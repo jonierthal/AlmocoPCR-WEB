@@ -1,0 +1,46 @@
+{
+  "name": "appalmoco-web",
+  "private": true,
+  "version": "0.0.0",
+  "homepage": "https://jonierthal.github.io/AppAlmocoPCR-WEB",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.1.0",
+    "axios": "^1.3.6",
+    "bootstrap": "^5.2.3",
+    "date-fns": "^2.22.1",
+    "moment": "^2.29.4",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.7.4",
+    "react-data-export": "^0.6.0",
+    "react-datepicker": "^4.11.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.43.9",
+    "react-hooks-yup-form": "^0.1.5",
+    "react-icons": "^4.8.0",
+    "react-loader-spinner": "^5.3.4",
+    "react-modal": "^3.16.1",
+    "react-router-dom": "^6.10.0",
+    "styled-components": "^5.3.9",
+    "xlsx-js-style": "^1.2.0",
+    "xslx": "^1.0.0",
+    "yup": "^1.1.1",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@types/react-datepicker": "^4.11.2",
+    "@types/react-dom": "^18.0.11",
+    "@types/react-modal": "^3.16.0",
+    "@types/styled-components": "^5.1.26",
+    "@types/xlsx": "^0.0.36",
+    "@vitejs/plugin-react": "^3.1.0",
+    "typescript": "^4.9.3",
+    "vite": "^4.2.0"
+  }
+}
