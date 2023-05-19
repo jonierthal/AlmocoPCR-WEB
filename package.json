@@ -2,7 +2,6 @@
   "name": "appalmoco-web",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://jonierthal.github.io/AppAlmocoPCR-WEB",
   "type": "module",
   "scripts": {
     "dev": "vite",
