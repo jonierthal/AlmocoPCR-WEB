@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { TableContainer, Table, Th, Td, Icon, ThMenor, ButtonGreen, ButtonRed, ContainerModal, ButonContainer, TextAlertContainer, StyledAlert, Input, InputContainer} from './styles';
+import { TableContainer, Table, Th, Td, Icon, ThMenor, ButtonGreen, ButtonRed, ContainerModal, ButonContainer, TextAlertContainer, StyledAlert, Input, InputContainer, InputFilterContainer} from './styles';
 import { Title } from '../../components/Title/styles';
 import { SubtitleComp } from '../../components/Subtitle';
 import { ProgressBar } from  'react-loader-spinner'
 import { TitleComp } from '../../components/Title';
+
 
 export function ManutFuncionarios() {
 
@@ -32,6 +33,10 @@ export function ManutFuncionarios() {
   const[chaveEditId,setChaveEditId] = useState<number>(0);
   
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+
+  const [filterName, setFilterName] = useState('');
+  const [filterId, setFilterId] = useState<number>();
+
 
   async function carregaDadosTabela(){
       setLoading(true);
@@ -192,6 +197,26 @@ export function ManutFuncionarios() {
         <StyledAlert variant="success ">{successMessage}</StyledAlert>
       </TextAlertContainer>   
     }
+    <InputFilterContainer>
+          <span>
+            <input
+              type="text"
+              id="filterName"
+              value={filterName}
+              onChange={(e) => setFilterName(e.target.value)}
+              placeholder="Filtre por nome..."
+            />
+        </span>
+        <span>
+          <input
+            type="number"
+            id="filterId"
+            value={filterId}
+            onChange={(e) => setFilterId(parseInt(e.target.value))}        
+            placeholder="Filtre por código..."
+          />
+        </span>
+        </InputFilterContainer>
     {loading ?
      <TextAlertContainer>    
       <ProgressBar
@@ -205,7 +230,9 @@ export function ManutFuncionarios() {
       />
       </TextAlertContainer>    
       :
+      
         <Table>
+        
           <thead>
             <tr>
               <ThMenor>Código</ThMenor>
@@ -215,7 +242,10 @@ export function ManutFuncionarios() {
             </tr>
           </thead>
           <tbody>
-            {funcionarios.map(funcionario => (
+            {funcionarios.filter((funcionario) =>
+              funcionario.nome.toLowerCase().startsWith(filterName.toLowerCase()) &&
+              (!filterId || funcionario.id_fun === filterId))
+              .map(funcionario => (
               <tr key={funcionario.id_fun}>
                 <Td>{funcionario.id_fun}</Td>
                 <Td>{funcionario.nome}</Td>

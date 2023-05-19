@@ -177,3 +177,31 @@ export const Input = styled.input`
     }
 `;
 
+export const InputFilterContainer = styled.div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+
+    span {
+      margin: 0.5rem
+    }
+
+    input {
+      border: 1px solid #0476AC;
+      border-radius: 6px;
+      color: #0476AC;
+      font-family: Arial;
+      font-size: 15px;
+      font-weight: bold;
+      padding: 0.5rem;
+      text-align: center;
+
+      ::placeholder {
+        color: #0476AC;
+      }
+    }
+`;
+
+
