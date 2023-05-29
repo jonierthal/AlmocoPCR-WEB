@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { TableContainer, Table, Th, Td, Icon, ThMenor, ButtonGreen, ButtonRed, ContainerModal, ButonContainer, TextAlertContainer, StyledAlert, Input, InputContainer, InputFilterContainer} from './styles';
 import { Title } from '../../components/Title/styles';
 import { SubtitleComp } from '../../components/Subtitle';
 import { ProgressBar } from  'react-loader-spinner'
 import { TitleComp } from '../../components/Title';
+import { api } from '../../lib/axios';
 
 
 export function ManutFuncionarios() {
@@ -41,7 +41,7 @@ export function ManutFuncionarios() {
   async function carregaDadosTabela(){
       setLoading(true);
 
-      await axios.get('https://appalmoco-pcr.azurewebsites.net/cad_fun_id')
+      await api.get('/cad_fun_id')
         .then(response => {
           setFuncionarios(response.data.pesquisaFuncionario);
         })
@@ -61,7 +61,7 @@ export function ManutFuncionarios() {
   async function handleDelete(id: number)  {
     setLoading(true);
 
-    await axios.delete(`https://appalmoco-pcr.azurewebsites.net/cadastro/${id}`)
+    await api.delete(`/cadastro/${id}`)
       .then(response => {
         setFuncionarios(response.data.pesquisaFuncionario);
         console.log(response.data.mensagem);
@@ -113,7 +113,7 @@ export function ManutFuncionarios() {
 
     switch(true) {
       case editId > 0:
-        await axios.get(`https://appalmoco-pcr.azurewebsites.net/verificar-id/${editId}`)
+        await api.get(`/verificar-id/${editId}`)
           .then(async response => {
           console.log("Verificar ID sucesso:",response.data)
 
@@ -123,7 +123,7 @@ export function ManutFuncionarios() {
             setLoading(true);
             console.log(id, editId, editNome)
 
-            await axios.put(`https://appalmoco-pcr.azurewebsites.net/edita_cadastro/${id}`, {
+            await api.put(`/edita_cadastro/${id}`, {
               funcionario: {
               id: editId,
               nome: editNome
@@ -229,10 +229,8 @@ export function ManutFuncionarios() {
         barColor = '#0476AC'
       />
       </TextAlertContainer>    
-      :
-      
+      :   
         <Table>
-        
           <thead>
             <tr>
               <ThMenor>Código</ThMenor>

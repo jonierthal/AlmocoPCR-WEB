@@ -13,6 +13,7 @@ import { Alert } from 'react-bootstrap';
 import { ProgressBar } from  'react-loader-spinner'
 
 import axios from 'axios';
+import { api } from "../../lib/axios";
 
 const novoValidacaoFormularioSchema = Yup.object().shape({
     nome: Yup.string().min(1, 'Informe o nome'),
@@ -47,7 +48,7 @@ export function Home(){
         try {
           setLoading(true);
 
-          const response = await axios.post('https://appalmoco-pcr.azurewebsites.net/cadastro_funcionario', {
+          const response = await api.post('/cadastro_funcionario', {
             codFuncionario: data.codigo,
             nameFuncionario: data.nome
           });

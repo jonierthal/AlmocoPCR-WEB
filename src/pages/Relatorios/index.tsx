@@ -27,6 +27,7 @@ import * as XLSX from 'xlsx';
 import XlsxStyle from 'xlsx-js-style';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
 import ptBR from 'date-fns/locale/pt-BR';
+import { api } from "../../lib/axios";
 
 // Registra o locale para Português (Brasil)
 registerLocale('pt-BR', ptBR);
@@ -210,7 +211,7 @@ setDefaultLocale('pt-BR');
 
             const livro = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(livro, planilha, 'Relatório período');
-            XlsxStyle.writeFile(livro, 'relatorio.xlsx');
+            XlsxStyle.writeFile(livro, 'relatorio-periodo.xlsx');
 
           })
           .catch((error) => {
@@ -256,7 +257,7 @@ setDefaultLocale('pt-BR');
         const livro = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(livro, planilha, 'Reservas de Xis');
       
-        XlsxStyle.writeFile(livro, 'relatorio.xlsx');
+        XlsxStyle.writeFile(livro, 'relatorio-xis.xlsx');
       } catch (e) {
         console.log(e);
       } finally {
@@ -364,7 +365,7 @@ setDefaultLocale('pt-BR');
         const livro = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(livro, planilha, 'Reservas de Almoço');
   
-        XlsxStyle.writeFile(livro, 'relatorio.xlsx');
+        XlsxStyle.writeFile(livro, 'relatorio-almoco.xlsx');
       }  
       catch(error){
         console.log(error);
@@ -378,7 +379,7 @@ setDefaultLocale('pt-BR');
     async function carregaDadosAlmoco(){
         setLoading(true);
   
-        await axios.get('https://appalmoco-pcr.azurewebsites.net/almocos')
+        await api.get('/almocos')
           .then(response => {
             setAlmocos(response.data.almocos);
             setNum_almocos(response.data.num_almocos);
@@ -397,7 +398,7 @@ setDefaultLocale('pt-BR');
     async function carregaDadosAlmocoExtra(){
         setLoading(true);
   
-        await axios.get('https://appalmoco-pcr.azurewebsites.net/alm_ext')
+        await api.get('/alm_ext')
           .then(response => {
             setAlmocos_ext(response.data.alm_ext);
             console.log(response.data.alm_ext)
@@ -419,7 +420,7 @@ setDefaultLocale('pt-BR');
     async function carregaDadosReservaXis(){
         setLoading(true);
   
-        await axios.get('https://appalmoco-pcr.azurewebsites.net/reserva_xis')
+        await api.get('/reserva_xis')
           .then(response => {
             setReserva_xis(response.data.reserva_xis);
             console.log(response.data.reserva_xis)
