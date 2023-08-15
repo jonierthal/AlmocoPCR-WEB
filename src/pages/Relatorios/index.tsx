@@ -57,6 +57,12 @@ setDefaultLocale('pt-BR');
     quantidade: number;
   }
 
+  type ReservaXisPeriodoType = {
+    id_fun: number;
+    nome: string;
+    quantidade_rx: number;
+  }
+
   export function Relatorios(){
     const [loading, setLoading] = useState<boolean>(false)
     const [almocos, setAlmocos] = useState<AlmocoType[]>([])
@@ -141,7 +147,7 @@ setDefaultLocale('pt-BR');
         const endDateString = endDate.toISOString();
     
         // Aqui você pode chamar a API para buscar os dados com as datas selecionadas
-        axios.get('https://appalmoco-pcr.azurewebsites.net//retorno_rel', {
+        api.get('/retorno_rel', {
           params: {
             startDate: startDateString,
             endDate: endDateString
@@ -152,27 +158,33 @@ setDefaultLocale('pt-BR');
 
             const dataAlmocosPeriodo: AlmocosPeriodoType[] = response.data.funcionarios;
             const dataAlmocosExtrasPeriodo: AlmocoExtraType[] = response.data.almExts;
+            const dataReservaXisPeriodo: ReservaXisPeriodoType[] = response.data.funcionarios_xis;
             const total = response.data.total.quantidade_total;
-
-            console.log(dataAlmocosExtrasPeriodo)
 
             const almocosPeriodo = dataAlmocosPeriodo.map(almocoPeriodo => [almocoPeriodo.nome, almocoPeriodo.quantidade]);           
             const almocosExtrasPeriodo = dataAlmocosExtrasPeriodo.map(almocoExtrasPeriodo => ['',almocoExtrasPeriodo.nome_aext, almocoExtrasPeriodo.quantidade_aext]);
+            const reservaXisPeriodo = dataReservaXisPeriodo.map(reservaXisPeriodo => ['',reservaXisPeriodo.nome, reservaXisPeriodo.quantidade_rx]);
+
+            const maxLength = Math.max(almocosPeriodo.length, almocosExtrasPeriodo.length, reservaXisPeriodo.length);
       
-            const dados = almocosPeriodo.map((almocosPeriodo, index) => [
-              ...almocosPeriodo,
-              ...(almocosExtrasPeriodo[index] || ['', '']) // adiciona as células dos extras para a reserva atual, ou células vazias se não houver extras para a reserva
-            ])
+            const dados = [];
+            for (let i = 0; i < maxLength; i++) {
+              const almocoRow = almocosPeriodo[i] || ['', ''];
+              const almocoExtrasRow = almocosExtrasPeriodo[i] || ['', '', ''];
+              const reservaXisRow = reservaXisPeriodo[i] || ['', '', ''];
+
+              dados.push([...almocoRow, ...almocoExtrasRow, ...reservaXisRow]);
+            }
 
             const planilha = XLSX.utils.aoa_to_sheet([
               ['DATA INICIO', 'DATA FIM'],
               [startDate,endDate],
               [null],
-              ['NOME', 'QUANTIDADE', '', 'NOME ALMOCO EXTRA','QUANTIDADE', '', 'TOTAL'],
+              ['NOME', 'QUANTIDADE', '', 'NOME ALMOCO EXTRA','QUANTIDADE', '','NOME RESERVA XIS', 'QUANTIDADE','','TOTAL'],
               ...dados
             ]);
 
-            planilha['G5'] = { v: total, t: 'n' };
+            planilha['J5'] = { v: total, t: 'n' };
 
             //seta o estilho nas celular indicadas
             planilha['A1'].s = tableHeader;
@@ -182,10 +194,12 @@ setDefaultLocale('pt-BR');
             planilha['D4'].s = tableHeader;
             planilha['E4'].s = tableHeader;
             planilha['G4'].s = tableHeader;
+            planilha['H4'].s = tableHeader;
+            planilha['J4'].s = tableHeader;
             planilha['A2'].s = dateStyle;
             planilha['B2'].s = dateStyle;
 
-            planilha['G5'].s = thinBorder;
+            planilha['J5'].s = thinBorder;
 
             for (let i = 5; i <= almocosPeriodo.length + 4; i++) {
               const cellRef = `A${i}`;
@@ -206,8 +220,18 @@ setDefaultLocale('pt-BR');
               const cellRef = `E${i}`;
               planilha[cellRef].s = thinBorder;
             }
+
+            for (let i = 5; i <= reservaXisPeriodo.length + 4; i++) {
+              const cellRef = `G${i}`;
+              planilha[cellRef].s = thinBorder;
+            }
+
+            for (let i = 5; i <= reservaXisPeriodo.length + 4; i++) {
+              const cellRef = `H${i}`;
+              planilha[cellRef].s = thinBorder;
+            }
             
-            planilha['!cols'] = [{ width: 40 },{ width: 15},{ width: 5 },{ width: 40},{ width: 15},{ width: 5 },{ width: 15}];
+            planilha['!cols'] = [{ width: 40 },{ width: 15},{ width: 5 },{ width: 40},{ width: 15},{ width: 5 },{ width: 40},{ width: 15},{ width: 15}];
 
             const livro = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(livro, planilha, 'Relatório período');
