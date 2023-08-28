@@ -10,7 +10,7 @@ import { useForm } from 'react-hook-form'
 import { useState } from "react";
 import { Alert } from 'react-bootstrap';
 
-import { ProgressBar } from  'react-loader-spinner'
+import { ColorRing } from  'react-loader-spinner'
 
 import axios from 'axios';
 import { api } from "../../lib/axios";
@@ -109,15 +109,15 @@ export function Home(){
 
               {loading && 
                     <TextAlertContainer>    
-                      <ProgressBar
-                        height="80"
-                        width="80"
-                        ariaLabel="progress-bar-loading"
+                      <ColorRing
+                        visible={true}
+                        height="60"
+                        width="60"
+                        ariaLabel="blocks-loading"
                         wrapperStyle={{}}
-                        wrapperClass="progress-bar-wrapper"
-                        borderColor = '#0476AC'
-                        barColor = '#0476AC'
-                      />
+                        wrapperClass="blocks-wrapper"
+                        colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+                      />  
                     </TextAlertContainer>
                 }
               <Button name="Confirmar" type="submit" />

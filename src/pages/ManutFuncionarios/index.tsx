@@ -16,7 +16,7 @@ import { TableContainer,
          InputFilterContainer} from './styles';
 import { Title } from '../../components/Title/styles';
 import { SubtitleComp } from '../../components/Subtitle';
-import { ColorRing, ProgressBar } from  'react-loader-spinner'
+import { ColorRing } from  'react-loader-spinner'
 import { TitleComp } from '../../components/Title';
 import { api } from '../../lib/axios';
 import { SpinnerContainer } from '../Relatorios/styles';
@@ -227,15 +227,15 @@ export function ManutFuncionarios() {
         </InputFilterContainer>
     {loading ?
      <TextAlertContainer>    
-      <ProgressBar
-        height="80"
-        width="80"
-        ariaLabel="progress-bar-loading"
+      <ColorRing
+        visible={true}
+        height="60"
+        width="60"
+        ariaLabel="blocks-loading"
         wrapperStyle={{}}
-        wrapperClass="progress-bar-wrapper"
-        borderColor = '#0476AC'
-        barColor = '#0476AC'
-      />
+        wrapperClass="blocks-wrapper"
+        colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+      />  
       </TextAlertContainer>    
       :   
         <Table>

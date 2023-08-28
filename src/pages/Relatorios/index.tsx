@@ -23,7 +23,7 @@ import {
 import { ButonContainer, ButtonGreen, ContainerModal, StyledAlert, TextAlertContainer } from "../ManutFuncionarios/styles";
 import { BiMoveHorizontal } from 'react-icons/bi';
 import { useEffect, useState } from "react";
-import { ProgressBar, ColorRing } from 'react-loader-spinner'
+import { ColorRing } from 'react-loader-spinner'
 import moment from 'moment';
 import * as XLSX from 'xlsx';
 import XlsxStyle from 'xlsx-js-style';
@@ -72,6 +72,9 @@ setDefaultLocale('pt-BR');
 
   export function Relatorios(){
     const [loading, setLoading] = useState<boolean>(false)
+    const [loadingAlmoco, setLoadingAlmoco] = useState<boolean>(false)
+    const [loadingXis, setLoadingXis] = useState<boolean>(false)
+    const [loadingAlm_ext, setLoadingAlm_ext] = useState<boolean>(false)
     const [almocos, setAlmocos] = useState<AlmocoType[]>([])
     const [num_almocos, setNum_almocos] = useState<number>(0)
     const [almocos_ext, setAlmocos_ext] = useState<AlmocoExtraType[]>([])
@@ -415,7 +418,7 @@ setDefaultLocale('pt-BR');
     }
 
     async function handleDeleteAlmoco(id: number)  {
-      setLoading(true);
+      setLoadingAlmoco(true);
   
       await api.delete(`/almocos/${id}`)
         .then(response => {
@@ -433,7 +436,7 @@ setDefaultLocale('pt-BR');
           }, 4000);
         })
         .finally(() => {
-          setLoading(false);
+          setLoadingAlmoco(false);
           window.scrollTo({
             top: 0,
             behavior: 'smooth'
@@ -443,7 +446,7 @@ setDefaultLocale('pt-BR');
     };
 
     async function handleDeleteXis(id: number)  {
-      setLoading(true);
+      setLoadingXis(true);
   
       await api.delete(`/reservaXis/${id}`)
         .then(response => {
@@ -461,7 +464,7 @@ setDefaultLocale('pt-BR');
           }, 4000);
         })
         .finally(() => {
-          setLoading(false);
+          setLoadingXis(false);
           window.scrollTo({
             top: 0,
             behavior: 'smooth'
@@ -471,7 +474,7 @@ setDefaultLocale('pt-BR');
     };
 
     async function handleDeleteAlm_ext(id: number)  {
-      setLoading(true);
+      setLoadingAlm_ext(true);
 
       await api.delete(`/alm_ext/${id}`)
         .then(response => {
@@ -489,7 +492,7 @@ setDefaultLocale('pt-BR');
           }, 4000);
         })
         .finally(() => {
-          setLoading(false);
+          setLoadingAlm_ext(false);
           window.scrollTo({
             top: 0,
             behavior: 'smooth'
@@ -526,7 +529,7 @@ setDefaultLocale('pt-BR');
       
 
     async function carregaDadosAlmoco(){
-        setLoading(true);
+        setLoadingAlmoco(true);
 
         const response = await api.get('/almocos');
   
@@ -540,12 +543,12 @@ setDefaultLocale('pt-BR');
            // setErrorMessage('Ocorreu um erro ao listar os funcionários. Contate o Administrador!');
           })
           .finally(() => {
-            setLoading(false); // define loading como false após a requisição ter sido concluída (com sucesso ou erro)
+            setLoadingAlmoco(false); // define loading como false após a requisição ter sido concluída (com sucesso ou erro)
           });
     }
     
     async function carregaDadosAlmocoExtra(){
-        setLoading(true);
+        setLoadingAlm_ext(true);
   
         await api.get('/alm_ext')
           .then(response => {
@@ -561,12 +564,12 @@ setDefaultLocale('pt-BR');
            // setErrorMessage('Ocorreu um erro ao listar os funcionários. Contate o Administrador!');
           })
           .finally(() => {
-            setLoading(false); // define loading como false após a requisição ter sido concluída (com sucesso ou erro)
+            setLoadingAlm_ext(false); // define loading como false após a requisição ter sido concluída (com sucesso ou erro)
           });
     }
 
     async function carregaDadosReservaXis(){
-        setLoading(true);
+        setLoadingXis(true);
   
         await api.get('/reserva_xis')
           .then(response => {
@@ -577,7 +580,7 @@ setDefaultLocale('pt-BR');
            // setErrorMessage('Ocorreu um erro ao listar os funcionários. Contate o Administrador!');
           })
           .finally(() => {
-            setLoading(false); // define loading como false após a requisição ter sido concluída (com sucesso ou erro)
+            setLoadingXis(false); // define loading como false após a requisição ter sido concluída (com sucesso ou erro)
           });
     }
   
@@ -634,19 +637,19 @@ setDefaultLocale('pt-BR');
             </RelatoriosContainer>
             <SpinnerContainer>
             {loading &&         
-                <ProgressBar
-                    height="80"
-                    width="80"
-                    ariaLabel="progress-bar-loading"
-                    wrapperStyle={{}}
-                    wrapperClass="progress-bar-wrapper"
-                    borderColor = '#0476AC'
-                    barColor = '#0476AC'
-                />   
+              <ColorRing
+                visible={true}
+                height="60"
+                width="60"
+                ariaLabel="blocks-loading"
+                wrapperStyle={{}}
+                wrapperClass="blocks-wrapper"
+                colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+              />  
             }
             </SpinnerContainer>
 
-            <TableContainer>    
+            <TableContainer> 
               <TableSpacing>       
                   <Table>
                     <Thead>
@@ -674,6 +677,19 @@ setDefaultLocale('pt-BR');
                           ))}
                       </tbody>   
                   </Table>
+                  <SpinnerContainer>
+                    {loadingAlm_ext &&         
+                    <ColorRing
+                        visible={true}
+                        height="60"
+                        width="60"
+                        ariaLabel="blocks-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="blocks-wrapper"
+                        colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+                    />  
+                    }
+                </SpinnerContainer>
               </TableSpacing>
 
               <TableSpacing>             
@@ -701,6 +717,19 @@ setDefaultLocale('pt-BR');
                     ))}
                   </tbody>
                 </Table>
+                <SpinnerContainer>
+                    {loadingAlmoco &&         
+                    <ColorRing
+                        visible={true}
+                        height="60"
+                        width="60"
+                        ariaLabel="blocks-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="blocks-wrapper"
+                        colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+                    />  
+                    }
+                </SpinnerContainer>
               </TableSpacing>
 
               <TableSpacing>    
@@ -728,12 +757,23 @@ setDefaultLocale('pt-BR');
                     ))}
                   </tbody>
                 </Table>
+                <SpinnerContainer>
+                    {loadingXis &&         
+                    <ColorRing
+                        visible={true}
+                        height="60"
+                        width="60"
+                        ariaLabel="blocks-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="blocks-wrapper"
+                        colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+                    />  
+                    }
+                </SpinnerContainer>
               </TableSpacing>
             </TableContainer>
-
-
             <ContainerTextFooter>
-                <TextDate>QUANTIDADE TOTAL DE ALMOÇOS - {date} = {num_almocos + numAlmocos_ext}</TextDate>
+                <TextDate>QUANTIDADE TOTAL DE ALMOÇOS - {date} = {num_almocos + numAlmocos_ext}<br/><br/><br/></TextDate>
             </ContainerTextFooter>
 
         <ContainerModal
@@ -744,7 +784,7 @@ setDefaultLocale('pt-BR');
           <Title>Confirmar exclusão?</Title>
           <SubtitleComp subtitle={`Você está prestes a excluir a reserva de Almoço: \n\n Nome: ${deleteNome} \n\nTem certeza disso?`}/>
             <SpinnerContainer>
-              {loading &&         
+              {loadingAlmoco &&         
                   <ColorRing
                     visible={true}
                     height="60"
@@ -776,7 +816,7 @@ setDefaultLocale('pt-BR');
           <Title>Confirmar exclusão?</Title>
           <SubtitleComp subtitle={`Você está prestes a excluir a reserva de Xis: \n\n Nome: ${deleteNome} \n\n Tem certeza disso?`}/>
           <SpinnerContainer>
-            {loading &&         
+            {loadingXis &&         
                 <ColorRing
                   visible={true}
                   height="60"
@@ -808,7 +848,7 @@ setDefaultLocale('pt-BR');
           <Title>Confirmar exclusão?</Title>
           <SubtitleComp subtitle={`Você está prestes a excluir a reserva de almoço extra: \n\n Nome: ${deleteNome} \n\n Tem certeza disso?`}/>
           <SpinnerContainer>
-            {loading &&         
+            {loadingAlm_ext &&         
                 <ColorRing
                   visible={true}
                   height="60"
