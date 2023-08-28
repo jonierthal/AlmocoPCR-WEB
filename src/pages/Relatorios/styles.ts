@@ -95,6 +95,100 @@ export const ListsContainer = styled.div`
     padding: 1rem;
 `
 
+export const TableContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+`
+
+export const TableSpacing = styled.div`
+    width: 100%;
+    margin: 0 00.5rem;
+`
+
+export const Table = styled.table`
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid #000;
+`
+
+export const Thead = styled.thead`
+  width: 100%;
+`;
+
+export const Th = styled.th`
+  background-color: #0476AC;
+  border: 1px solid #FFFF;
+  padding: 8px;
+
+  text-align: center;
+  color: #FFFF;
+  font-weight:bold;
+  font-size: 1rem;
+  font-family: Arial;
+
+  width: 100%;
+
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+
+`;
+
+export const Th2 = styled.th`
+  background-color: #0476AC;
+  border: 1px solid #FFFF;
+  padding: 8px;
+
+  text-align: center;
+  color: #FFFF;
+  font-weight:bold;
+  font-size: 1rem;
+  font-family: Arial;
+`;
+
+export const Td = styled.td`
+  border: 1px solid #ddd;
+  padding: 5px;
+
+  color: #0476AC;
+  font-weight:bold;
+  font-size: 1rem;
+  font-family: Arial;
+  text-align: center;
+  vertical-align: middle;
+`;
+
+export const ButtonRed = styled.button`
+    width: 100%;
+    height: auto;
+    padding: 0.6rem;
+
+    background-color: #FF0000;
+
+    font-weight:bold;
+    font-size: 1rem;
+    font-family: Arial;
+    color: #FFFF;
+
+    border:none; ;
+    border-radius: 0.3rem;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    &:active {
+        transform: translateY(2px); /* Desloca o botão para baixo quando pressionado */
+        box-shadow: none; /* Remove a sombra do botão quando pressionado */
+        background: #FF8C00;
+    }
+`;
+
+export const Icon = styled.i`
+  display: inline-block;
+`;
+
 export const ListaAlmocosContainer = styled.div`
     width: 100%;
     margin: 0 00.5rem;

@@ -1,10 +1,25 @@
 import { useState, useEffect } from 'react';
-import { TableContainer, Table, Th, Td, Icon, ThMenor, ButtonGreen, ButtonRed, ContainerModal, ButonContainer, TextAlertContainer, StyledAlert, Input, InputContainer, InputFilterContainer} from './styles';
+import { TableContainer, 
+         Table, 
+         Th, 
+         Td, 
+         Icon, 
+         ThMenor, 
+         ButtonGreen, 
+         ButtonRed, 
+         ContainerModal, 
+         ButonContainer, 
+         TextAlertContainer, 
+         StyledAlert, 
+         Input, 
+         InputContainer, 
+         InputFilterContainer} from './styles';
 import { Title } from '../../components/Title/styles';
 import { SubtitleComp } from '../../components/Subtitle';
-import { ProgressBar } from  'react-loader-spinner'
+import { ColorRing, ProgressBar } from  'react-loader-spinner'
 import { TitleComp } from '../../components/Title';
 import { api } from '../../lib/axios';
+import { SpinnerContainer } from '../Relatorios/styles';
 
 
 export function ManutFuncionarios() {
@@ -63,8 +78,7 @@ export function ManutFuncionarios() {
 
     await api.delete(`/cadastro/${id}`)
       .then(response => {
-        setFuncionarios(response.data.pesquisaFuncionario);
-        console.log(response.data.mensagem);
+        carregaDadosTabela();
         setSuccessMessage('Funcionário excluído com sucesso!');
         setTimeout(() => {
           setSuccessMessage('');
@@ -115,13 +129,10 @@ export function ManutFuncionarios() {
       case editId > 0:
         await api.get(`/verificar-id/${editId}`)
           .then(async response => {
-          console.log("Verificar ID sucesso:",response.data)
 
           if((response.data.idExiste && id === editId) || (!response.data.idExiste)) {
 
-            console.log('posso editar, ids iguais ou id inexistente')
             setLoading(true);
-            console.log(id, editId, editNome)
 
             await api.put(`/edita_cadastro/${id}`, {
               funcionario: {
@@ -135,14 +146,12 @@ export function ManutFuncionarios() {
               }
             })
             .then(() => {
-              console.log("Cadastro sucesso!")
               setSuccessMessage('Funcionário editado com sucesso!');
               setTimeout(() => {
               setSuccessMessage('');
             }, 4000);
             })
             .catch ((err) => {
-              console.log('Cadastro falhou')
               setErrorMessage('Não foi possível editar o funcionário, contate o adminsitrador!')
               setTimeout(() => {
               setErrorMessage('');
@@ -155,7 +164,6 @@ export function ManutFuncionarios() {
           });
 
           } else if (response.data.idExiste && id !== editId){
-            console.log('não posso editar pois id já existe')
             closeEditModal();
             setErrorMessage('Não foi possível alterar este funcionário, pois este código já existe! Digite um código válido!')
               setTimeout(() => {
@@ -271,6 +279,19 @@ export function ManutFuncionarios() {
         >
           <Title>Confirmar exclusão?</Title>
           <SubtitleComp subtitle={`Você está prestes a excluir o funcionário: \n\n Nome: ${deleteNome} \n Código: ${deleteId}\n\n Tem certeza disso?`}/>
+            <SpinnerContainer>
+              {loading &&         
+                <ColorRing
+                  visible={true}
+                  height="60"
+                  width="60"
+                  ariaLabel="blocks-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="blocks-wrapper"
+                  colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+                />  
+              }
+              </SpinnerContainer>
             <ButonContainer>
               <ButtonGreen onClick={() => handleDelete(deleteId!)}>
                 Confirmar

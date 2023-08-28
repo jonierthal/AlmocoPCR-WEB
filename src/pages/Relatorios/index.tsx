@@ -7,27 +7,31 @@ import {
     TextDateContainer, 
     ButtonDateIntervalContainer,
     RelatoriosContainer,
-    ListsContainer,
-    ListaAlmocosContainer,
-    ListaExtrasContainer,
-    ListaXisContainer,
-    ListGroupItem,
     ContainerTextFooter,
-    ListGroupItemText,
     SpinnerContainer,
-    StyledDatePicker
+    StyledDatePicker,
+    TableSpacing,
+    Table,
+    TableContainer,
+    Th,
+    Thead,
+    Th2,
+    Td,
+    ButtonRed,
+    Icon
 } from "./styles";
+import { ButonContainer, ButtonGreen, ContainerModal, StyledAlert, TextAlertContainer } from "../ManutFuncionarios/styles";
 import { BiMoveHorizontal } from 'react-icons/bi';
-import ListGroup from 'react-bootstrap/ListGroup';
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { ProgressBar } from 'react-loader-spinner'
+import { ProgressBar, ColorRing } from 'react-loader-spinner'
 import moment from 'moment';
 import * as XLSX from 'xlsx';
 import XlsxStyle from 'xlsx-js-style';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
 import ptBR from 'date-fns/locale/pt-BR';
 import { api } from "../../lib/axios";
+import { Title } from "../../components/Title/styles";
+import { SubtitleComp } from "../../components/Subtitle";
 
 // Registra o locale para Português (Brasil)
 registerLocale('pt-BR', ptBR);
@@ -36,11 +40,13 @@ setDefaultLocale('pt-BR');
 
   type AlmocoType = {
     cod_funcionario: number,
-    "Funcionario.nome": string;
+    "Funcionario.nome": string,
+    id: number,
     num_almocos: number;
   }
 
   type AlmocoExtraType = {
+    id: number,
     nome_aext: string;
     quantidade_aext: number;
   }
@@ -49,6 +55,7 @@ setDefaultLocale('pt-BR');
     cod_funcionario: number;
     quantidade_rx: number;
     "Funcionario.nome": string;
+    id: number;
   }
 
   type AlmocosPeriodoType = {
@@ -70,6 +77,14 @@ setDefaultLocale('pt-BR');
     const [almocos_ext, setAlmocos_ext] = useState<AlmocoExtraType[]>([])
     const [numAlmocos_ext, setNumAlmocos_ext] = useState<number>(0)
     const [reserva_xis, setReserva_xis] = useState<ReservaXisType[]>([])
+
+    const [isModalOpenAlmoco, setIsModalOpenAlmoco] = useState<boolean>(false);
+    const [isModalOpenXis, setIsModalOpenXis] = useState<boolean>(false);
+    const [isModalOpenAlm_ext, setIsModalOpenAlm_ext] = useState<boolean>(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [deleteId, setDeleteId] = useState<number | null>(null);
+    const [deleteNome, setDeleteNome] = useState<string>('');
 
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
@@ -398,17 +413,127 @@ setDefaultLocale('pt-BR');
         setLoading(false);
       }
     }
+
+    async function handleDeleteAlmoco(id: number)  {
+      setLoading(true);
+  
+      await api.delete(`/almocos/${id}`)
+        .then(response => {
+          carregaDadosAlmoco();
+          setSuccessMessage('Almoço excluído com sucesso!');
+          setTimeout(() => {
+            setSuccessMessage('');
+          }, 4000);
+        })
+        .catch(error => {
+          console.error(error);
+          setErrorMessage('Ocorreu um erro ao excluir o Almoço. Contate o Administrador!');
+          setTimeout(() => {
+            setErrorMessage('');
+          }, 4000);
+        })
+        .finally(() => {
+          setLoading(false);
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        });
+      closeModal();
+    };
+
+    async function handleDeleteXis(id: number)  {
+      setLoading(true);
+  
+      await api.delete(`/reservaXis/${id}`)
+        .then(response => {
+          carregaDadosReservaXis();
+          setSuccessMessage('Reserva de Xis excluído com sucesso!');
+          setTimeout(() => {
+            setSuccessMessage('');
+          }, 4000);
+        })
+        .catch(error => {
+          console.error(error);
+          setErrorMessage('Ocorreu um erro ao excluir a reserva de Xis. Contate o Administrador!');
+          setTimeout(() => {
+            setErrorMessage('');
+          }, 4000);
+        })
+        .finally(() => {
+          setLoading(false);
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        });
+      closeModal();
+    };
+
+    async function handleDeleteAlm_ext(id: number)  {
+      setLoading(true);
+
+      await api.delete(`/alm_ext/${id}`)
+        .then(response => {
+          carregaDadosAlmocoExtra();
+          setSuccessMessage('Almoço extra excluído com sucesso!');
+          setTimeout(() => {
+            setSuccessMessage('');
+          }, 4000);
+        })
+        .catch(error => {
+          console.error(error);
+          setErrorMessage('Ocorreu um erro ao excluir o Almoço extra. Contate o Administrador!');
+          setTimeout(() => {
+            setErrorMessage('');
+          }, 4000);
+        })
+        .finally(() => {
+          setLoading(false);
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        });
+      closeModal();
+    };
+
+    function openModalAlmoco(id: number, nome: string)  {
+      setDeleteId(id);
+      setDeleteNome(nome);
+      setIsModalOpenAlmoco(true);
+    };
+
+    function openModalXis(id: number, nome: string)  {
+      setDeleteId(id);
+      setDeleteNome(nome);
+      setIsModalOpenXis(true);
+    };
+
+    function openModalAlm_ext(id: number, nome: string)  {
+      setDeleteId(id);
+      setDeleteNome(nome);
+      setIsModalOpenAlm_ext(true);
+    };
+  
+    function closeModal() {
+      setDeleteId(null);
+      setDeleteNome('');
+      setIsModalOpenAlmoco(false);
+      setIsModalOpenXis(false);
+      setIsModalOpenAlm_ext(false);
+    };
       
 
     async function carregaDadosAlmoco(){
         setLoading(true);
+
+        const response = await api.get('/almocos');
   
         await api.get('/almocos')
           .then(response => {
             setAlmocos(response.data.almocos);
             setNum_almocos(response.data.num_almocos);
-            console.log(response.data.almocos)
-            console.log(response.data.num_almocos)
           })
           .catch(error => {
             console.error(error);
@@ -425,7 +550,6 @@ setDefaultLocale('pt-BR');
         await api.get('/alm_ext')
           .then(response => {
             setAlmocos_ext(response.data.alm_ext);
-            console.log(response.data.alm_ext)
             let sum = 0;
             for (const item of response.data.alm_ext) {
                 sum += item.quantidade_aext;
@@ -447,7 +571,6 @@ setDefaultLocale('pt-BR');
         await api.get('/reserva_xis')
           .then(response => {
             setReserva_xis(response.data.reserva_xis);
-            console.log(response.data.reserva_xis)
           })
           .catch(error => {
             console.error(error);
@@ -466,6 +589,16 @@ setDefaultLocale('pt-BR');
       
     return(
         <Container>
+          {errorMessage &&
+            <TextAlertContainer>   
+              <StyledAlert variant="danger">{errorMessage}</StyledAlert>
+            </TextAlertContainer>   
+          }
+          {successMessage && 
+            <TextAlertContainer>   
+              <StyledAlert variant="success ">{successMessage}</StyledAlert>
+            </TextAlertContainer>   
+          }
             <RelatoriosContainer>
                 <ButtonContainer >
                     <Button onClick={() => handleGerarRelatorioAlmoco()}> Reservar Almoço </Button>    
@@ -512,38 +645,194 @@ setDefaultLocale('pt-BR');
                 />   
             }
             </SpinnerContainer>
-            <ListsContainer>
-                <ListaExtrasContainer>
-                    <ListGroup className="text-center">
-                        <ListGroupItem active>Almoços extras</ListGroupItem>
-                        {almocos_ext.map(almoco_ext => (
-                            <ListGroupItemText key={almoco_ext.quantidade_aext}>{almoco_ext.nome_aext} - {almoco_ext.quantidade_aext}</ListGroupItemText>
-                        ))}
-                    </ListGroup >
-                </ListaExtrasContainer>
-                <ListaAlmocosContainer>
-                    <ListGroup className="text-center" >
-                        <ListGroupItem active>Lista de almoços</ListGroupItem>  
-                        {almocos.map(almoco => (  
-                            <ListGroupItemText key={almoco.cod_funcionario}>{almoco['Funcionario.nome']}</ListGroupItemText>
-                        ))}
-                    </ListGroup>
-                </ListaAlmocosContainer>
-                <ListaXisContainer>
-                    <ListGroup className="text-center">
-                        <ListGroupItem active>Reserva de Xis</ListGroupItem>
-                        {reserva_xis.map(xis => (
-                            <ListGroupItemText key={xis.cod_funcionario}>{xis['Funcionario.nome']}</ListGroupItemText>
-                        ))}
-                    </ListGroup>
-                </ListaXisContainer>
-            </ListsContainer>
+
+            <TableContainer>    
+              <TableSpacing>       
+                  <Table>
+                    <Thead>
+                        <tr>
+                          <Th colSpan={3}>Almoços extras</Th>
+                        </tr>
+                        <tr>
+                          <Th2 >Nome</Th2>
+                          <Th2 >Quantidade</Th2>
+                          <Th2>Excluir</Th2>
+                      </tr>
+                    </Thead>
+
+                    <tbody>
+                          {almocos_ext.map(almoco_ext => (
+                              <tr key={almoco_ext.id}>
+                                  <Td>{almoco_ext.nome_aext}</Td>
+                                  <Td>{almoco_ext.quantidade_aext}</Td>
+                                  <Td>
+                                    <ButtonRed onClick={() => openModalAlm_ext(almoco_ext.id,almoco_ext.nome_aext)}>
+                                      <Icon className="fas fa-trash-alt" />
+                                    </ButtonRed>
+                                  </Td>
+                              </tr>
+                          ))}
+                      </tbody>   
+                  </Table>
+              </TableSpacing>
+
+              <TableSpacing>             
+                <Table>
+                  <Thead>
+                      <tr>
+                        <Th colSpan={3}>Lista de almoços</Th>
+                      </tr>
+                      <tr>
+                        <Th2 >Nome</Th2>
+                        <Th2>Excluir</Th2>
+                    </tr>
+                  </Thead>
+                  
+                  <tbody>
+                    {almocos.map(almoco => (
+                      <tr key={almoco.cod_funcionario}>
+                        <Td>{almoco['Funcionario.nome']}</Td>
+                        <Td>
+                          <ButtonRed onClick={() => openModalAlmoco(almoco.id,almoco['Funcionario.nome'])}>
+                            <Icon className="fas fa-trash-alt" />
+                          </ButtonRed>
+                        </Td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </TableSpacing>
+
+              <TableSpacing>    
+                <Table>
+                  <Thead>
+                      <tr>
+                        <Th colSpan={3}>Reservas de Xis</Th>
+                      </tr>
+                      <tr>
+                        <Th2 >Nome</Th2>
+                        <Th2>Excluir</Th2>
+                    </tr>
+                  </Thead>
+                    
+                  <tbody>
+                    {reserva_xis.map(xis => (
+                    <tr key={xis.cod_funcionario}>
+                      <Td>{xis['Funcionario.nome']}</Td>
+                      <Td>
+                        <ButtonRed onClick={() => openModalXis(xis.id,xis['Funcionario.nome'])}>
+                          <Icon className="fas fa-trash-alt" />
+                        </ButtonRed>
+                      </Td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </TableSpacing>
+            </TableContainer>
+
 
             <ContainerTextFooter>
                 <TextDate>QUANTIDADE TOTAL DE ALMOÇOS - {date} = {num_almocos + numAlmocos_ext}</TextDate>
             </ContainerTextFooter>
-            
-           
+
+        <ContainerModal
+          isOpen={isModalOpenAlmoco}
+          onRequestClose={closeModal}
+          contentLabel="Confirmar exclusão"
+        >
+          <Title>Confirmar exclusão?</Title>
+          <SubtitleComp subtitle={`Você está prestes a excluir a reserva de Almoço: \n\n Nome: ${deleteNome} \n\nTem certeza disso?`}/>
+            <SpinnerContainer>
+              {loading &&         
+                  <ColorRing
+                    visible={true}
+                    height="60"
+                    width="60"
+                    ariaLabel="blocks-loading"
+                    wrapperStyle={{}}
+                    wrapperClass="blocks-wrapper"
+                    colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+                  />  
+              }
+            </SpinnerContainer>
+            <ButonContainer>
+              <ButtonGreen onClick={() => handleDeleteAlmoco(deleteId!)}>
+                Confirmar
+              </ButtonGreen>
+            </ButonContainer>
+            <ButonContainer>
+              <ButtonRed onClick={closeModal}>
+                Voltar
+              </ButtonRed>
+            </ButonContainer>
+          </ContainerModal>
+
+          <ContainerModal
+            isOpen={isModalOpenXis}
+            onRequestClose={closeModal}
+            contentLabel="Confirmar exclusão"
+          >
+          <Title>Confirmar exclusão?</Title>
+          <SubtitleComp subtitle={`Você está prestes a excluir a reserva de Xis: \n\n Nome: ${deleteNome} \n\n Tem certeza disso?`}/>
+          <SpinnerContainer>
+            {loading &&         
+                <ColorRing
+                  visible={true}
+                  height="60"
+                  width="60"
+                  ariaLabel="blocks-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="blocks-wrapper"
+                  colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+                />  
+            }
+            </SpinnerContainer>
+            <ButonContainer>
+              <ButtonGreen onClick={() => handleDeleteXis(deleteId!)}>
+                Confirmar
+              </ButtonGreen>
+            </ButonContainer>
+            <ButonContainer>
+              <ButtonRed onClick={closeModal}>
+                Voltar
+              </ButtonRed>
+            </ButonContainer>
+          </ContainerModal>
+
+          <ContainerModal
+            isOpen={isModalOpenAlm_ext}
+            onRequestClose={closeModal}
+            contentLabel="Confirmar exclusão"
+          >
+          <Title>Confirmar exclusão?</Title>
+          <SubtitleComp subtitle={`Você está prestes a excluir a reserva de almoço extra: \n\n Nome: ${deleteNome} \n\n Tem certeza disso?`}/>
+          <SpinnerContainer>
+            {loading &&         
+                <ColorRing
+                  visible={true}
+                  height="60"
+                  width="60"
+                  ariaLabel="blocks-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="blocks-wrapper"
+                  colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+                />  
+            }
+            </SpinnerContainer>
+            <ButonContainer>
+              <ButtonGreen onClick={() => handleDeleteAlm_ext(deleteId!)}>
+                Confirmar
+              </ButtonGreen>
+            </ButonContainer>
+            <ButonContainer>
+              <ButtonRed onClick={closeModal}>
+                Voltar
+              </ButtonRed>
+            </ButonContainer>
+          </ContainerModal>
+
         </Container>
+        
     )
 }
