@@ -185,7 +185,7 @@ setDefaultLocale('pt-BR');
 
             const almocosPeriodo = dataAlmocosPeriodo.map(almocoPeriodo => [almocoPeriodo.nome, almocoPeriodo.setor_nome || '', almocoPeriodo.quantidade]);           
             const almocosExtrasPeriodo = dataAlmocosExtrasPeriodo.map(almocoExtrasPeriodo => ['',almocoExtrasPeriodo.nome_aext, almocoExtrasPeriodo.quantidade_aext]);
-            const reservaXisPeriodo = dataReservaXisPeriodo.map(reservaXisPeriodo => ['',reservaXisPeriodo.nome,reservaXisPeriodo.setor_nome, reservaXisPeriodo.quantidade_rx]);
+            const reservaXisPeriodo = dataReservaXisPeriodo.map(reservaXisPeriodo => ['',reservaXisPeriodo.nome,reservaXisPeriodo.setor_nome || '', reservaXisPeriodo.quantidade_rx]);
 
             const maxLength = Math.max(almocosPeriodo.length, almocosExtrasPeriodo.length, reservaXisPeriodo.length);
       
@@ -289,7 +289,7 @@ setDefaultLocale('pt-BR');
       try {
         setLoading(true)
 
-        const reservas = reserva_xis.map(reserva => [reserva['Funcionario.nome'],reserva['Funcionario.Setor.nome'],reserva.quantidade_rx,]);
+        const reservas = reserva_xis.map(reserva => [reserva['Funcionario.nome'],reserva['Funcionario.Setor.nome'] || '',reserva.quantidade_rx,]);
         
         //cria a planilha
         const planilha = XLSX.utils.aoa_to_sheet([
