@@ -1,13 +1,13 @@
 import { Button } from "../../components/Button";
 import { SubtitleComp } from "../../components/Subtitle";
 import { TitleComp } from "../../components/Title";
-import { ErrorsMessage, Fieldset, Input, InputContainer, TextAlertContainer } from "./styles";
+import { StyledSelect, ErrorsMessage, Fieldset, Input, InputContainer, TextAlertContainer } from "./styles";
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 
 import { useForm } from 'react-hook-form'
-import { useState } from "react";
+import { useEffect,useState } from "react";
 import { Alert } from 'react-bootstrap';
 
 import { ColorRing } from  'react-loader-spinner'
@@ -21,16 +21,23 @@ const novoValidacaoFormularioSchema = Yup.object().shape({
       .number()
       .typeError('Informe um código válido')
       .positive('Informe um número válido para o código')
-      .integer('O código deve ser um número inteiro')
+      .integer('O código deve ser um número inteiro'),
+    departamento: Yup.string().required('Selecione um departamento')
   });
   
 interface NewValidationFormData {
     codigo: number;
     nome: string;
+    departamento: number;
 }
 
+interface Departamento {
+  id: number;
+  nome: string;
+}
 
 export function Home(){
+    const [departamento, setDepartamentos] = useState([]);
     const [success, setSuccess] = useState(false)
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
@@ -39,9 +46,23 @@ export function Home(){
     const { register, handleSubmit, watch,reset, formState: { errors } } = useForm<NewValidationFormData>({
         resolver: yupResolver(novoValidacaoFormularioSchema),
         defaultValues: {
-            nome:''
+            nome:'',
+            codigo: undefined,
+            departamento: undefined
         }
     });
+
+    useEffect(() => {
+      async function fetchDepartamentos() {
+        try {
+          const response = await api.get('/setores');
+          setDepartamentos(response.data);
+        } catch (error) {
+            console.error("Erro ao carregar os departamentos", error);
+        }
+      }
+      fetchDepartamentos();
+    }, []);
 
     async function handleSubmitForm(data: NewValidationFormData) {
         
@@ -50,7 +71,8 @@ export function Home(){
 
           const response = await api.post('/cadastro_funcionario', {
             codFuncionario: data.codigo,
-            nameFuncionario: data.nome
+            nameFuncionario: data.nome,
+            departamentos: data.departamento
           });
     
           if (response.status === 200) {
@@ -105,6 +127,15 @@ export function Home(){
                   {...register('nome')}
                 />
                 {getErrorMessage('nome', errors)}
+              </InputContainer>
+              <InputContainer>
+                <StyledSelect id="departamento" {...register('departamento')} defaultValue="">
+                  <option value="" disabled>Selecione um departamento</option>
+                  {departamento.map((setor: any) => (
+                    <option key={setor.id} value={setor.id}>{setor.nome}</option>
+                   ))}
+                </StyledSelect>
+                {getErrorMessage('departamento', errors)}
               </InputContainer>
 
               {loading && 

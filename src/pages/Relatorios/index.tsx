@@ -41,6 +41,7 @@ setDefaultLocale('pt-BR');
   type AlmocoType = {
     cod_funcionario: number,
     "Funcionario.nome": string,
+    "Funcionario.Setor.nome": string
     id: number,
     num_almocos: number;
   }
@@ -55,6 +56,7 @@ setDefaultLocale('pt-BR');
     cod_funcionario: number;
     quantidade_rx: number;
     "Funcionario.nome": string;
+    "Funcionario.Setor.nome": string
     id: number;
   }
 
@@ -62,12 +64,14 @@ setDefaultLocale('pt-BR');
     id_fun: number;
     nome: string;
     quantidade: number;
+    setor_nome: string;
   }
 
   type ReservaXisPeriodoType = {
     id_fun: number;
     nome: string;
     quantidade_rx: number;
+    setor_nome: string;
   }
 
   export function Relatorios(){
@@ -179,9 +183,9 @@ setDefaultLocale('pt-BR');
             const dataReservaXisPeriodo: ReservaXisPeriodoType[] = response.data.funcionarios_xis;
             const total = response.data.total.quantidade_total;
 
-            const almocosPeriodo = dataAlmocosPeriodo.map(almocoPeriodo => [almocoPeriodo.nome, almocoPeriodo.quantidade]);           
+            const almocosPeriodo = dataAlmocosPeriodo.map(almocoPeriodo => [almocoPeriodo.nome, almocoPeriodo.setor_nome || '', almocoPeriodo.quantidade]);           
             const almocosExtrasPeriodo = dataAlmocosExtrasPeriodo.map(almocoExtrasPeriodo => ['',almocoExtrasPeriodo.nome_aext, almocoExtrasPeriodo.quantidade_aext]);
-            const reservaXisPeriodo = dataReservaXisPeriodo.map(reservaXisPeriodo => ['',reservaXisPeriodo.nome, reservaXisPeriodo.quantidade_rx]);
+            const reservaXisPeriodo = dataReservaXisPeriodo.map(reservaXisPeriodo => ['',reservaXisPeriodo.nome,reservaXisPeriodo.setor_nome, reservaXisPeriodo.quantidade_rx]);
 
             const maxLength = Math.max(almocosPeriodo.length, almocosExtrasPeriodo.length, reservaXisPeriodo.length);
       
@@ -198,26 +202,31 @@ setDefaultLocale('pt-BR');
               ['DATA INICIO', 'DATA FIM'],
               [startDate,endDate],
               [null],
-              ['NOME', 'QUANTIDADE', '', 'NOME ALMOCO EXTRA','QUANTIDADE', '','NOME RESERVA XIS', 'QUANTIDADE','','TOTAL'],
+              ['NOME', 'DEPARTAMENTO', 'QUANTIDADE', '', 'NOME ALMOCO EXTRA','QUANTIDADE', '','NOME RESERVA XIS','DEPARTAMENTO','QUANTIDADE','','TOTAL'],
               ...dados
             ]);
 
-            planilha['J5'] = { v: total, t: 'n' };
+            planilha['L5'] = { v: total, t: 'n' };
 
             //seta o estilho nas celular indicadas
             planilha['A1'].s = tableHeader;
             planilha['B1'].s = tableHeader;
             planilha['A4'].s = tableHeader;
             planilha['B4'].s = tableHeader;
-            planilha['D4'].s = tableHeader;
+            planilha['C4'].s = tableHeader;
+
             planilha['E4'].s = tableHeader;
-            planilha['G4'].s = tableHeader;
+            planilha['F4'].s = tableHeader;
+
             planilha['H4'].s = tableHeader;
+            planilha['I4'].s = tableHeader;
             planilha['J4'].s = tableHeader;
+
+            planilha['L4'].s = tableHeader;
             planilha['A2'].s = dateStyle;
             planilha['B2'].s = dateStyle;
 
-            planilha['J5'].s = thinBorder;
+            planilha['L5'].s = thinBorder;
 
             for (let i = 5; i <= almocosPeriodo.length + 4; i++) {
               const cellRef = `A${i}`;
@@ -229,8 +238,8 @@ setDefaultLocale('pt-BR');
               planilha[cellRef].s = thinBorder;
             }
 
-            for (let i = 5; i <= almocosExtrasPeriodo.length + 4; i++) {
-              const cellRef = `D${i}`;
+            for (let i = 5; i <= almocosPeriodo.length + 4; i++) {
+              const cellRef = `C${i}`;
               planilha[cellRef].s = thinBorder;
             }
 
@@ -239,8 +248,8 @@ setDefaultLocale('pt-BR');
               planilha[cellRef].s = thinBorder;
             }
 
-            for (let i = 5; i <= reservaXisPeriodo.length + 4; i++) {
-              const cellRef = `G${i}`;
+            for (let i = 5; i <= almocosExtrasPeriodo.length + 4; i++) {
+              const cellRef = `F${i}`;
               planilha[cellRef].s = thinBorder;
             }
 
@@ -248,8 +257,18 @@ setDefaultLocale('pt-BR');
               const cellRef = `H${i}`;
               planilha[cellRef].s = thinBorder;
             }
+
+            for (let i = 5; i <= reservaXisPeriodo.length + 4; i++) {
+              const cellRef = `I${i}`;
+              planilha[cellRef].s = thinBorder;
+            }
+
+            for (let i = 5; i <= reservaXisPeriodo.length + 4; i++) {
+              const cellRef = `J${i}`;
+              planilha[cellRef].s = thinBorder;
+            }
             
-            planilha['!cols'] = [{ width: 40 },{ width: 15},{ width: 5 },{ width: 40},{ width: 15},{ width: 5 },{ width: 40},{ width: 15},{ width: 15}];
+            planilha['!cols'] = [{ width: 40 },{ width: 30},{ width: 15 },{ width: 5},{ width: 40},{ width: 15 },{ width: 5},{ width: 40},{ width: 30},{ width: 15 },{width: 5},{ width: 15}];
 
             const livro = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(livro, planilha, 'Relatório período');
@@ -270,17 +289,18 @@ setDefaultLocale('pt-BR');
       try {
         setLoading(true)
 
-        const reservas = reserva_xis.map(reserva => [reserva['Funcionario.nome'], reserva.quantidade_rx]);
+        const reservas = reserva_xis.map(reserva => [reserva['Funcionario.nome'],reserva['Funcionario.Setor.nome'],reserva.quantidade_rx,]);
         
         //cria a planilha
         const planilha = XLSX.utils.aoa_to_sheet([
-          ['Funcionário', 'Quantidade'],
+          ['Funcionário','Departamento','Quantidade',],
           ...reservas
         ]);
         
         //seta o estilho nas celular indicadas
         planilha['A1'].s = tableHeader;
         planilha['B1'].s = tableHeader;
+        planilha['C1'].s = tableHeader;
 
         for (let i = 2; i <= reservas.length + 1; i++) {
           const cellRef = `A${i}`;
@@ -292,8 +312,13 @@ setDefaultLocale('pt-BR');
           planilha[cellRef].s = thinBorder;
         }
 
+        for (let i = 2; i <= reservas.length + 1; i++) {
+          const cellRef = `C${i}`;
+          planilha[cellRef].s = thinBorder;
+        }
+
         //Define a largura da celula
-        planilha['!cols'] = [{ width: 40 },{ width: 15} ];
+        planilha['!cols'] = [{ width: 40 },{ width: 15},{ width: 15 } ];
 
         //responsavel pelo download da planoilha 
         const livro = XLSX.utils.book_new();
@@ -315,8 +340,8 @@ setDefaultLocale('pt-BR');
 
       const reservas = almocos.map(almoco => [
         almoco.cod_funcionario,
-        almoco['Funcionario.nome']
-      ])
+        almoco['Funcionario.nome'],
+        almoco['Funcionario.Setor.nome'] || '' ])
 
       const extras = almocos_ext.map(extra => [
         '','',
@@ -330,37 +355,40 @@ setDefaultLocale('pt-BR');
       ])
 
         const planilha = XLSX.utils.aoa_to_sheet([
-          ['RESERVAS DE ALMOÇO', '','', '','RESERVAS EXTRAS','','','','TOTAL RESERVAS+EXTRAS'],
-          ['Código','Funcionário','TOTAL','','Nome Almoco Extra', 'Quantidade','TOTAL'],
+          ['RESERVAS DE ALMOÇO','','','', '','RESERVAS EXTRAS','','','','TOTAL RESERVAS+EXTRAS'],
+          ['Código','Funcionário','Departamento','TOTAL','','Nome Almoço Extra', 'Quantidade','TOTAL',],
           ...dados
         ]);
 
-        // Define o valor de num_almocos na célula C3
-        planilha['C3'] = { v: num_almocos, t: 'n' };
+        // Define o valor de num_almocos na célula D3
+        planilha['D3'] = { v: num_almocos, t: 'n' };
 
         // Define o valor de num_almocos+=_ext na célula G3
-        planilha['G3'] = { v: numAlmocos_ext, t: 'n' };
+        planilha['H3'] = { v: numAlmocos_ext, t: 'n' };
 
         // Define o valor de num_almocos+numAlmoco_ext na célula G3
-        planilha['I2'] = { v: (numAlmocos_ext+num_almocos), t: 'n' };
+        planilha['J2'] = { v: (numAlmocos_ext+num_almocos), t: 'n' };
 
         // Define a mesclagem das células
         planilha['!merges'] = [
-          { s: { r: 0, c: 0 }, e: { r: 0, c: 2 } }, // mesclagem A1:C1
-          { s: { r: 0, c: 4 }, e: { r: 0, c: 6 } }, // mesclagem E1:G1
+          { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } }, // mesclagem A1:C1
+          { s: { r: 0, c: 5 }, e: { r: 0, c: 7 } }, // mesclagem E1:G1
         ];
   
         // seta o estilo nas celulas indicadas
         planilha['A1'].s = tableHeaderTitles;
-        planilha['E1'].s = tableHeaderTitles;
+        planilha['F1'].s = tableHeaderTitles;
 
         planilha['A2'].s = tableHeader;
         planilha['B2'].s = tableHeader;
         planilha['C2'].s = tableHeader;
-        planilha['E2'].s = tableHeader;
+        planilha['D2'].s = tableHeader;
+        
         planilha['F2'].s = tableHeader;
         planilha['G2'].s = tableHeader;
-        planilha['I1'].s = tableHeader;
+        planilha['H2'].s = tableHeader;
+
+        planilha['J1'].s = tableHeader;
 
         // Define o estilo de borda fina para todas as outras celulas
         const thinBorder = {
@@ -386,22 +414,27 @@ setDefaultLocale('pt-BR');
           planilha[cellRef].s = thinBorder;
         }
 
-         for (let i = 3; i <= extras.length + 2; i++) {
-          const cellRef = `E${i}`;
+        for (let i = 3; i <= reservas.length + 2; i++) {
+          const cellRef = `C${i}`;
           planilha[cellRef].s = thinBorder;
         }
 
-        for (let i = 3; i <= extras.length + 2; i++) {
+         for (let i = 3; i <= extras.length + 2; i++) {
           const cellRef = `F${i}`;
           planilha[cellRef].s = thinBorder;
         }
 
-        planilha['C3'].s = thinBorder;
-        planilha['G3'].s = thinBorder; 
-        planilha['I2'].s = thinBorder; 
+        for (let i = 3; i <= extras.length + 2; i++) {
+          const cellRef = `G${i}`;
+          planilha[cellRef].s = thinBorder;
+        }
+
+        planilha['D3'].s = thinBorder;
+        planilha['H3'].s = thinBorder; 
+        planilha['J2'].s = thinBorder; 
   
         // Define a largura da celula
-        planilha['!cols'] = [{ width: 15 },{ width: 40},{ width: 15},{width:5}, {width:30},{width:15},{width:15},{width:5},{width:30}];
+        planilha['!cols'] = [{ width: 15 },{ width: 40},{ width: 30},{width:15}, {width:5},{width:40},{width:15},{width:15},{width:5},{width:30}];
   
         // responsavel pelo download da planilha 
         const livro = XLSX.utils.book_new();
@@ -700,6 +733,7 @@ setDefaultLocale('pt-BR');
                       </tr>
                       <tr>
                         <Th2 >Nome</Th2>
+                        <Th2 >Departamento</Th2>
                         <Th2>Excluir</Th2>
                     </tr>
                   </Thead>
@@ -708,6 +742,7 @@ setDefaultLocale('pt-BR');
                     {almocos.map(almoco => (
                       <tr key={almoco.cod_funcionario}>
                         <Td>{almoco['Funcionario.nome']}</Td>
+                        <Td>{almoco['Funcionario.Setor.nome']}</Td>
                         <Td>
                           <ButtonRed onClick={() => openModalAlmoco(almoco.id,almoco['Funcionario.nome'])}>
                             <Icon className="fas fa-trash-alt" />
@@ -740,6 +775,7 @@ setDefaultLocale('pt-BR');
                       </tr>
                       <tr>
                         <Th2 >Nome</Th2>
+                        <Th2 >Departamento</Th2>
                         <Th2>Excluir</Th2>
                     </tr>
                   </Thead>
@@ -748,6 +784,7 @@ setDefaultLocale('pt-BR');
                     {reserva_xis.map(xis => (
                     <tr key={xis.cod_funcionario}>
                       <Td>{xis['Funcionario.nome']}</Td>
+                      <Td>{xis['Funcionario.Setor.nome']}</Td>
                       <Td>
                         <ButtonRed onClick={() => openModalXis(xis.id,xis['Funcionario.nome'])}>
                           <Icon className="fas fa-trash-alt" />

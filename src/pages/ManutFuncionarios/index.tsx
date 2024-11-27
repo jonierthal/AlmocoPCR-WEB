@@ -13,7 +13,8 @@ import { TableContainer,
          StyledAlert, 
          Input, 
          InputContainer, 
-         InputFilterContainer} from './styles';
+         InputFilterContainer,
+         StyledSelect} from './styles';
 import { Title } from '../../components/Title/styles';
 import { SubtitleComp } from '../../components/Subtitle';
 import { ColorRing } from  'react-loader-spinner'
@@ -27,12 +28,20 @@ export function ManutFuncionarios() {
   type FuncionarioType = {
     id_fun: number;
     nome: string;
+    setor_id  : number;
+    Setor: {
+      nome: string;
+    }
   }
 
   const [funcionarios, setFuncionarios] = useState<FuncionarioType[]>([]);
 
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [deleteNome, setDeleteNome] = useState<string>('');
+
+  const [editSetorId, setEditSetorId] = useState<number>(0);
+  const [setores, setSetores] = useState<{ id: number; nome: string }[]>([]);
+
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -73,6 +82,19 @@ export function ManutFuncionarios() {
     carregaDadosTabela()
     }, []);
 
+    useEffect(() => {
+      async function carregarSetores() {
+        try {
+          const response = await api.get('/setores');
+          setSetores(response.data); // Supondo que a API retorne os setores no formato [{id, nome}]
+        } catch (error) {
+          console.error('Erro ao carregar setores:', error);
+        }
+      }
+    
+      carregarSetores();
+    }, []);
+
   async function handleDelete(id: number)  {
     setLoading(true);
 
@@ -109,9 +131,10 @@ export function ManutFuncionarios() {
     setIsModalOpen(false);
   };
 
-  function openEditModal(id: number, nome: string)  {
-    setChaveEditId(id)
-    setEditNome(nome)
+  function openEditModal(id: number, nome: string, setorId: number)  {
+    setChaveEditId(id);
+    setEditNome(nome);
+    setEditSetorId(setorId);
     setIsEditModalOpen(true);
   };
 
@@ -137,7 +160,8 @@ export function ManutFuncionarios() {
             await api.put(`/edita_cadastro/${id}`, {
               funcionario: {
               id: editId,
-              nome: editNome
+              nome: editNome,
+              setor_id: editSetorId
             }
             },
             {
@@ -243,6 +267,7 @@ export function ManutFuncionarios() {
             <tr>
               <ThMenor>Código</ThMenor>
               <Th>Nome</Th>
+              <Th>Setor</Th>
               <ThMenor>Editar</ThMenor>
               <ThMenor>Excluir</ThMenor>
             </tr>
@@ -255,8 +280,9 @@ export function ManutFuncionarios() {
               <tr key={funcionario.id_fun}>
                 <Td>{funcionario.id_fun}</Td>
                 <Td>{funcionario.nome}</Td>
+                <Td>{funcionario.Setor?.nome}</Td>
                 <Td>
-                  <ButtonGreen onClick={() =>openEditModal(funcionario.id_fun, funcionario.nome)}>
+                  <ButtonGreen onClick={() =>openEditModal(funcionario.id_fun, funcionario.nome, funcionario.setor_id)}>
                     <Icon className="fas fa-edit" />
                   </ButtonGreen>
                 </Td>
@@ -352,6 +378,22 @@ export function ManutFuncionarios() {
               }}
             />
           </InputContainer>
+          <InputContainer>
+            <StyledSelect
+              id="setor"
+              value={editSetorId}
+              onChange={(e) => setEditSetorId(parseInt(e.target.value))}
+              required
+            >
+              <option value="" disabled>Selecione um setor</option>
+              {setores.map((setor) => (
+                <option key={setor.id} value={setor.id}>
+                  {setor.nome}
+                </option>
+              ))}
+            </StyledSelect>
+          </InputContainer>
+
           <ButonContainer>
               <ButtonGreen type="submit">
                 Confirmar
