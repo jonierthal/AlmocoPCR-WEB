@@ -381,11 +381,11 @@ export function ManutFuncionarios() {
           <InputContainer>
             <StyledSelect
               id="setor"
-              value={editSetorId}
+              value={editSetorId || ''}
               onChange={(e) => setEditSetorId(parseInt(e.target.value))}
               required
             >
-              <option value="" disabled>Selecione um setor</option>
+              <option value="" disabled={!editSetorId}>Selecione um setor</option>
               {setores.map((setor) => (
                 <option key={setor.id} value={setor.id}>
                   {setor.nome}
