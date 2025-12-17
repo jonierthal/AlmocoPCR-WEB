@@ -25,6 +25,7 @@ import {
     Icon
 } from "./styles";
 import { ButonContainer, ButtonGreen, ContainerModal, StyledAlert, TextAlertContainer } from "../ManutFuncionarios/styles";
+import axios from 'axios' ;
 import { BiMoveHorizontal } from 'react-icons/bi';
 import { useEffect, useState } from "react";
 import { ColorRing } from 'react-loader-spinner'
@@ -231,6 +232,43 @@ setDefaultLocale('pt-BR');
       };
     }
 
+    function logEmailErro(error: unknown, payload: RelatorioEmailPayload, manual: boolean) {
+      const contextoEnvio = {
+        tipoEnvio: manual ? 'manual' : 'automatico',
+        dataReferencia: payload.dataReferencia,
+        destinatario: payload.destinatario,
+        totalAlmocos: payload.totalAlmocos,
+      };
+
+      console.group('Falha ao enviar relatório de reservas por e-mail');
+      console.log('Contexto do envio', contextoEnvio);
+
+      if (axios.isAxiosError(error)) {
+        console.error('Mensagem', error.message);
+        console.error('Status', error.response?.status);
+        console.error('Headers', error.response?.headers);
+        console.error('Body da resposta', error.response?.data);
+        console.error('Requisição', {
+          url: error.config?.url,
+          method: error.config?.method,
+          baseURL: error.config?.baseURL,
+        });
+      } else {
+        console.error('Erro desconhecido', error);
+      }
+
+      console.groupEnd();
+    }
+
+    function construirMensagemErroEmail(error: unknown) {
+      if (axios.isAxiosError(error) && error.response?.status) {
+        const statusText = error.response?.statusText ? ` ${error.response.statusText}` : '';
+        return `Erro ao enviar o relatório por e-mail (status ${error.response.status}${statusText}). Detalhes disponíveis no console.`;
+      }
+
+      return 'Ocorreu um erro ao enviar o relatório de reservas por e-mail. Consulte o console para detalhes.';
+    }
+
     async function enviarRelatorioPorEmail(manual: boolean) {
       setEnviandoEmail(true);
       const payload = montarPayloadEmail();
@@ -244,8 +282,8 @@ setDefaultLocale('pt-BR');
           setSuccessMessage('');
         }, 4000);
       } catch (error) {
-        console.error(error);
-        setErrorMessage('Ocorreu um erro ao enviar o relatório de reservas por e-mail. Contate o Administrador!');
+        logEmailErro(error, payload, manual);
+        setErrorMessage(construirMensagemErroEmail(error));
         setTimeout(() => {
           setErrorMessage('');
         }, 4000);
