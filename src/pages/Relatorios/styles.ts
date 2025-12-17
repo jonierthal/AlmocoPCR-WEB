@@ -87,6 +87,39 @@ export const RelatoriosContainer = styled.div`
     border-bottom: 1px solid #0476AC;
 `
 
+export const AutoEmailContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 1rem;
+    padding: 1rem;
+    border: 1px solid #0476AC;
+    border-radius: 8px;
+    background-color: #f4fbff;
+`
+
+export const AutoEmailTitle = styled.h3`
+    margin: 0;
+    color: #0476AC;
+    font-weight: bold;
+    font-size: 1.1rem;
+    font-family: Arial;
+`
+
+export const AutoEmailText = styled.p`
+    margin: 0;
+    color: #0476AC;
+    font-size: 1rem;
+    font-family: Arial;
+`
+
+export const AutoEmailStatus = styled.span`
+    color: #0476AC;
+    font-weight: bold;
+    font-size: 0.95rem;
+    font-family: Arial;
+`
+
 export const ListsContainer = styled.div`
     display: flex;
     //align-items: center;

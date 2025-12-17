@@ -7,6 +7,10 @@ import {
     TextDateContainer, 
     ButtonDateIntervalContainer,
     RelatoriosContainer,
+    AutoEmailContainer,
+    AutoEmailStatus,
+    AutoEmailText,
+    AutoEmailTitle,
     ContainerTextFooter,
     SpinnerContainer,
     StyledDatePicker,
@@ -37,6 +41,12 @@ import { SubtitleComp } from "../../components/Subtitle";
 registerLocale('pt-BR', ptBR);
 // Define o locale padrão como Português (Brasil)
 setDefaultLocale('pt-BR');
+
+  const EMAIL_DESTINATARIO_PADRAO = 'jonierthal@gmail.com';
+  const HORARIO_ENVIO_AUTOMATICO_HORA = 14;
+  const HORARIO_ENVIO_AUTOMATICO_MINUTO = 54;
+  const INTERVALO_CHECAGEM_MS = 30000;
+  const STORAGE_DATA_ENVIO = 'relatorio-almoco-email-enviado';
 
   type AlmocoType = {
     cod_funcionario: number,
@@ -74,16 +84,38 @@ setDefaultLocale('pt-BR');
     setor_nome: string;
   }
 
+  type RelatorioEmailPayload = {
+    destinatario: string;
+    dataReferencia: string;
+    almocos: {
+      nome: string;
+      setor: string;
+      quantidade: number;
+    }[];
+    almocosExtras: {
+      nome: string;
+      quantidade: number;
+    }[];
+    reservasXis: {
+      nome: string;
+      setor: string;
+      quantidade: number;
+    }[];
+    totalAlmocos: number;
+  }
+
   export function Relatorios(){
     const [loading, setLoading] = useState<boolean>(false)
     const [loadingAlmoco, setLoadingAlmoco] = useState<boolean>(false)
     const [loadingXis, setLoadingXis] = useState<boolean>(false)
     const [loadingAlm_ext, setLoadingAlm_ext] = useState<boolean>(false)
+    const [enviandoEmail, setEnviandoEmail] = useState<boolean>(false)
     const [almocos, setAlmocos] = useState<AlmocoType[]>([])
     const [num_almocos, setNum_almocos] = useState<number>(0)
     const [almocos_ext, setAlmocos_ext] = useState<AlmocoExtraType[]>([])
     const [numAlmocos_ext, setNumAlmocos_ext] = useState<number>(0)
     const [reserva_xis, setReserva_xis] = useState<ReservaXisType[]>([])
+    const [ultimaDataEnvio, setUltimaDataEnvio] = useState<string | null>(null)
 
     const [isModalOpenAlmoco, setIsModalOpenAlmoco] = useState<boolean>(false);
     const [isModalOpenXis, setIsModalOpenXis] = useState<boolean>(false);
@@ -95,6 +127,14 @@ setDefaultLocale('pt-BR');
 
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
+
+    useEffect(() => {
+      const dataSalva = localStorage.getItem(STORAGE_DATA_ENVIO);
+
+      if (dataSalva) {
+        setUltimaDataEnvio(dataSalva);
+      }
+    }, []);
 
     //estilos para o cabeçalho da planilha
     const tableHeader = {
@@ -161,6 +201,58 @@ setDefaultLocale('pt-BR');
     };
 
     let date = moment().format('DD/MM/YYYY');
+
+    function atualizarDataEnvio(dataEnvio: string) {
+      setUltimaDataEnvio(dataEnvio);
+      localStorage.setItem(STORAGE_DATA_ENVIO, dataEnvio);
+    }
+
+    function montarPayloadEmail(): RelatorioEmailPayload {
+      const totalAlmocosRegulares = almocos.reduce((total, almoco) => total + almoco.num_almocos, 0);
+      const totalAlmocosExtras = almocos_ext.reduce((total, extra) => total + extra.quantidade_aext, 0);
+      return {
+        destinatario: EMAIL_DESTINATARIO_PADRAO,
+        dataReferencia: moment().format('YYYY-MM-DD'),
+        almocos: almocos.map((almoco) => ({
+          nome: almoco['Funcionario.nome'],
+          setor: almoco['Funcionario.Setor.nome'] || '',
+          quantidade: almoco.num_almocos,
+        })),
+        almocosExtras: almocos_ext.map((extra) => ({
+          nome: extra.nome_aext,
+          quantidade: extra.quantidade_aext,
+        })),
+        reservasXis: reserva_xis.map((reserva) => ({
+          nome: reserva['Funcionario.nome'],
+          setor: reserva['Funcionario.Setor.nome'] || '',
+          quantidade: reserva.quantidade_rx,
+        })),
+        totalAlmocos: totalAlmocosRegulares + totalAlmocosExtras,
+      };
+    }
+
+    async function enviarRelatorioPorEmail(manual: boolean) {
+      setEnviandoEmail(true);
+      const payload = montarPayloadEmail();
+
+      try {
+        await api.post('/relatorios/email-automatico', payload);
+        const dataHoje = moment().format('YYYY-MM-DD');
+        atualizarDataEnvio(dataHoje);
+        setSuccessMessage(manual ? 'E-mail de reservas enviado com sucesso!' : 'Envio automático do relatório de reservas realizado com sucesso!');
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 4000);
+      } catch (error) {
+        console.error(error);
+        setErrorMessage('Ocorreu um erro ao enviar o relatório de reservas por e-mail. Contate o Administrador!');
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 4000);
+      } finally {
+        setEnviandoEmail(false);
+      }
+    }
 
     function handleRelatorioPeriodo() {
       if (startDate && endDate) {
@@ -616,7 +708,24 @@ setDefaultLocale('pt-BR');
             setLoadingXis(false); // define loading como false após a requisição ter sido concluída (com sucesso ou erro)
           });
     }
-  
+    
+    useEffect(() => {
+      const intervalo = setInterval(() => {
+        const agora = moment();
+        const dataHoje = agora.format('YYYY-MM-DD');
+
+        if (
+          agora.hour() === HORARIO_ENVIO_AUTOMATICO_HORA &&
+          agora.minute() === HORARIO_ENVIO_AUTOMATICO_MINUTO &&
+          ultimaDataEnvio !== dataHoje
+        ) {
+          enviarRelatorioPorEmail(false);
+        }
+      }, INTERVALO_CHECAGEM_MS);
+
+      return () => clearInterval(intervalo);
+    }, [ultimaDataEnvio, almocos, almocos_ext, reserva_xis, num_almocos, numAlmocos_ext]);
+
     useEffect(() => {
         carregaDadosAlmoco(),
         carregaDadosAlmocoExtra(),
@@ -668,8 +777,20 @@ setDefaultLocale('pt-BR');
                     <Button onClick={() => handleRelatorioPeriodo()}>Gerar Excel por período</Button>
                 </DateContainer>
             </RelatoriosContainer>
+            <AutoEmailContainer>
+              <AutoEmailTitle>Envio automático diário às 08:10</AutoEmailTitle>
+              <AutoEmailText>
+                Usamos a lista atual de reservas carregada nesta página para enviar o relatório diário para {EMAIL_DESTINATARIO_PADRAO}.
+              </AutoEmailText>
+              <AutoEmailStatus>
+                {ultimaDataEnvio ? `Último envio registrado: ${moment(ultimaDataEnvio).format('DD/MM/YYYY')}` : 'Nenhum envio registrado ainda.'}
+              </AutoEmailStatus>
+              <Button disabled={enviandoEmail} onClick={() => enviarRelatorioPorEmail(true)}>
+                {enviandoEmail ? 'Enviando...' : 'Enviar e-mail de teste agora'}
+              </Button>
+            </AutoEmailContainer>
             <SpinnerContainer>
-            {loading &&         
+            {loading &&
               <ColorRing
                 visible={true}
                 height="60"
