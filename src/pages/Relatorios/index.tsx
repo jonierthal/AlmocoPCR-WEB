@@ -88,21 +88,6 @@ setDefaultLocale('pt-BR');
   type RelatorioEmailPayload = {
     destinatario: string;
     dataReferencia: string;
-    almocos: {
-      nome: string;
-      setor: string;
-      quantidade: number;
-    }[];
-    almocosExtras: {
-      nome: string;
-      quantidade: number;
-    }[];
-    reservasXis: {
-      nome: string;
-      setor: string;
-      quantidade: number;
-    }[];
-    totalAlmocos: number;
   }
 
   export function Relatorios(){
@@ -209,26 +194,9 @@ setDefaultLocale('pt-BR');
     }
 
     function montarPayloadEmail(): RelatorioEmailPayload {
-      const totalAlmocosRegulares = almocos.reduce((total, almoco) => total + almoco.num_almocos, 0);
-      const totalAlmocosExtras = almocos_ext.reduce((total, extra) => total + extra.quantidade_aext, 0);
       return {
         destinatario: EMAIL_DESTINATARIO_PADRAO,
         dataReferencia: moment().format('YYYY-MM-DD'),
-        almocos: almocos.map((almoco) => ({
-          nome: almoco['Funcionario.nome'],
-          setor: almoco['Funcionario.Setor.nome'] || '',
-          quantidade: almoco.num_almocos,
-        })),
-        almocosExtras: almocos_ext.map((extra) => ({
-          nome: extra.nome_aext,
-          quantidade: extra.quantidade_aext,
-        })),
-        reservasXis: reserva_xis.map((reserva) => ({
-          nome: reserva['Funcionario.nome'],
-          setor: reserva['Funcionario.Setor.nome'] || '',
-          quantidade: reserva.quantidade_rx,
-        })),
-        totalAlmocos: totalAlmocosRegulares + totalAlmocosExtras,
       };
     }
 
@@ -237,7 +205,6 @@ setDefaultLocale('pt-BR');
         tipoEnvio: manual ? 'manual' : 'automatico',
         dataReferencia: payload.dataReferencia,
         destinatario: payload.destinatario,
-        totalAlmocos: payload.totalAlmocos,
       };
 
       console.group('Falha ao enviar relatório de reservas por e-mail');
