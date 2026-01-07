@@ -44,9 +44,9 @@ registerLocale('pt-BR', ptBR);
 setDefaultLocale('pt-BR');
 
   const EMAIL_DESTINATARIO_PADRAO = 'jonierthal@gmail.com';
-  const HORARIO_ENVIO_AUTOMATICO_HORA = 14;
-  const HORARIO_ENVIO_AUTOMATICO_MINUTO = 54;
-  const INTERVALO_CHECAGEM_MS = 30000;
+  const HORARIO_ENVIO_AUTOMATICO_HORA = 16;
+  const HORARIO_ENVIO_AUTOMATICO_MINUTO = 17;
+  const INTERVALO_CHECAGEM_MS = 5000;
   const STORAGE_DATA_ENVIO = 'relatorio-almoco-email-enviado';
 
   type AlmocoType = {
@@ -729,7 +729,7 @@ setDefaultLocale('pt-BR');
       }, INTERVALO_CHECAGEM_MS);
 
       return () => clearInterval(intervalo);
-    }, [ultimaDataEnvio, almocos, almocos_ext, reserva_xis, num_almocos, numAlmocos_ext]);
+    }, [ultimaDataEnvio]);
 
     useEffect(() => {
         carregaDadosAlmoco(),
@@ -785,8 +785,9 @@ setDefaultLocale('pt-BR');
             <AutoEmailContainer>
               <AutoEmailTitle>Envio automático diário às 08:10</AutoEmailTitle>
               <AutoEmailText>
-                Usamos a lista atual de reservas carregada nesta página para enviar o relatório diário para {EMAIL_DESTINATARIO_PADRAO}.
+                O relatório diário é calculado no backend (banco de dados) e enviado automaticamente para {EMAIL_DESTINATARIO_PADRAO}.
               </AutoEmailText>
+
               <AutoEmailStatus>
                 {ultimaDataEnvio ? `Último envio registrado: ${moment(ultimaDataEnvio).format('DD/MM/YYYY')}` : 'Nenhum envio registrado ainda.'}
               </AutoEmailStatus>
