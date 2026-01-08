@@ -11,6 +11,7 @@ import {
     AutoEmailStatus,
     AutoEmailText,
     AutoEmailTitle,
+    AutoEmailInput,
     ContainerTextFooter,
     SpinnerContainer,
     StyledDatePicker,
@@ -48,6 +49,7 @@ setDefaultLocale('pt-BR');
   const HORARIO_ENVIO_AUTOMATICO_MINUTO = 17;
   const INTERVALO_CHECAGEM_MS = 5000;
   const STORAGE_DATA_ENVIO = 'relatorio-almoco-email-enviado';
+  const STORAGE_EMAIL_ADICIONAIS = 'relatorio-almoco-email-adicionais';
 
   type AlmocoType = {
     cod_funcionario: number,
@@ -86,7 +88,8 @@ setDefaultLocale('pt-BR');
   }
 
   type RelatorioEmailPayload = {
-    destinatario: string;
+    destinatarioPadrao: string;
+    destinatariosAdicionais: string;
     dataReferencia: string;
   }
 
@@ -102,6 +105,7 @@ setDefaultLocale('pt-BR');
     const [numAlmocos_ext, setNumAlmocos_ext] = useState<number>(0)
     const [reserva_xis, setReserva_xis] = useState<ReservaXisType[]>([])
     const [ultimaDataEnvio, setUltimaDataEnvio] = useState<string | null>(null)
+    const [emailsAdicionais, setEmailsAdicionais] = useState<string>('')
 
     const [isModalOpenAlmoco, setIsModalOpenAlmoco] = useState<boolean>(false);
     const [isModalOpenXis, setIsModalOpenXis] = useState<boolean>(false);
@@ -116,9 +120,14 @@ setDefaultLocale('pt-BR');
 
     useEffect(() => {
       const dataSalva = localStorage.getItem(STORAGE_DATA_ENVIO);
+      const emailsSalvos = localStorage.getItem(STORAGE_EMAIL_ADICIONAIS);
 
       if (dataSalva) {
         setUltimaDataEnvio(dataSalva);
+      }
+
+      if (emailsSalvos) {
+        setEmailsAdicionais(emailsSalvos);
       }
     }, []);
 
@@ -195,16 +204,45 @@ setDefaultLocale('pt-BR');
 
     function montarPayloadEmail(): RelatorioEmailPayload {
       return {
-        destinatario: EMAIL_DESTINATARIO_PADRAO,
+        destinatarioPadrao: EMAIL_DESTINATARIO_PADRAO,
+        destinatariosAdicionais: emailsAdicionais,
         dataReferencia: moment().format('YYYY-MM-DD'),
       };
+    }
+
+    function obterEmailsAdicionais(): string[] {
+      return emailsAdicionais
+        .split(/[,;]+/)
+        .map((email) => email.trim())
+        .filter((email) => email.length > 0);
+    }
+
+    function validarEmailsAdicionais(): boolean {
+      const emails = obterEmailsAdicionais();
+      if (emails.length === 0) {
+        return true;
+      }
+
+      const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailsInvalidos = emails.filter((email) => !regexEmail.test(email));
+
+      if (emailsInvalidos.length > 0) {
+        setErrorMessage(`E-mails adicionais inválidos: ${emailsInvalidos.join(', ')}`);
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 4000);
+        return false;
+      }
+
+      return true;
     }
 
     function logEmailErro(error: unknown, payload: RelatorioEmailPayload, manual: boolean) {
       const contextoEnvio = {
         tipoEnvio: manual ? 'manual' : 'automatico',
         dataReferencia: payload.dataReferencia,
-        destinatario: payload.destinatario,
+        destinatarioPadrao: payload.destinatarioPadrao,
+        destinatariosAdicionais: payload.destinatariosAdicionais,
       };
 
       console.group('Falha ao enviar relatório de reservas por e-mail');
@@ -237,6 +275,10 @@ setDefaultLocale('pt-BR');
     }
 
     async function enviarRelatorioPorEmail(manual: boolean) {
+      if (!validarEmailsAdicionais()) {
+        return;
+      }
+
       setEnviandoEmail(true);
       const payload = montarPayloadEmail();
 
@@ -257,6 +299,14 @@ setDefaultLocale('pt-BR');
       } finally {
         setEnviandoEmail(false);
       }
+    }
+
+    function handleSalvarEmailsAdicionais() {
+      localStorage.setItem(STORAGE_EMAIL_ADICIONAIS, emailsAdicionais);
+      setSuccessMessage('Destinatários adicionais salvos!');
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 4000);
     }
 
     function handleRelatorioPeriodo() {
@@ -736,7 +786,12 @@ setDefaultLocale('pt-BR');
         carregaDadosAlmocoExtra(),
         carregaDadosReservaXis()
       }, []);
-      
+    
+    const emailsAdicionaisLista = obterEmailsAdicionais();
+    const destinatariosResumo = emailsAdicionaisLista.length > 0
+      ? `${EMAIL_DESTINATARIO_PADRAO} + ${emailsAdicionaisLista.join(', ')}`
+      : EMAIL_DESTINATARIO_PADRAO;
+
     return(
         <Container>
           {errorMessage &&
@@ -785,7 +840,22 @@ setDefaultLocale('pt-BR');
             <AutoEmailContainer>
               <AutoEmailTitle>Envio automático diário às 08:10</AutoEmailTitle>
               <AutoEmailText>
-                O relatório diário é calculado no backend (banco de dados) e enviado automaticamente para {EMAIL_DESTINATARIO_PADRAO}.
+                O relatório diário é enviado automaticamente para o destinatário padrão (rh@pcr.ind.br) e demais adicionais informados.
+              </AutoEmailText>
+              <AutoEmailText>
+                Destinatários adicionais (separe por vírgula ou ponto e vírgula)
+              </AutoEmailText>
+              <AutoEmailInput
+                rows={3}
+                value={emailsAdicionais}
+                onChange={(event) => setEmailsAdicionais(event.target.value)}
+                placeholder="email1@exemplo.com; email2@exemplo.com"
+              />
+              <Button type="button" onClick={handleSalvarEmailsAdicionais}>
+                Salvar destinatários adicionais
+              </Button>
+              <AutoEmailText>
+                Serão enviados para: {destinatariosResumo}
               </AutoEmailText>
 
               <AutoEmailStatus>

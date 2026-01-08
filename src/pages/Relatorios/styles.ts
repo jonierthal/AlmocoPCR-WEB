@@ -120,6 +120,18 @@ export const AutoEmailStatus = styled.span`
     font-family: Arial;
 `
 
+export const AutoEmailInput = styled.textarea`
+  width: 100%;
+  min-height: 80px;
+  padding: 0.6rem;
+  border: 1px solid #0476AC;
+  border-radius: 6px;
+  color: #0476AC;
+  font-size: 0.95rem;
+  font-family: Arial;
+  resize: vertical;
+`;
+
 export const ListsContainer = styled.div`
     display: flex;
     //align-items: center;
