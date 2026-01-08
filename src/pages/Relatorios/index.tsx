@@ -8,6 +8,9 @@ import {
     ButtonDateIntervalContainer,
     RelatoriosContainer,
     AutoEmailContainer,
+    AutoEmailHeader,
+    AutoEmailContent,
+    AutoEmailSummary,
     AutoEmailStatus,
     AutoEmailText,
     AutoEmailTitle,
@@ -110,6 +113,7 @@ setDefaultLocale('pt-BR');
     const [ultimaDataEnvio, setUltimaDataEnvio] = useState<string | null>(null)
     const [ultimaDataEnvioXis, setUltimaDataEnvioXis] = useState<string | null>(null)
     const [emailsAdicionais, setEmailsAdicionais] = useState<string>('')
+    const [emailMenuOpen, setEmailMenuOpen] = useState<boolean>(false)
 
     const [isModalOpenAlmoco, setIsModalOpenAlmoco] = useState<boolean>(false);
     const [isModalOpenXis, setIsModalOpenXis] = useState<boolean>(false);
@@ -840,6 +844,10 @@ setDefaultLocale('pt-BR');
     const destinatariosResumo = emailsAdicionaisLista.length > 0
       ? `${EMAIL_DESTINATARIO_PADRAO} + ${emailsAdicionaisLista.join(', ')}`
       : EMAIL_DESTINATARIO_PADRAO;
+    const horarioAlmoco = `${String(HORARIO_ENVIO_AUTOMATICO_HORA).padStart(2, '0')}:${String(HORARIO_ENVIO_AUTOMATICO_MINUTO).padStart(2, '0')}`;
+    const horarioXis = `${String(HORARIO_ENVIO_XIS_HORA).padStart(2, '0')}:${String(HORARIO_ENVIO_XIS_MINUTO).padStart(2, '0')}`;
+    const ultimaDataEnvioFormatada = ultimaDataEnvio ? moment(ultimaDataEnvio).format('DD/MM/YYYY') : 'nenhum';
+    const ultimaDataEnvioXisFormatada = ultimaDataEnvioXis ? moment(ultimaDataEnvioXis).format('DD/MM/YYYY') : 'nenhum';
 
     return(
         <Container>
@@ -887,42 +895,62 @@ setDefaultLocale('pt-BR');
                 </DateContainer>
             </RelatoriosContainer>
             <AutoEmailContainer>
-              <AutoEmailTitle>Envio automático diário às 08:10</AutoEmailTitle>
-              <AutoEmailText>
-                O relatório diário é enviado automaticamente para o destinatário padrão (rh@pcr.ind.br) e demais adicionais informados.
-              </AutoEmailText>
-              <AutoEmailText>
-                Destinatários adicionais (separe por vírgula ou ponto e vírgula)
-              </AutoEmailText>
-              <AutoEmailInput
-                rows={3}
-                value={emailsAdicionais}
-                onChange={(event) => setEmailsAdicionais(event.target.value)}
-                placeholder="email1@exemplo.com; email2@exemplo.com"
-              />
-              <Button type="button" onClick={handleSalvarEmailsAdicionais}>
-                Salvar destinatários adicionais
-              </Button>
-              <AutoEmailText>
-                Serão enviados para: {destinatariosResumo}
-              </AutoEmailText>
+              <AutoEmailHeader
+                type="button"
+                onClick={() => setEmailMenuOpen((open) => !open)}
+                aria-expanded={emailMenuOpen}
+              >
+                <span>Automação de e-mails</span>
+                <span>{emailMenuOpen ? 'Esconder ▲' : 'Mostrar ▼'}</span>
+              </AutoEmailHeader>
+              {!emailMenuOpen && (
+                <AutoEmailSummary>
+                  <span>Destinatário padrão: {EMAIL_DESTINATARIO_PADRAO}</span>
+                  <span>Último envio almoço: {ultimaDataEnvioFormatada}</span>
+                  <span>Último envio xis: {ultimaDataEnvioXisFormatada}</span>
+                </AutoEmailSummary>
+              )}
+              {emailMenuOpen && (
+                <AutoEmailContent>
+                  <AutoEmailTitle>Destinatários</AutoEmailTitle>
+                  <AutoEmailText>
+                    Destinatário padrão (sempre recebe): {EMAIL_DESTINATARIO_PADRAO}
+                  </AutoEmailText>
+                  <AutoEmailText>
+                    Destinatários adicionais (separe por vírgula ou ponto e vírgula)
+                  </AutoEmailText>
+                  <AutoEmailInput
+                    rows={3}
+                    value={emailsAdicionais}
+                    onChange={(event) => setEmailsAdicionais(event.target.value)}
+                    placeholder="email1@exemplo.com; email2@exemplo.com"
+                  />
+                  <Button type="button" onClick={handleSalvarEmailsAdicionais}>
+                    Salvar destinatários adicionais
+                  </Button>
+                  <AutoEmailText>
+                    Serão enviados para: {destinatariosResumo}
+                  </AutoEmailText>
 
-              <AutoEmailStatus>
-                {ultimaDataEnvio ? `Último envio registrado: ${moment(ultimaDataEnvio).format('DD/MM/YYYY')}` : 'Nenhum envio registrado ainda.'}
-              </AutoEmailStatus>
-              <Button disabled={enviandoEmail} onClick={() => enviarRelatorioPorEmail(true)}>
-                {enviandoEmail ? 'Enviando...' : 'Enviar e-mail de teste agora'}
-              </Button>
-              <AutoEmailTitle>Envio automático do Xis às 15:30</AutoEmailTitle>
-              <AutoEmailText>
-                O relatório diário de Xis é enviado automaticamente para o destinatário padrão e demais adicionais informados.
-              </AutoEmailText>
-              <AutoEmailStatus>
-                {ultimaDataEnvioXis ? `Último envio registrado: ${moment(ultimaDataEnvioXis).format('DD/MM/YYYY')}` : 'Nenhum envio registrado ainda.'}
-              </AutoEmailStatus>
-              <Button disabled={enviandoEmail} onClick={() => enviarRelatorioXisPorEmail(true)}>
-                {enviandoEmail ? 'Enviando...' : 'Enviar e-mail de Xis de teste agora'}
-              </Button>
+                  <AutoEmailTitle>Almoço</AutoEmailTitle>
+                  <AutoEmailText>Envio automático diário às {horarioAlmoco}</AutoEmailText>
+                  <AutoEmailStatus>
+                    {ultimaDataEnvio ? `Último envio registrado: ${ultimaDataEnvioFormatada}` : 'Nenhum envio registrado ainda.'}
+                  </AutoEmailStatus>
+                  <Button disabled={enviandoEmail} onClick={() => enviarRelatorioPorEmail(true)}>
+                    {enviandoEmail ? 'Enviando...' : 'Enviar e-mail de almoço de teste agora'}
+                  </Button>
+
+                  <AutoEmailTitle>Xis</AutoEmailTitle>
+                  <AutoEmailText>Envio automático diário às {horarioXis}</AutoEmailText>
+                  <AutoEmailStatus>
+                    {ultimaDataEnvioXis ? `Último envio registrado: ${ultimaDataEnvioXisFormatada}` : 'Nenhum envio registrado ainda.'}
+                  </AutoEmailStatus>
+                  <Button disabled={enviandoEmail} onClick={() => enviarRelatorioXisPorEmail(true)}>
+                    {enviandoEmail ? 'Enviando...' : 'Enviar e-mail de Xis de teste agora'}
+                  </Button>
+                </AutoEmailContent>
+              )}
             </AutoEmailContainer>
             <SpinnerContainer>
             {loading &&

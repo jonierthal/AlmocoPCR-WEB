@@ -92,11 +92,49 @@ export const AutoEmailContainer = styled.div`
     flex-direction: column;
     gap: 0.5rem;
     margin: 1rem;
-    padding: 1rem;
-    border: 1px solid #0476AC;
+    padding: 0.5rem;
     border-radius: 8px;
-    background-color: #f4fbff;
 `
+export const AutoEmailHeader = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #0476AC;
+  background-color: #f4fbff;
+  color: #0476AC;
+  font-weight: bold;
+  font-size: 1rem;
+  font-family: Arial;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid #0476AC;
+    outline-offset: 2px;
+  }
+`;
+
+export const AutoEmailContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #c7e3f3;
+  background-color: #f9fcff;
+`;
+
+export const AutoEmailSummary = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.5rem 0.25rem;
+  color: #0476AC;
+  font-size: 0.95rem;
+  font-family: Arial;
+`;
 
 export const AutoEmailTitle = styled.h3`
     margin: 0;
