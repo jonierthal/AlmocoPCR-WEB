@@ -45,10 +45,13 @@ registerLocale('pt-BR', ptBR);
 setDefaultLocale('pt-BR');
 
   const EMAIL_DESTINATARIO_PADRAO = 'jonierthal@gmail.com';
-  const HORARIO_ENVIO_AUTOMATICO_HORA = 16;
-  const HORARIO_ENVIO_AUTOMATICO_MINUTO = 17;
-  const INTERVALO_CHECAGEM_MS = 5000;
+  const HORARIO_ENVIO_AUTOMATICO_HORA = 8;
+  const HORARIO_ENVIO_AUTOMATICO_MINUTO = 10;
+  const HORARIO_ENVIO_XIS_HORA = 15;
+  const HORARIO_ENVIO_XIS_MINUTO = 30;
+  const INTERVALO_CHECAGEM_MS = 30000;
   const STORAGE_DATA_ENVIO = 'relatorio-almoco-email-enviado';
+  const STORAGE_DATA_ENVIO_XIS = 'relatorio-xis-email-enviado';
   const STORAGE_EMAIL_ADICIONAIS = 'relatorio-almoco-email-adicionais';
 
   type AlmocoType = {
@@ -105,6 +108,7 @@ setDefaultLocale('pt-BR');
     const [numAlmocos_ext, setNumAlmocos_ext] = useState<number>(0)
     const [reserva_xis, setReserva_xis] = useState<ReservaXisType[]>([])
     const [ultimaDataEnvio, setUltimaDataEnvio] = useState<string | null>(null)
+    const [ultimaDataEnvioXis, setUltimaDataEnvioXis] = useState<string | null>(null)
     const [emailsAdicionais, setEmailsAdicionais] = useState<string>('')
 
     const [isModalOpenAlmoco, setIsModalOpenAlmoco] = useState<boolean>(false);
@@ -120,10 +124,15 @@ setDefaultLocale('pt-BR');
 
     useEffect(() => {
       const dataSalva = localStorage.getItem(STORAGE_DATA_ENVIO);
+      const dataSalvaXis = localStorage.getItem(STORAGE_DATA_ENVIO_XIS);
       const emailsSalvos = localStorage.getItem(STORAGE_EMAIL_ADICIONAIS);
 
       if (dataSalva) {
         setUltimaDataEnvio(dataSalva);
+      }
+
+      if (dataSalvaXis) {
+        setUltimaDataEnvioXis(dataSalvaXis);
       }
 
       if (emailsSalvos) {
@@ -200,6 +209,11 @@ setDefaultLocale('pt-BR');
     function atualizarDataEnvio(dataEnvio: string) {
       setUltimaDataEnvio(dataEnvio);
       localStorage.setItem(STORAGE_DATA_ENVIO, dataEnvio);
+    }
+
+    function atualizarDataEnvioXis(dataEnvio: string) {
+      setUltimaDataEnvioXis(dataEnvio);
+      localStorage.setItem(STORAGE_DATA_ENVIO_XIS, dataEnvio);
     }
 
     function montarPayloadEmail(): RelatorioEmailPayload {
@@ -287,6 +301,33 @@ setDefaultLocale('pt-BR');
         const dataHoje = moment().format('YYYY-MM-DD');
         atualizarDataEnvio(dataHoje);
         setSuccessMessage(manual ? 'E-mail de reservas enviado com sucesso!' : 'Envio automático do relatório de reservas realizado com sucesso!');
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 4000);
+      } catch (error) {
+        logEmailErro(error, payload, manual);
+        setErrorMessage(construirMensagemErroEmail(error));
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 4000);
+      } finally {
+        setEnviandoEmail(false);
+      }
+    }
+
+    async function enviarRelatorioXisPorEmail(manual: boolean) {
+      if (!validarEmailsAdicionais()) {
+        return;
+      }
+
+      setEnviandoEmail(true);
+      const payload = montarPayloadEmail();
+
+      try {
+        await api.post('/relatorios/xis-email-automatico', payload);
+        const dataHoje = moment().format('YYYY-MM-DD');
+        atualizarDataEnvioXis(dataHoje);
+        setSuccessMessage(manual ? 'Relatório de Xis enviado com sucesso!' : 'Envio automático do relatório de Xis realizado com sucesso!');
         setTimeout(() => {
           setSuccessMessage('');
         }, 4000);
@@ -776,10 +817,18 @@ setDefaultLocale('pt-BR');
         ) {
           enviarRelatorioPorEmail(false);
         }
+
+        if (
+          agora.hour() === HORARIO_ENVIO_XIS_HORA &&
+          agora.minute() === HORARIO_ENVIO_XIS_MINUTO &&
+          ultimaDataEnvioXis !== dataHoje
+        ) {
+          enviarRelatorioXisPorEmail(false);
+        }
       }, INTERVALO_CHECAGEM_MS);
 
       return () => clearInterval(intervalo);
-    }, [ultimaDataEnvio]);
+    }, [ultimaDataEnvio, ultimaDataEnvioXis]);
 
     useEffect(() => {
         carregaDadosAlmoco(),
@@ -863,6 +912,16 @@ setDefaultLocale('pt-BR');
               </AutoEmailStatus>
               <Button disabled={enviandoEmail} onClick={() => enviarRelatorioPorEmail(true)}>
                 {enviandoEmail ? 'Enviando...' : 'Enviar e-mail de teste agora'}
+              </Button>
+              <AutoEmailTitle>Envio automático do Xis às 15:30</AutoEmailTitle>
+              <AutoEmailText>
+                O relatório diário de Xis é enviado automaticamente para o destinatário padrão e demais adicionais informados.
+              </AutoEmailText>
+              <AutoEmailStatus>
+                {ultimaDataEnvioXis ? `Último envio registrado: ${moment(ultimaDataEnvioXis).format('DD/MM/YYYY')}` : 'Nenhum envio registrado ainda.'}
+              </AutoEmailStatus>
+              <Button disabled={enviandoEmail} onClick={() => enviarRelatorioXisPorEmail(true)}>
+                {enviandoEmail ? 'Enviando...' : 'Enviar e-mail de Xis de teste agora'}
               </Button>
             </AutoEmailContainer>
             <SpinnerContainer>
