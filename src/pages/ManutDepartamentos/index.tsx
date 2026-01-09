@@ -18,8 +18,8 @@ import { Title } from '../../components/Title/styles';
 import { SubtitleComp } from '../../components/Subtitle';
 import { ColorRing } from  'react-loader-spinner';
 import { TitleComp } from '../../components/Title';
-import { api } from '../../lib/axios';
 import { SpinnerContainer } from '../Relatorios/styles';
+import { deleteDepartamento, fetchDepartamentos, updateDepartamento } from '../../services/departamentos';
 
 export function ManutDepartamentos() {
 
@@ -47,9 +47,8 @@ export function ManutDepartamentos() {
     setLoading(true);
 
     try{
-        const response = await api.get('/setores');
-        const dados = response.data;
-        setDepartamentos(dados)
+        const dados = await fetchDepartamentos();
+        setDepartamentos(dados);
     } catch (error) {
         setErrorMessage("Ocorreu um erro ao listar os departatamentos!")
     } finally {
@@ -64,7 +63,7 @@ export function ManutDepartamentos() {
   // Função de excluir setor
   async function handleDelete(id: number)  {
     setLoading(true);
-    await api.delete(`/setores/${id}`)
+    await deleteDepartamento(id)
       .then(response => {
         carregaDadosTabela();
         setSuccessMessage('Setor excluído com sucesso!');
@@ -118,11 +117,7 @@ export function ManutDepartamentos() {
 
     setLoading(true);
 
-    await api.put(`/edita_setor/${editId}`, {
-      setor: {
-        nome: editNome
-      }
-    })
+    await updateDepartamento(editId, editNome)
     .then(() => {
       setSuccessMessage('Setor editado com sucesso!');
       setTimeout(() => {

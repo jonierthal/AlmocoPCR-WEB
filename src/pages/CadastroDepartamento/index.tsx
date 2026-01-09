@@ -9,11 +9,11 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react';
 
-import { api } from '../../lib/axios';
 import { FormAlert } from '../../components/Feedback/FormAlert';
 import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
 import { FormFieldError } from '../../components/Feedback/FormFieldError';
 import { getFieldErrorMessage } from '../../utils/form';
+import { createDepartamento } from '../../services/departamentos';
 
 interface NewValidationFormData {
     nome: string;
@@ -41,7 +41,7 @@ export function CadastroDepartamento(){
         try {
             setLoading(true);
 
-            const response = await api.post('/cadastro_setor', {
+            const response = await createDepartamento({
                 nome: data.nome
             });
             
