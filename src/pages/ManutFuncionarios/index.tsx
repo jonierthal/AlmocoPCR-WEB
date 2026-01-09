@@ -20,31 +20,29 @@ import { SubtitleComp } from '../../components/Subtitle';
 import { ColorRing } from  'react-loader-spinner'
 import { TitleComp } from '../../components/Title';
 import { SpinnerContainer } from '../Relatorios/styles';
-import { fetchSetores } from '../../services/setores';
-import { deleteFuncionario, fetchFuncionarios, updateFuncionario, verifyFuncionarioId } from '../../services/funcionario';
-import { Funcionario } from '../../types/funcionario';
-import { Departamento } from '../../types/departamento';
+import { useFuncionarios } from '../../hooks/useFuncionario';
+import { useSetores } from '../../hooks/useSetores';
 
 
 export function ManutFuncionarios() {
 
-  const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
+  const { setores } = useSetores();
+  const {
+    funcionarios,
+    loading,
+    errorMessage,
+    successMessage,
+    errorMessageInputModal,
+    handleDelete,
+    handleEditarCadastro,
+  } = useFuncionarios();
 
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [deleteNome, setDeleteNome] = useState<string>('');
 
   const [editSetorId, setEditSetorId] = useState<number>(0);
-  const [setores, setSetores] = useState<Departamento[]>([]);
-
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-
-  const[errorMessageInputModal, setErrorMessageInputModal] = useState('')
 
   const[editId,setEditId] = useState<number>(0);
   const[editNome,setEditNome] = useState<string>('');
@@ -54,60 +52,6 @@ export function ManutFuncionarios() {
 
   const [filterName, setFilterName] = useState('');
   const [filterId, setFilterId] = useState<number>();
-
-
-  async function carregaDadosTabela(){
-      setLoading(true);
-
-      try {
-        const dados = await fetchFuncionarios();
-        setFuncionarios(dados);
-      } catch (error) {
-        console.error(error);
-        setErrorMessage('Ocorreu um erro ao listar os funcionários. Contate o Administrador!');
-      } finally {
-        setLoading(false); // define loading como false após a requisição ter sido concluída (com sucesso ou erro)
-      }
-  }
-
-  useEffect(() => {
-    carregaDadosTabela()
-    }, []);
-
-    useEffect(() => {
-      async function carregarSetores() {
-        try {
-          const dados = await fetchSetores();
-          setSetores(dados);
-        } catch (error) {
-          console.error('Erro ao carregar setores:', error);
-        }
-      }
-    
-      carregarSetores();
-    }, []);
-
-  async function handleDelete(id: number)  {
-    setLoading(true);
-
-    try {
-      await deleteFuncionario(id);
-      carregaDadosTabela();
-      setSuccessMessage('Funcionário excluído com sucesso!');
-      setTimeout(() => {
-        setSuccessMessage('');
-      }, 4000);
-    } catch (error) {
-      console.error(error);
-      setErrorMessage('Ocorreu um erro ao excluir o funcionário. Contate o Administrador!');
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 4000);
-    } finally {
-      setLoading(false);
-    }
-    closeModal();
-  };
 
   function openModal(id: number, nome: string)  {
     setDeleteId(id);
@@ -135,70 +79,6 @@ export function ManutFuncionarios() {
   useEffect(() => {
     setEditId(chaveEditId)
     }, [chaveEditId]);
-
-  async function handleEditarCadastro(id: number, editId: number, editNome: string){
-
-    switch(true) {
-      case editId > 0:
-        await verifyFuncionarioId(editId)
-          .then(async response => {
-
-          if((response.idExiste && id === editId) || (!response.idExiste)) {
-
-            setLoading(true);
-
-            await updateFuncionario(id, {
-              funcionario: {
-              id: editId,
-                nome: editNome,
-                setor_id: editSetorId
-              }
-            })
-            .then(() => {
-              setSuccessMessage('Funcionário editado com sucesso!');
-              setTimeout(() => {
-              setSuccessMessage('');
-            }, 4000);
-            })
-            .catch ((err) => {
-              setErrorMessage('Não foi possível editar o funcionário, contate o adminsitrador!')
-              setTimeout(() => {
-              setErrorMessage('');
-              }, 4000);
-            })
-            .finally(() => {
-              setLoading(false);
-              closeEditModal();
-              carregaDadosTabela();
-          });
-
-          } else if (response.idExiste && id !== editId){
-            closeEditModal();
-            setErrorMessage('Não foi possível alterar este funcionário, pois este código já existe! Digite um código válido!')
-              setTimeout(() => {
-                setErrorMessage('');
-              }, 6000);
-          }
-        })
-        .catch(error => {
-          console.error("Verificar Id Error: ",error);
-        })
-
-      case editId === 0:
-        setErrorMessageInputModal('Id inválido! Este valor não pode ser 0!');
-        setTimeout(() => {
-          setErrorMessageInputModal('');
-        }, 4000);
-        break;
-
-      case editId <= 0:
-        setErrorMessageInputModal('Id inválido! Este valor não pode ser negativo!');
-        setTimeout(() => {
-          setErrorMessageInputModal('');
-        }, 4000);
-        break;
-    }
-  }
 
   return (
     <>
@@ -304,7 +184,7 @@ export function ManutFuncionarios() {
               }
               </SpinnerContainer>
             <ButonContainer>
-              <ButtonGreen onClick={() => handleDelete(deleteId!)}>
+              <ButtonGreen onClick={() => handleDelete(deleteId!, closeModal)}>
                 Confirmar
               </ButtonGreen>
             </ButonContainer>
@@ -322,7 +202,13 @@ export function ManutFuncionarios() {
         <SubtitleComp subtitle="Preencha as informações"/>
         <form onSubmit={async (event) => {
           event.preventDefault();
-          await handleEditarCadastro(chaveEditId, editId, editNome);
+          await handleEditarCadastro(
+            chaveEditId,
+            editId,
+            editNome,
+            editSetorId,
+            closeEditModal,
+          );
         }}>
           <InputContainer>
             <Input
