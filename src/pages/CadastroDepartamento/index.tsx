@@ -1,18 +1,19 @@
-import { Fieldset, Input, InputContainer, ErrorsMessage, TextAlertContainer } from './styles';
+import { Fieldset, Input, InputContainer } from './styles';
 import { TitleComp } from '../../components/Title';
 import { SubtitleComp } from '../../components/Subtitle';
 import { Button } from '../../components/Button';
 
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Alert } from'react-bootstrap';	
-import { ColorRing } from  'react-loader-spinner'
 
 import { useForm } from 'react-hook-form'
 import { useState } from 'react';
 
-import axios from 'axios';
 import { api } from '../../lib/axios';
+import { FormAlert } from '../../components/Feedback/FormAlert';
+import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
+import { FormFieldError } from '../../components/Feedback/FormFieldError';
+import { getFieldErrorMessage } from '../../utils/form';
 
 interface NewValidationFormData {
     nome: string;
@@ -24,12 +25,11 @@ const novoValidacaoFormularioSchema = Yup.object().shape({
 
 
 export function CadastroDepartamento(){
-    const [success, setSuccess] = useState(false)
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const { register, handleSubmit, watch,reset, formState: { errors } } = useForm<NewValidationFormData>({
+    const { register, handleSubmit, reset, formState: { errors } } = useForm<NewValidationFormData>({
         resolver: yupResolver(novoValidacaoFormularioSchema),
         defaultValues: {
             nome:''
@@ -46,7 +46,6 @@ export function CadastroDepartamento(){
             });
             
             if (response.status == 200) {
-                setSuccess(true);
                 setSuccessMessage('Setor cadastrado com sucesso!')
                     setTimeout(() => {
                         setSuccessMessage('');
@@ -64,14 +63,6 @@ export function CadastroDepartamento(){
         }
     }
 
-    function getErrorMessage(field: string, errors: any) {
-        const error = errors[field];
-        if (error) {
-          return <ErrorsMessage>{error.message}</ErrorsMessage>;
-        }
-        return null;
-      }
-    
     return (
         <>
             <Fieldset>
@@ -87,35 +78,15 @@ export function CadastroDepartamento(){
                         id="Nome" 
                         {...register('nome')} 
                         />
-                        {getErrorMessage('nome', errors)}
+                        <FormFieldError message={getFieldErrorMessage(errors, 'nome')} />
                     </InputContainer>
 
-                    {loading && 
-                        <TextAlertContainer>    
-                            <ColorRing
-                            visible={true}
-                            height="60"
-                            width="60"
-                            ariaLabel="blocks-loading"
-                            wrapperStyle={{}}
-                            wrapperClass="blocks-wrapper"
-                            colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-                            />  
-                        </TextAlertContainer>
-                    }
+                    {loading && <LoadingSpinner />}
 
                     <Button name='Confirmar' type='submit' />
                 </form>
-                {successMessage && 
-                    <TextAlertContainer>
-                        <Alert variant='success'>{successMessage}</Alert>
-                    </TextAlertContainer>
-                }
-                {errorMessage && 
-                    <TextAlertContainer>
-                        <Alert variant="danger">Erro! {errorMessage}</Alert>
-                    </TextAlertContainer>        
-                }
+                <FormAlert message={successMessage} variant="success" />
+                <FormAlert message={errorMessage} variant="danger" />
             </Fieldset>
         </>
     );

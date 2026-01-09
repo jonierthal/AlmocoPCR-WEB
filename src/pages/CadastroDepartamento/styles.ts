@@ -38,21 +38,3 @@ export const Input = styled.input`
         color: #0476AC;
     }
 `;
-
-export const ErrorsMessage = styled.span`
-    margin-top: 1rem;
-
-    text-align: center;
-    font-size: 0.9rem;
-    font-family: Arial;
-    color: #FF0000	
-`;
-
-export const TextAlertContainer = styled.span`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-`;
-

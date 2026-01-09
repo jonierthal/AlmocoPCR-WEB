@@ -39,38 +39,6 @@ export const Input = styled.input`
     }
 `;
 
-export const ErrorsMessage = styled.span`
-    margin-top: 1rem;
-
-    text-align: center;
-    font-size: 0.9rem;
-    font-family: Arial;
-    color: #FF0000	
-`;
-
-export const TextAlertError = styled.span`
-    font-size: 1rem;
-    font-family: Arial;
-    color: #FF0000;
-    font-weight: bold;
-`;
-
-export const TextAlertSuccess = styled.span`
-    font-size: 1rem;
-    font-family: Arial;
-    color: #228B22;
-    font-weight: bold;
-`;
-
-
-export const TextAlertContainer = styled.span`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-`;
-
 export const StyledSelect = styled.select`
     text-align: center;
     font-size: 1rem;
