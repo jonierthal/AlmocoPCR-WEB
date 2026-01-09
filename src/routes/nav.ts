@@ -1,4 +1,4 @@
-import { ROUTE_REGISTRY } from "./paths";
+import { ROUTE_REGISTRY } from "./registry";
 
 export const NAV_ITEMS = ROUTE_REGISTRY.map(({ label, path }) => ({
   label,
