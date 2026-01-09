@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import Modal from 'react-modal';
 import Alert from 'react-bootstrap/Alert';
+export { InputContainer, InputWide as Input } from '../../styles/forms';
 
 export const StyledAlert = styled(Alert)`
   text-align: center;
@@ -145,36 +146,6 @@ export const TextAlertContainer = styled.span`
     align-items: center;
     justify-content: center;
     margin-top:1rem
-`;
-
-export const InputContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: 1rem;
-    margin-bottom: 2rem;
-`;
-
-export const Input = styled.input`
-    text-align: center;
-    font-size: 1rem;
-    font-family: Arial;
-    font-weight: bold;
-
-    color: #0476AC;
-
-    border-radius: 0.3rem;
-    border: 2px solid;
-    border-color:#0476AC;
-
-    width: 60%;
-    
-    padding: 0.5rem;
-
-    ::placeholder {
-        color: #0476AC;
-    }
 `;
 
 export const InputFilterContainer = styled.div`
