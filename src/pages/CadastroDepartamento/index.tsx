@@ -13,7 +13,7 @@ import { FormAlert } from '../../components/Feedback/FormAlert';
 import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
 import { FormFieldError } from '../../components/Feedback/FormFieldError';
 import { getFieldErrorMessage } from '../../utils/form';
-import { createDepartamento } from '../../services/departamentos';
+import { createDepartamento } from '../../features/departamentos/services/departamentos';
 
 interface NewValidationFormData {
     nome: string;

@@ -1,4 +1,4 @@
-import { api } from '../lib/axios';
+import { api } from '../../../lib/axios';
 import { Funcionario } from '../types/funcionario';
 
 export interface CreateFuncionarioPayload {

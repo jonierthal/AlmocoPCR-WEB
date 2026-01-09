@@ -4,7 +4,7 @@ import { TitleComp } from "../../components/Title";
 import { StyledSelect, Fieldset, Input, InputContainer } from "./styles";
 
 import { useDepartamentos } from "../../hooks/useDepartamento";
-import { useCadastroFuncionario } from "../../hooks/useCadastroFuncionario";
+import { useCadastroFuncionario } from "../../features/funcionarios/hooks/useCadastroFuncionario";
 
 import { FormAlert } from "../../components/Feedback/FormAlert"
 import { LoadingSpinner } from "../../components/Feedback/LoadingSpinner";

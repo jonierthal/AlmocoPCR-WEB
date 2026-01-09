@@ -19,7 +19,7 @@ import { SubtitleComp } from '../../components/Subtitle';
 import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
 import { TitleComp } from '../../components/Title';
 import { SpinnerContainer } from '../Relatorios/styles';
-import { deleteDepartamento, fetchDepartamentos, updateDepartamento } from '../../services/departamentos';
+import { deleteDepartamento, fetchDepartamentos, updateDepartamento } from '../../features/departamentos/services/departamentos';
 
 export function ManutDepartamentos() {
 

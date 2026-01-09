@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { createFuncionario } from "../services/funcionario";
-import { novoValidacaoFormularioSchema } from "../features/funcionarios/validation/cadastroFuncionarioSchema";
+import { novoValidacaoFormularioSchema } from "../validation/cadastroFuncionarioSchema";
 
 export interface NewValidationFormData {
   codigo: number;

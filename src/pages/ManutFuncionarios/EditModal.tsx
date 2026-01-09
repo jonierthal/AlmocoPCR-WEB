@@ -1,6 +1,6 @@
 import { SubtitleComp } from '../../components/Subtitle';
 import { TitleComp } from '../../components/Title';
-import { Departamento } from '../../types/departamento';
+import { Departamento } from '../../features/departamentos/types/departamento';
 import {
   ButtonGreen,
   ButtonRed,
