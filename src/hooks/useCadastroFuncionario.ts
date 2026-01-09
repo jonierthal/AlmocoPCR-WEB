@@ -1,18 +1,9 @@
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
 
 import { createFuncionario } from "../services/funcionario";
-
-const novoValidacaoFormularioSchema = Yup.object().shape({
-  nome: Yup.string().min(1, "Informe o nome"),
-  codigo: Yup.number()
-    .typeError("Informe um código válido")
-    .positive("Informe um número válido para o código")
-    .integer("O código deve ser um número inteiro"),
-  departamento: Yup.string().required("Selecione um departamento"),
-});
+import { novoValidacaoFormularioSchema } from "../features/funcionarios/validation/cadastroFuncionarioSchema";
 
 export interface NewValidationFormData {
   codigo: number;
