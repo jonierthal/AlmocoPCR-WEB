@@ -1,7 +1,6 @@
-import { ROUTE_REGISTRY } from "./registry";
-export { ROUTE_REGISTRY } from "./registry";
+import { ROUTES, type RouteKey } from "./routes";
 
-export const ROUTES = ROUTE_REGISTRY.reduce((acc, route) => {
+export const ROUTE_PATHS = ROUTES.reduce((acc, route) => {
   acc[route.key] = route.path;
   return acc;
-}, {} as Record<(typeof ROUTE_REGISTRY)[number]["key"], string>);
+}, {} as Record<RouteKey, string>);

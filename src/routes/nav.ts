@@ -1,6 +1,5 @@
-import { ROUTE_REGISTRY } from "./registry";
+import { ROUTES } from "./routes";
 
-export const NAV_ITEMS = ROUTE_REGISTRY.map(({ label, path }) => ({
-  label,
+export const NAV_ITEMS = ROUTES.map(({ label, path }) => ({  label,
   path,
 })) satisfies ReadonlyArray<{ label: string; path: string }>;
