@@ -19,28 +19,22 @@ import { Title } from '../../components/Title/styles';
 import { SubtitleComp } from '../../components/Subtitle';
 import { ColorRing } from  'react-loader-spinner'
 import { TitleComp } from '../../components/Title';
-import { api } from '../../lib/axios';
 import { SpinnerContainer } from '../Relatorios/styles';
+import { fetchSetores } from '../../services/setores';
+import { deleteFuncionario, fetchFuncionarios, updateFuncionario, verifyFuncionarioId } from '../../services/funcionario';
+import { Funcionario } from '../../types/funcionario';
+import { Departamento } from '../../types/departamento';
 
 
 export function ManutFuncionarios() {
 
-  type FuncionarioType = {
-    id_fun: number;
-    nome: string;
-    setor_id  : number;
-    Setor: {
-      nome: string;
-    }
-  }
-
-  const [funcionarios, setFuncionarios] = useState<FuncionarioType[]>([]);
+  const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
 
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [deleteNome, setDeleteNome] = useState<string>('');
 
   const [editSetorId, setEditSetorId] = useState<number>(0);
-  const [setores, setSetores] = useState<{ id: number; nome: string }[]>([]);
+  const [setores, setSetores] = useState<Departamento[]>([]);
 
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -65,17 +59,15 @@ export function ManutFuncionarios() {
   async function carregaDadosTabela(){
       setLoading(true);
 
-      await api.get('/cad_fun_id')
-        .then(response => {
-          setFuncionarios(response.data.pesquisaFuncionario);
-        })
-        .catch(error => {
-          console.error(error);
-          setErrorMessage('Ocorreu um erro ao listar os funcionários. Contate o Administrador!');
-        })
-        .finally(() => {
-          setLoading(false); // define loading como false após a requisição ter sido concluída (com sucesso ou erro)
-        });
+      try {
+        const dados = await fetchFuncionarios();
+        setFuncionarios(dados);
+      } catch (error) {
+        console.error(error);
+        setErrorMessage('Ocorreu um erro ao listar os funcionários. Contate o Administrador!');
+      } finally {
+        setLoading(false); // define loading como false após a requisição ter sido concluída (com sucesso ou erro)
+      }
   }
 
   useEffect(() => {
@@ -85,8 +77,8 @@ export function ManutFuncionarios() {
     useEffect(() => {
       async function carregarSetores() {
         try {
-          const response = await api.get('/setores');
-          setSetores(response.data); // Supondo que a API retorne os setores no formato [{id, nome}]
+          const dados = await fetchSetores();
+          setSetores(dados);
         } catch (error) {
           console.error('Erro ao carregar setores:', error);
         }
@@ -98,24 +90,22 @@ export function ManutFuncionarios() {
   async function handleDelete(id: number)  {
     setLoading(true);
 
-    await api.delete(`/cadastro/${id}`)
-      .then(response => {
-        carregaDadosTabela();
-        setSuccessMessage('Funcionário excluído com sucesso!');
-        setTimeout(() => {
-          setSuccessMessage('');
-        }, 4000);
-      })
-      .catch(error => {
-        console.error(error);
-        setErrorMessage('Ocorreu um erro ao excluir o funcionário. Contate o Administrador!');
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 4000);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      await deleteFuncionario(id);
+      carregaDadosTabela();
+      setSuccessMessage('Funcionário excluído com sucesso!');
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 4000);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage('Ocorreu um erro ao excluir o funcionário. Contate o Administrador!');
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 4000);
+    } finally {
+      setLoading(false);
+    }
     closeModal();
   };
 
@@ -150,23 +140,18 @@ export function ManutFuncionarios() {
 
     switch(true) {
       case editId > 0:
-        await api.get(`/verificar-id/${editId}`)
+        await verifyFuncionarioId(editId)
           .then(async response => {
 
-          if((response.data.idExiste && id === editId) || (!response.data.idExiste)) {
+          if((response.idExiste && id === editId) || (!response.idExiste)) {
 
             setLoading(true);
 
-            await api.put(`/edita_cadastro/${id}`, {
+            await updateFuncionario(id, {
               funcionario: {
               id: editId,
-              nome: editNome,
-              setor_id: editSetorId
-            }
-            },
-            {
-              headers: {
-                'Content-Type': 'application/json'
+                nome: editNome,
+                setor_id: editSetorId
               }
             })
             .then(() => {
@@ -187,7 +172,7 @@ export function ManutFuncionarios() {
               carregaDadosTabela();
           });
 
-          } else if (response.data.idExiste && id !== editId){
+          } else if (response.idExiste && id !== editId){
             closeEditModal();
             setErrorMessage('Não foi possível alterar este funcionário, pois este código já existe! Digite um código válido!')
               setTimeout(() => {

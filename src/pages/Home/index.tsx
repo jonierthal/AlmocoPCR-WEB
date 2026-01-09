@@ -7,13 +7,15 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 
 import { useForm } from 'react-hook-form'
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 
-import { api } from "../../lib/axios";
 import { FormAlert } from "../../components/Feedback/FormAlert"
 import { LoadingSpinner } from "../../components/Feedback/LoadingSpinner";
 import { FormFieldError } from "../../components/Feedback/FormFieldError";
 import { getFieldErrorMessage } from "../../utils/form";
+import { fetchSetores } from "../../services/setores";
+import { createFuncionario } from "../../services/funcionario";
+import { Departamento } from "../../types/departamento";
 
 const novoValidacaoFormularioSchema = Yup.object().shape({
     nome: Yup.string().min(1, 'Informe o nome'),
@@ -29,11 +31,6 @@ interface NewValidationFormData {
     codigo: number;
     nome: string;
     departamento: number;
-}
-
-interface Departamento {
-  id: number;
-  nome: string;
 }
 
 export function Home(){
@@ -54,8 +51,8 @@ export function Home(){
     useEffect(() => {
       async function fetchDepartamentos() {
         try {
-          const response = await api.get('/setores');
-          setDepartamentos(response.data);
+          const setores = await fetchSetores();
+          setDepartamentos(setores);
         } catch (error) {
             console.error("Erro ao carregar os departamentos", error);
         }
@@ -68,7 +65,7 @@ export function Home(){
         try {
           setLoading(true);
 
-          const response = await api.post('/cadastro_funcionario', {
+          const response = await createFuncionario({
             codFuncionario: data.codigo,
             nameFuncionario: data.nome,
             departamentos: data.departamento
