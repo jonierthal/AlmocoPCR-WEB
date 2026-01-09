@@ -1,103 +1,59 @@
-import { 
-    Container, 
-    ButtonContainer, 
-    Button, 
-    TextDate, 
-    DateContainer, 
-    TextDateContainer, 
-    ButtonDateIntervalContainer,
-    RelatoriosContainer,
-    AutoEmailContainer,
-    AutoEmailHeader,
-    AutoEmailContent,
-    AutoEmailSummary,
-    AutoEmailStatus,
-    AutoEmailText,
-    AutoEmailTitle,
-    AutoEmailInput,
-    ContainerTextFooter,
-    SpinnerContainer,
-    StyledDatePicker,
-    TableSpacing,
-    Table,
-    TableContainer,
-    Th,
-    Thead,
-    Th2,
-    Td,
-    ButtonRed,
-    Icon
-} from "./styles";
+import {
+  Button,
+  ButtonContainer,
+  ButtonDateIntervalContainer,
+  ButtonRed,
+  Container,
+  ContainerTextFooter,
+  DateContainer,
+  RelatoriosContainer,
+  SpinnerContainer,
+  StyledDatePicker,
+  TextDate,
+  TextDateContainer,
+} from './styles';
 import { ButonContainer, ButtonGreen, ContainerModal, StyledAlert, TextAlertContainer } from "../ManutFuncionarios/styles";
 import axios from 'axios' ;
 import { BiMoveHorizontal } from 'react-icons/bi';
 import { useEffect, useState } from "react";
 import { ColorRing } from 'react-loader-spinner'
 import moment from 'moment';
-import * as XLSX from 'xlsx';
-import XlsxStyle from 'xlsx-js-style';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
 import ptBR from 'date-fns/locale/pt-BR';
 import { api } from "../../lib/axios";
 import { Title } from "../../components/Title/styles";
 import { SubtitleComp } from "../../components/Subtitle";
+import {
+  EMAIL_DESTINATARIO_PADRAO,
+  HORARIO_ENVIO_AUTOMATICO_HORA,
+  HORARIO_ENVIO_AUTOMATICO_MINUTO,
+  HORARIO_ENVIO_XIS_HORA,
+  HORARIO_ENVIO_XIS_MINUTO,
+  INTERVALO_CHECAGEM_MS,
+  STORAGE_DATA_ENVIO,
+  STORAGE_DATA_ENVIO_XIS,
+  STORAGE_EMAIL_ADICIONAIS,
+} from './constants';
+import {
+  exportRelatorioAlmoco,
+  exportRelatorioPeriodo,
+  exportRelatorioXis,
+} from './export';
+import { EmailSettings } from './EmailSettings';
+import { RelatorioTable } from './RelatorioTable';
+import {
+  AlmocoExtraType,
+  AlmocoType,
+  AlmocosPeriodoType,
+  RelatorioEmailPayload,
+  ReservaXisPeriodoType,
+  ReservaXisType,
+} from './types';
 
 // Registra o locale para Português (Brasil)
 registerLocale('pt-BR', ptBR);
 // Define o locale padrão como Português (Brasil)
 setDefaultLocale('pt-BR');
-
-  const EMAIL_DESTINATARIO_PADRAO = 'jonierthal@gmail.com';
-  const HORARIO_ENVIO_AUTOMATICO_HORA = 8;
-  const HORARIO_ENVIO_AUTOMATICO_MINUTO = 10;
-  const HORARIO_ENVIO_XIS_HORA = 15;
-  const HORARIO_ENVIO_XIS_MINUTO = 30;
-  const INTERVALO_CHECAGEM_MS = 30000;
-  const STORAGE_DATA_ENVIO = 'relatorio-almoco-email-enviado';
-  const STORAGE_DATA_ENVIO_XIS = 'relatorio-xis-email-enviado';
-  const STORAGE_EMAIL_ADICIONAIS = 'relatorio-almoco-email-adicionais';
-
-  type AlmocoType = {
-    cod_funcionario: number,
-    "Funcionario.nome": string,
-    "Funcionario.Setor.nome": string
-    id: number,
-    num_almocos: number;
-  }
-
-  type AlmocoExtraType = {
-    id: number,
-    nome_aext: string;
-    quantidade_aext: number;
-  }
-
-  type ReservaXisType = {
-    cod_funcionario: number;
-    quantidade_rx: number;
-    "Funcionario.nome": string;
-    "Funcionario.Setor.nome": string
-    id: number;
-  }
-
-  type AlmocosPeriodoType = {
-    id_fun: number;
-    nome: string;
-    quantidade: number;
-    setor_nome: string;
-  }
-
-  type ReservaXisPeriodoType = {
-    id_fun: number;
-    nome: string;
-    quantidade_rx: number;
-    setor_nome: string;
-  }
-
-  type RelatorioEmailPayload = {
-    destinatarioPadrao: string;
-    destinatariosAdicionais: string;
-    dataReferencia: string;
-  }
 
   export function Relatorios(){
     const [loading, setLoading] = useState<boolean>(false)
@@ -143,70 +99,6 @@ setDefaultLocale('pt-BR');
         setEmailsAdicionais(emailsSalvos);
       }
     }, []);
-
-    //estilos para o cabeçalho da planilha
-    const tableHeader = {
-      fill: {
-        type: 'pattern',
-        patternType: 'solid',
-        fgColor: { rgb: 'FFFF00' }
-      },
-      font: {
-        bold: true,
-      },
-      alignment: {
-        vertical: "center",
-        horizontal: "center"
-      },
-      border: {
-        bottom: { style: "thin" },
-        top: { style: "thin" },
-        left: { style: "thin" },
-        right: { style: "thin" }
-      },
-      numFmt: "0" // Formatação para número
-    };
-
-    const tableHeaderTitles = {
-      fill: {
-        type: 'pattern',
-        patternType: 'solid',
-        fgColor: { rgb: '00B0F0' }
-      },
-      font: {
-        bold: true,
-      },
-      alignment: {
-        vertical: "center",
-        horizontal: "center"
-      },
-      border: {
-        bottom: { style: "thin" },
-        top: { style: "thin" },
-        left: { style: "thin" },
-        right: { style: "thin" }
-      }
-    };
-
-    // Definir o estilo de borda fina para todas as outras células
-    const thinBorder = {
-      border: {
-        bottom: { style: "thin" },
-        top: { style: "thin" },
-        left: { style: "thin" },
-        right: { style: "thin" }
-      },
-      alignment: {
-        vertical: "center",
-        horizontal: "center",
-      },
-      numFmt: "0" // Formatação para números
-    };
-    
-    const dateStyle = {
-      ...thinBorder,
-      numFmt: "dd/mm/yyyy" // Formatação para datas
-    };
 
     let date = moment().format('DD/MM/YYYY');
 
@@ -375,96 +267,14 @@ setDefaultLocale('pt-BR');
             const dataReservaXisPeriodo: ReservaXisPeriodoType[] = response.data.funcionarios_xis;
             const total = response.data.total.quantidade_total;
 
-            const almocosPeriodo = dataAlmocosPeriodo.map(almocoPeriodo => [almocoPeriodo.nome, almocoPeriodo.setor_nome || '', almocoPeriodo.quantidade]);           
-            const almocosExtrasPeriodo = dataAlmocosExtrasPeriodo.map(almocoExtrasPeriodo => ['',almocoExtrasPeriodo.nome_aext, almocoExtrasPeriodo.quantidade_aext]);
-            const reservaXisPeriodo = dataReservaXisPeriodo.map(reservaXisPeriodo => ['',reservaXisPeriodo.nome,reservaXisPeriodo.setor_nome || '', reservaXisPeriodo.quantidade_rx]);
-
-            const maxLength = Math.max(almocosPeriodo.length, almocosExtrasPeriodo.length, reservaXisPeriodo.length);
-      
-            const dados = [];
-            for (let i = 0; i < maxLength; i++) {
-              const almocoRow = almocosPeriodo[i] || ['', ''];
-              const almocoExtrasRow = almocosExtrasPeriodo[i] || ['', '', ''];
-              const reservaXisRow = reservaXisPeriodo[i] || ['', '', ''];
-
-              dados.push([...almocoRow, ...almocoExtrasRow, ...reservaXisRow]);
-            }
-
-            const planilha = XLSX.utils.aoa_to_sheet([
-              ['DATA INICIO', 'DATA FIM'],
-              [startDate,endDate],
-              [null],
-              ['NOME', 'DEPARTAMENTO', 'QUANTIDADE', '', 'NOME ALMOCO EXTRA','QUANTIDADE', '','NOME RESERVA XIS','DEPARTAMENTO','QUANTIDADE','','TOTAL'],
-              ...dados
-            ]);
-
-            planilha['L5'] = { v: total, t: 'n' };
-
-            //seta o estilho nas celular indicadas
-            planilha['A1'].s = tableHeader;
-            planilha['B1'].s = tableHeader;
-            planilha['A4'].s = tableHeader;
-            planilha['B4'].s = tableHeader;
-            planilha['C4'].s = tableHeader;
-
-            planilha['E4'].s = tableHeader;
-            planilha['F4'].s = tableHeader;
-
-            planilha['H4'].s = tableHeader;
-            planilha['I4'].s = tableHeader;
-            planilha['J4'].s = tableHeader;
-
-            planilha['L4'].s = tableHeader;
-            planilha['A2'].s = dateStyle;
-            planilha['B2'].s = dateStyle;
-
-            planilha['L5'].s = thinBorder;
-
-            for (let i = 5; i <= almocosPeriodo.length + 4; i++) {
-              const cellRef = `A${i}`;
-              planilha[cellRef].s = thinBorder;
-            }
-      
-            for (let i = 5; i <= almocosPeriodo.length + 4; i++) {
-              const cellRef = `B${i}`;
-              planilha[cellRef].s = thinBorder;
-            }
-
-            for (let i = 5; i <= almocosPeriodo.length + 4; i++) {
-              const cellRef = `C${i}`;
-              planilha[cellRef].s = thinBorder;
-            }
-
-            for (let i = 5; i <= almocosExtrasPeriodo.length + 4; i++) {
-              const cellRef = `E${i}`;
-              planilha[cellRef].s = thinBorder;
-            }
-
-            for (let i = 5; i <= almocosExtrasPeriodo.length + 4; i++) {
-              const cellRef = `F${i}`;
-              planilha[cellRef].s = thinBorder;
-            }
-
-            for (let i = 5; i <= reservaXisPeriodo.length + 4; i++) {
-              const cellRef = `H${i}`;
-              planilha[cellRef].s = thinBorder;
-            }
-
-            for (let i = 5; i <= reservaXisPeriodo.length + 4; i++) {
-              const cellRef = `I${i}`;
-              planilha[cellRef].s = thinBorder;
-            }
-
-            for (let i = 5; i <= reservaXisPeriodo.length + 4; i++) {
-              const cellRef = `J${i}`;
-              planilha[cellRef].s = thinBorder;
-            }
-            
-            planilha['!cols'] = [{ width: 40 },{ width: 30},{ width: 15 },{ width: 5},{ width: 40},{ width: 15 },{ width: 5},{ width: 40},{ width: 30},{ width: 15 },{width: 5},{ width: 15}];
-
-            const livro = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(livro, planilha, 'Relatório período');
-            XlsxStyle.writeFile(livro, 'relatorio-periodo.xlsx');
+            exportRelatorioPeriodo({
+              startDate,
+              endDate,
+              almocosPeriodo: dataAlmocosPeriodo,
+              almocosExtrasPeriodo: dataAlmocosExtrasPeriodo,
+              reservaXisPeriodo: dataReservaXisPeriodo,
+              total,
+            });
 
           })
           .catch((error) => {
@@ -481,42 +291,7 @@ setDefaultLocale('pt-BR');
       try {
         setLoading(true)
 
-        const reservas = reserva_xis.map(reserva => [reserva['Funcionario.nome'],reserva['Funcionario.Setor.nome'] || '',reserva.quantidade_rx,]);
-        
-        //cria a planilha
-        const planilha = XLSX.utils.aoa_to_sheet([
-          ['Funcionário','Departamento','Quantidade',],
-          ...reservas
-        ]);
-        
-        //seta o estilho nas celular indicadas
-        planilha['A1'].s = tableHeader;
-        planilha['B1'].s = tableHeader;
-        planilha['C1'].s = tableHeader;
-
-        for (let i = 2; i <= reservas.length + 1; i++) {
-          const cellRef = `A${i}`;
-          planilha[cellRef].s = thinBorder;
-        }
-
-        for (let i = 2; i <= reservas.length + 1; i++) {
-          const cellRef = `B${i}`;
-          planilha[cellRef].s = thinBorder;
-        }
-
-        for (let i = 2; i <= reservas.length + 1; i++) {
-          const cellRef = `C${i}`;
-          planilha[cellRef].s = thinBorder;
-        }
-
-        //Define a largura da celula
-        planilha['!cols'] = [{ width: 40 },{ width: 15},{ width: 15 } ];
-
-        //responsavel pelo download da planoilha 
-        const livro = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(livro, planilha, 'Reservas de Xis');
-      
-        XlsxStyle.writeFile(livro, 'relatorio-xis.xlsx');
+        exportRelatorioXis(reserva_xis);
       } catch (e) {
         console.log(e);
       } finally {
@@ -530,109 +305,12 @@ setDefaultLocale('pt-BR');
     try{    
       setLoading(true)
 
-      const reservas = almocos.map(almoco => [
-        almoco.cod_funcionario,
-        almoco['Funcionario.nome'],
-        almoco['Funcionario.Setor.nome'] || '' ])
-
-      const extras = almocos_ext.map(extra => [
-        '','',
-        extra.nome_aext,
-        extra.quantidade_aext
-      ])
-
-      const dados = reservas.map((reserva, index) => [
-        ...reserva,
-        ...(extras[index] || ['', '']) // adiciona as células dos extras para a reserva atual, ou células vazias se não houver extras para a reserva
-      ])
-
-        const planilha = XLSX.utils.aoa_to_sheet([
-          ['RESERVAS DE ALMOÇO','','','', '','RESERVAS EXTRAS','','','','TOTAL RESERVAS+EXTRAS'],
-          ['Código','Funcionário','Departamento','TOTAL','','Nome Almoço Extra', 'Quantidade','TOTAL',],
-          ...dados
-        ]);
-
-        // Define o valor de num_almocos na célula D3
-        planilha['D3'] = { v: num_almocos, t: 'n' };
-
-        // Define o valor de num_almocos+=_ext na célula G3
-        planilha['H3'] = { v: numAlmocos_ext, t: 'n' };
-
-        // Define o valor de num_almocos+numAlmoco_ext na célula G3
-        planilha['J2'] = { v: (numAlmocos_ext+num_almocos), t: 'n' };
-
-        // Define a mesclagem das células
-        planilha['!merges'] = [
-          { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } }, // mesclagem A1:C1
-          { s: { r: 0, c: 5 }, e: { r: 0, c: 7 } }, // mesclagem E1:G1
-        ];
-  
-        // seta o estilo nas celulas indicadas
-        planilha['A1'].s = tableHeaderTitles;
-        planilha['F1'].s = tableHeaderTitles;
-
-        planilha['A2'].s = tableHeader;
-        planilha['B2'].s = tableHeader;
-        planilha['C2'].s = tableHeader;
-        planilha['D2'].s = tableHeader;
-        
-        planilha['F2'].s = tableHeader;
-        planilha['G2'].s = tableHeader;
-        planilha['H2'].s = tableHeader;
-
-        planilha['J1'].s = tableHeader;
-
-        // Define o estilo de borda fina para todas as outras celulas
-        const thinBorder = {
-          border: {
-            bottom: { style: "thin" },
-            top: { style: "thin" },
-            left: { style: "thin" },
-            right: { style: "thin" }
-          },
-          alignment: {
-            vertical: "center",
-            horizontal: "center",
-          }
-        }
-  
-        for (let i = 3; i <= reservas.length + 2; i++) {
-          const cellRef = `A${i}`;
-          planilha[cellRef].s = thinBorder;
-        }
-
-        for (let i = 3; i <= reservas.length + 2; i++) {
-          const cellRef = `B${i}`;
-          planilha[cellRef].s = thinBorder;
-        }
-
-        for (let i = 3; i <= reservas.length + 2; i++) {
-          const cellRef = `C${i}`;
-          planilha[cellRef].s = thinBorder;
-        }
-
-         for (let i = 3; i <= extras.length + 2; i++) {
-          const cellRef = `F${i}`;
-          planilha[cellRef].s = thinBorder;
-        }
-
-        for (let i = 3; i <= extras.length + 2; i++) {
-          const cellRef = `G${i}`;
-          planilha[cellRef].s = thinBorder;
-        }
-
-        planilha['D3'].s = thinBorder;
-        planilha['H3'].s = thinBorder; 
-        planilha['J2'].s = thinBorder; 
-  
-        // Define a largura da celula
-        planilha['!cols'] = [{ width: 15 },{ width: 40},{ width: 30},{width:15}, {width:5},{width:40},{width:15},{width:15},{width:5},{width:30}];
-  
-        // responsavel pelo download da planilha 
-        const livro = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(livro, planilha, 'Reservas de Almoço');
-  
-        XlsxStyle.writeFile(livro, 'relatorio-almoco.xlsx');
+      exportRelatorioAlmoco({
+        almocos,
+        almocosExtra: almocos_ext,
+        numAlmocos: num_almocos,
+        numAlmocosExtra: numAlmocos_ext,
+      });
       }  
       catch(error){
         console.log(error);
@@ -894,64 +572,24 @@ setDefaultLocale('pt-BR');
                     <Button onClick={() => handleRelatorioPeriodo()}>Gerar Excel por período</Button>
                 </DateContainer>
             </RelatoriosContainer>
-            <AutoEmailContainer>
-              <AutoEmailHeader
-                type="button"
-                onClick={() => setEmailMenuOpen((open) => !open)}
-                aria-expanded={emailMenuOpen}
-              >
-                <span>Automação de e-mails</span>
-                <span>{emailMenuOpen ? 'Esconder ▲' : 'Mostrar ▼'}</span>
-              </AutoEmailHeader>
-              {!emailMenuOpen && (
-                <AutoEmailSummary>
-                  <span>Destinatário padrão: {EMAIL_DESTINATARIO_PADRAO}</span>
-                  <span>Último envio almoço: {ultimaDataEnvioFormatada}</span>
-                  <span>Último envio xis: {ultimaDataEnvioXisFormatada}</span>
-                </AutoEmailSummary>
-              )}
-              {emailMenuOpen && (
-                <AutoEmailContent>
-                  <AutoEmailTitle>Destinatários</AutoEmailTitle>
-                  <AutoEmailText>
-                    Destinatário padrão (sempre recebe): {EMAIL_DESTINATARIO_PADRAO}
-                  </AutoEmailText>
-                  <AutoEmailText>
-                    Destinatários adicionais (separe por vírgula ou ponto e vírgula)
-                  </AutoEmailText>
-                  <AutoEmailInput
-                    rows={3}
-                    value={emailsAdicionais}
-                    onChange={(event) => setEmailsAdicionais(event.target.value)}
-                    placeholder="email1@exemplo.com; email2@exemplo.com"
-                  />
-                  <Button type="button" onClick={handleSalvarEmailsAdicionais}>
-                    Salvar destinatários adicionais
-                  </Button>
-                  <AutoEmailText>
-                    Serão enviados para: {destinatariosResumo}
-                  </AutoEmailText>
-
-                  <AutoEmailTitle>Almoço</AutoEmailTitle>
-                  <AutoEmailText>Envio automático diário às {horarioAlmoco}</AutoEmailText>
-                  <AutoEmailStatus>
-                    {ultimaDataEnvio ? `Último envio registrado: ${ultimaDataEnvioFormatada}` : 'Nenhum envio registrado ainda.'}
-                  </AutoEmailStatus>
-                  <Button disabled={enviandoEmail} onClick={() => enviarRelatorioPorEmail(true)}>
-                    {enviandoEmail ? 'Enviando...' : 'Enviar e-mail de almoço de teste agora'}
-                  </Button>
-
-                  <AutoEmailTitle>Xis</AutoEmailTitle>
-                  <AutoEmailText>Envio automático diário às {horarioXis}</AutoEmailText>
-                  <AutoEmailStatus>
-                    {ultimaDataEnvioXis ? `Último envio registrado: ${ultimaDataEnvioXisFormatada}` : 'Nenhum envio registrado ainda.'}
-                  </AutoEmailStatus>
-                  <Button disabled={enviandoEmail} onClick={() => enviarRelatorioXisPorEmail(true)}>
-                    {enviandoEmail ? 'Enviando...' : 'Enviar e-mail de Xis de teste agora'}
-                  </Button>
-                </AutoEmailContent>
-              )}
-            </AutoEmailContainer>
+            <EmailSettings
+              emailMenuOpen={emailMenuOpen}
+              onToggleMenu={() => setEmailMenuOpen((open) => !open)}
+              emailsAdicionais={emailsAdicionais}
+              onChangeEmailsAdicionais={setEmailsAdicionais}
+              onSalvarEmailsAdicionais={handleSalvarEmailsAdicionais}
+              destinatariosResumo={destinatariosResumo}
+              ultimaDataEnvio={ultimaDataEnvio}
+              ultimaDataEnvioFormatada={ultimaDataEnvioFormatada}
+              ultimaDataEnvioXis={ultimaDataEnvioXis}
+              ultimaDataEnvioXisFormatada={ultimaDataEnvioXisFormatada}
+              enviandoEmail={enviandoEmail}
+              horarioAlmoco={horarioAlmoco}
+              horarioXis={horarioXis}
+              onEnviarRelatorioAlmoco={() => enviarRelatorioPorEmail(true)}
+              onEnviarRelatorioXis={() => enviarRelatorioXisPorEmail(true)}
+              emailDestinatarioPadrao={EMAIL_DESTINATARIO_PADRAO}
+            />
             <SpinnerContainer>
             {loading &&
               <ColorRing
@@ -966,133 +604,17 @@ setDefaultLocale('pt-BR');
             }
             </SpinnerContainer>
 
-            <TableContainer> 
-              <TableSpacing>       
-                  <Table>
-                    <Thead>
-                        <tr>
-                          <Th colSpan={3}>Almoços extras</Th>
-                        </tr>
-                        <tr>
-                          <Th2 >Nome</Th2>
-                          <Th2 >Quantidade</Th2>
-                          <Th2>Excluir</Th2>
-                      </tr>
-                    </Thead>
-
-                    <tbody>
-                          {almocos_ext.map(almoco_ext => (
-                              <tr key={almoco_ext.id}>
-                                  <Td>{almoco_ext.nome_aext}</Td>
-                                  <Td>{almoco_ext.quantidade_aext}</Td>
-                                  <Td>
-                                    <ButtonRed onClick={() => openModalAlm_ext(almoco_ext.id,almoco_ext.nome_aext)}>
-                                      <Icon className="fas fa-trash-alt" />
-                                    </ButtonRed>
-                                  </Td>
-                              </tr>
-                          ))}
-                      </tbody>   
-                  </Table>
-                  <SpinnerContainer>
-                    {loadingAlm_ext &&         
-                    <ColorRing
-                        visible={true}
-                        height="60"
-                        width="60"
-                        ariaLabel="blocks-loading"
-                        wrapperStyle={{}}
-                        wrapperClass="blocks-wrapper"
-                        colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-                    />  
-                    }
-                </SpinnerContainer>
-              </TableSpacing>
-
-              <TableSpacing>             
-                <Table>
-                  <Thead>
-                      <tr>
-                        <Th colSpan={3}>Lista de almoços</Th>
-                      </tr>
-                      <tr>
-                        <Th2 >Nome</Th2>
-                        <Th2 >Departamento</Th2>
-                        <Th2>Excluir</Th2>
-                    </tr>
-                  </Thead>
-                  
-                  <tbody>
-                    {almocos.map(almoco => (
-                      <tr key={almoco.cod_funcionario}>
-                        <Td>{almoco['Funcionario.nome']}</Td>
-                        <Td>{almoco['Funcionario.Setor.nome']}</Td>
-                        <Td>
-                          <ButtonRed onClick={() => openModalAlmoco(almoco.id,almoco['Funcionario.nome'])}>
-                            <Icon className="fas fa-trash-alt" />
-                          </ButtonRed>
-                        </Td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-                <SpinnerContainer>
-                    {loadingAlmoco &&         
-                    <ColorRing
-                        visible={true}
-                        height="60"
-                        width="60"
-                        ariaLabel="blocks-loading"
-                        wrapperStyle={{}}
-                        wrapperClass="blocks-wrapper"
-                        colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-                    />  
-                    }
-                </SpinnerContainer>
-              </TableSpacing>
-
-              <TableSpacing>    
-                <Table>
-                  <Thead>
-                      <tr>
-                        <Th colSpan={3}>Reservas de Xis</Th>
-                      </tr>
-                      <tr>
-                        <Th2 >Nome</Th2>
-                        <Th2 >Departamento</Th2>
-                        <Th2>Excluir</Th2>
-                    </tr>
-                  </Thead>
-                    
-                  <tbody>
-                    {reserva_xis.map(xis => (
-                    <tr key={xis.cod_funcionario}>
-                      <Td>{xis['Funcionario.nome']}</Td>
-                      <Td>{xis['Funcionario.Setor.nome']}</Td>
-                      <Td>
-                        <ButtonRed onClick={() => openModalXis(xis.id,xis['Funcionario.nome'])}>
-                          <Icon className="fas fa-trash-alt" />
-                        </ButtonRed>
-                      </Td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-                <SpinnerContainer>
-                    {loadingXis &&         
-                    <ColorRing
-                        visible={true}
-                        height="60"
-                        width="60"
-                        ariaLabel="blocks-loading"
-                        wrapperStyle={{}}
-                        wrapperClass="blocks-wrapper"
-                        colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-                    />  
-                    }
-                </SpinnerContainer>
-              </TableSpacing>
-            </TableContainer>
+            <RelatorioTable
+              almocosExtra={almocos_ext}
+              almocos={almocos}
+              reservaXis={reserva_xis}
+              loadingAlmocosExtra={loadingAlm_ext}
+              loadingAlmoco={loadingAlmoco}
+              loadingXis={loadingXis}
+              onOpenModalAlmocoExtra={openModalAlm_ext}
+              onOpenModalAlmoco={openModalAlmoco}
+              onOpenModalXis={openModalXis}
+            />
             <ContainerTextFooter>
                 <TextDate>QUANTIDADE TOTAL DE ALMOÇOS - {date} = {num_almocos + numAlmocos_ext}<br/><br/><br/></TextDate>
             </ContainerTextFooter>
