@@ -123,7 +123,7 @@ export function exportRelatorioPeriodo({
     reservaXisRows.length,
   );
 
-  const dados = [] as Array<string | number | null>[][];
+  const dados: Array<(string | number | null)[]> = [];
   for (let i = 0; i < maxLength; i += 1) {
     const almocoRow = almocosPeriodoRows[i] || ['', ''];
     const almocoExtrasRow = almocosExtrasRows[i] || ['', '', ''];
