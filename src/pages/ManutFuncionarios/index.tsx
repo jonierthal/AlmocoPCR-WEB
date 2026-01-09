@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ColorRing } from 'react-loader-spinner';
-import { SpinnerContainer } from '../Relatorios/styles';
+import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
 import { useFuncionarios } from '../../hooks/useFuncionario';
 import { useSetores } from '../../hooks/useSetores';
 import { DeleteModal } from './DeleteModal';
@@ -85,17 +84,7 @@ export function ManutFuncionarios() {
         onChangeFilterId={setFilterId}
       />
       {loading ? (
-        <TextAlertContainer>
-          <ColorRing
-            visible={true}
-            height="60"
-            width="60"
-            ariaLabel="blocks-loading"
-            wrapperStyle={{}}
-            wrapperClass="blocks-wrapper"
-            colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-          />
-        </TextAlertContainer>
+        <LoadingSpinner />
       ) : (
         <FuncionarioTable
           funcionarios={funcionarios}

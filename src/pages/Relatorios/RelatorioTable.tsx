@@ -1,4 +1,4 @@
-import { ColorRing } from 'react-loader-spinner';
+import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
 import {
   ButtonRed,
   Icon,
@@ -70,17 +70,7 @@ export function RelatorioTable({
           </tbody>
         </Table>
         <SpinnerContainer>
-          {loadingAlmocosExtra && (
-            <ColorRing
-              visible={true}
-              height="60"
-              width="60"
-              ariaLabel="blocks-loading"
-              wrapperStyle={{}}
-              wrapperClass="blocks-wrapper"
-              colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-            />
-          )}
+          {loadingAlmocosExtra && <LoadingSpinner />}
         </SpinnerContainer>
       </TableSpacing>
 
@@ -114,17 +104,7 @@ export function RelatorioTable({
           </tbody>
         </Table>
         <SpinnerContainer>
-          {loadingAlmoco && (
-            <ColorRing
-              visible={true}
-              height="60"
-              width="60"
-              ariaLabel="blocks-loading"
-              wrapperStyle={{}}
-              wrapperClass="blocks-wrapper"
-              colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-            />
-          )}
+          {loadingAlmoco && <LoadingSpinner />}
         </SpinnerContainer>
       </TableSpacing>
 
@@ -158,17 +138,7 @@ export function RelatorioTable({
           </tbody>
         </Table>
         <SpinnerContainer>
-          {loadingXis && (
-            <ColorRing
-              visible={true}
-              height="60"
-              width="60"
-              ariaLabel="blocks-loading"
-              wrapperStyle={{}}
-              wrapperClass="blocks-wrapper"
-              colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-            />
-          )}
+          {loadingXis && <LoadingSpinner />}
         </SpinnerContainer>
       </TableSpacing>
     </TableContainer>

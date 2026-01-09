@@ -16,7 +16,7 @@ import { ButonContainer, ButtonGreen, ContainerModal, StyledAlert, TextAlertCont
 import axios from 'axios' ;
 import { BiMoveHorizontal } from 'react-icons/bi';
 import { useEffect, useState } from "react";
-import { ColorRing } from 'react-loader-spinner'
+import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
 import moment from 'moment';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -591,17 +591,7 @@ setDefaultLocale('pt-BR');
               emailDestinatarioPadrao={EMAIL_DESTINATARIO_PADRAO}
             />
             <SpinnerContainer>
-            {loading &&
-              <ColorRing
-                visible={true}
-                height="60"
-                width="60"
-                ariaLabel="blocks-loading"
-                wrapperStyle={{}}
-                wrapperClass="blocks-wrapper"
-                colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-              />  
-            }
+            {loading && <LoadingSpinner />}
             </SpinnerContainer>
 
             <RelatorioTable
@@ -627,17 +617,7 @@ setDefaultLocale('pt-BR');
           <Title>Confirmar exclusão?</Title>
           <SubtitleComp subtitle={`Você está prestes a excluir a reserva de Almoço: \n\n Nome: ${deleteNome} \n\nTem certeza disso?`}/>
             <SpinnerContainer>
-              {loadingAlmoco &&         
-                  <ColorRing
-                    visible={true}
-                    height="60"
-                    width="60"
-                    ariaLabel="blocks-loading"
-                    wrapperStyle={{}}
-                    wrapperClass="blocks-wrapper"
-                    colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-                  />  
-              }
+              {loadingAlmoco && <LoadingSpinner />}
             </SpinnerContainer>
             <ButonContainer>
               <ButtonGreen onClick={() => handleDeleteAlmoco(deleteId!)}>
@@ -659,18 +639,8 @@ setDefaultLocale('pt-BR');
           <Title>Confirmar exclusão?</Title>
           <SubtitleComp subtitle={`Você está prestes a excluir a reserva de Xis: \n\n Nome: ${deleteNome} \n\n Tem certeza disso?`}/>
           <SpinnerContainer>
-            {loadingXis &&         
-                <ColorRing
-                  visible={true}
-                  height="60"
-                  width="60"
-                  ariaLabel="blocks-loading"
-                  wrapperStyle={{}}
-                  wrapperClass="blocks-wrapper"
-                  colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-                />  
-            }
-            </SpinnerContainer>
+            {loadingXis && <LoadingSpinner />}
+          </SpinnerContainer>
             <ButonContainer>
               <ButtonGreen onClick={() => handleDeleteXis(deleteId!)}>
                 Confirmar
@@ -691,18 +661,8 @@ setDefaultLocale('pt-BR');
           <Title>Confirmar exclusão?</Title>
           <SubtitleComp subtitle={`Você está prestes a excluir a reserva de almoço extra: \n\n Nome: ${deleteNome} \n\n Tem certeza disso?`}/>
           <SpinnerContainer>
-            {loadingAlm_ext &&         
-                <ColorRing
-                  visible={true}
-                  height="60"
-                  width="60"
-                  ariaLabel="blocks-loading"
-                  wrapperStyle={{}}
-                  wrapperClass="blocks-wrapper"
-                  colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-                />  
-            }
-            </SpinnerContainer>
+            {loadingAlm_ext && <LoadingSpinner />}
+          </SpinnerContainer>
             <ButonContainer>
               <ButtonGreen onClick={() => handleDeleteAlm_ext(deleteId!)}>
                 Confirmar

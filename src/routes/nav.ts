@@ -10,7 +10,7 @@ export const NAV_ITEMS = [
     path: ROUTES.manutFuncionarios,
   },
   {
-    label: "Cadastro de Deparatamento",
+    label: "Cadastro de Departamento",
     path: ROUTES.cadastroDepartamento,
   },
   {

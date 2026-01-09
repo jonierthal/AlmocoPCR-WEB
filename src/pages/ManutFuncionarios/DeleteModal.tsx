@@ -1,4 +1,4 @@
-import { ColorRing } from 'react-loader-spinner';
+import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
 import { SubtitleComp } from '../../components/Subtitle';
 import { Title } from '../../components/Title/styles';
 import { SpinnerContainer } from '../Relatorios/styles';
@@ -33,17 +33,7 @@ export function DeleteModal({
         subtitle={`Você está prestes a excluir o funcionário: \n\n Nome: ${deleteNome} \n Código: ${deleteId}\n\n Tem certeza disso?`}
       />
       <SpinnerContainer>
-        {loading && (
-          <ColorRing
-            visible={true}
-            height="60"
-            width="60"
-            ariaLabel="blocks-loading"
-            wrapperStyle={{}}
-            wrapperClass="blocks-wrapper"
-            colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-          />
-        )}
+        {loading && <LoadingSpinner />}
       </SpinnerContainer>
       <ButonContainer>
         <ButtonGreen onClick={onConfirm}>Confirmar</ButtonGreen>

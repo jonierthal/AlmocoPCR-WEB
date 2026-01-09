@@ -16,7 +16,7 @@ import { TableContainer,
          InputFilterContainer} from './styles';
 import { Title } from '../../components/Title/styles';
 import { SubtitleComp } from '../../components/Subtitle';
-import { ColorRing } from  'react-loader-spinner';
+import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
 import { TitleComp } from '../../components/Title';
 import { SpinnerContainer } from '../Relatorios/styles';
 import { deleteDepartamento, fetchDepartamentos, updateDepartamento } from '../../services/departamentos';
@@ -151,17 +151,7 @@ export function ManutDepartamentos() {
       </TextAlertContainer>   
     }
     {loading ? 
-      <TextAlertContainer>    
-        <ColorRing
-          visible={true}
-          height="60"
-          width="60"
-          ariaLabel="blocks-loading"
-          wrapperStyle={{}}
-          wrapperClass="blocks-wrapper"
-          colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-        />  
-      </TextAlertContainer>    
+      <LoadingSpinner />    
       :   
         <Table>
           <thead>
@@ -203,17 +193,7 @@ export function ManutDepartamentos() {
         <Title>Confirmar exclusão?</Title>
         <SubtitleComp subtitle={`Você está prestes a excluir o setor: \n\n Nome: ${deleteNome} \n\n  Tem certeza disso?`}/>
           <SpinnerContainer>
-            {loading &&         
-              <ColorRing
-                visible={true}
-                height="60"
-                width="60"
-                ariaLabel="blocks-loading"
-                wrapperStyle={{}}
-                wrapperClass="blocks-wrapper"
-                colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-              />
-            }
+            {loading && <LoadingSpinner />}
           </SpinnerContainer> 
         <ButonContainer>
           <ButtonGreen onClick={() => handleDelete(deleteId!)}>
@@ -252,17 +232,7 @@ export function ManutDepartamentos() {
         }
         
         <SpinnerContainer>
-            {loading &&         
-              <ColorRing
-                visible={true}
-                height="60"
-                width="60"
-                ariaLabel="blocks-loading"
-                wrapperStyle={{}}
-                wrapperClass="blocks-wrapper"
-                colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-              />
-            }
+            {loading && <LoadingSpinner />}
           </SpinnerContainer> 
         <ButonContainer>
           <ButtonGreen onClick={() => handleEditarCadastro(editNome)}>
