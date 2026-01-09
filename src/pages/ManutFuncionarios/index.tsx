@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
 import { useFuncionarios } from '../../hooks/useFuncionario';
-import { useSetores } from '../../hooks/useSetores';
+import { useDepartamentos } from '../../hooks/useDepartamento';
 import { DeleteModal } from './DeleteModal';
 import { EditModal } from './EditModal';
 import { FuncionarioFilters } from './FuncionarioFilters';
@@ -11,7 +11,7 @@ import { StyledAlert, TextAlertContainer } from './styles';
 
 export function ManutFuncionarios() {
 
-  const { setores } = useSetores();
+  const { departamentos } = useDepartamentos();
   const {
     funcionarios,
     loading,
@@ -25,7 +25,7 @@ export function ManutFuncionarios() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [deleteNome, setDeleteNome] = useState<string>('');
 
-  const [editSetorId, setEditSetorId] = useState<number>(0);
+  const [editDepartamentoId, setEditDepartamentoId] = useState<number>(0);
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -50,10 +50,10 @@ export function ManutFuncionarios() {
     setIsModalOpen(false);
   };
 
-  function openEditModal(id: number, nome: string, setorId: number)  {
+  function openEditModal(id: number, nome: string, departamentoId: number)  {
     setChaveEditId(id);
     setEditNome(nome);
-    setEditSetorId(setorId);
+    setEditDepartamentoId(departamentoId);
     setIsEditModalOpen(true);
   };
 
@@ -112,19 +112,19 @@ export function ManutFuncionarios() {
             chaveEditId,
             editId,
             editNome,
-            editSetorId,
+            editDepartamentoId,
             closeEditModal,
           );
         }}
-        setores={setores}
+        departamentos={departamentos}
         editId={editId}
         editNome={editNome}
-        editSetorId={editSetorId}
+        editDepartamentoId={editDepartamentoId}
         chaveEditId={chaveEditId}
         errorMessageInputModal={errorMessageInputModal}
         onChangeEditId={setEditId}
         onChangeEditNome={setEditNome}
-        onChangeEditSetorId={setEditSetorId}
+        onChangeEditDepartamentoId={setEditDepartamentoId}
       />
     </>
   );

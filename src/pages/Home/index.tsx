@@ -3,7 +3,7 @@ import { SubtitleComp } from "../../components/Subtitle";
 import { TitleComp } from "../../components/Title";
 import { StyledSelect, Fieldset, Input, InputContainer } from "./styles";
 
-import { useSetores } from "../../hooks/useSetores";
+import { useDepartamentos } from "../../hooks/useDepartamento";
 import { useCadastroFuncionario } from "../../hooks/useCadastroFuncionario";
 
 import { FormAlert } from "../../components/Feedback/FormAlert"
@@ -12,7 +12,7 @@ import { FormFieldError } from "../../components/Feedback/FormFieldError";
 import { getFieldErrorMessage } from "../../utils/form";
 
 export function Home(){
-    const { setores } = useSetores();
+    const { departamentos } = useDepartamentos();
     const {
       register,
       handleSubmit,
@@ -52,8 +52,8 @@ export function Home(){
               <InputContainer>
                 <StyledSelect id="departamento" {...register('departamento')} defaultValue="">
                   <option value="" disabled>Selecione um departamento</option>
-                  {setores.map((setor) => (
-                    <option key={setor.id} value={setor.id}>{setor.nome}</option>
+                  {departamentos.map((departamento) => (
+                    <option key={departamento.id} value={departamento.id}>{departamento.nome}</option>
                    ))}
                 </StyledSelect>
                 <FormFieldError message={getFieldErrorMessage(errors, 'departamento')} />

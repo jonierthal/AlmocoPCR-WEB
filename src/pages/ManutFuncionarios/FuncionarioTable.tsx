@@ -14,7 +14,7 @@ type FuncionarioTableProps = {
   funcionarios: Funcionario[];
   filterName: string;
   filterId?: number;
-  onEdit: (id: number, nome: string, setorId: number) => void;
+  onEdit: (id: number, nome: string, departamentoId: number) => void;
   onDelete: (id: number, nome: string) => void;
 };
 
@@ -38,7 +38,7 @@ export function FuncionarioTable({
           <tr>
             <ThMenor>Código</ThMenor>
             <Th>Nome</Th>
-            <Th>Setor</Th>
+            <Th>Departamento</Th>
             <ThMenor>Editar</ThMenor>
             <ThMenor>Excluir</ThMenor>
           </tr>

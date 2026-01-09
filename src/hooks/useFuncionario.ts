@@ -68,7 +68,7 @@ export function useFuncionarios() {
       id: number,
       editId: number,
       editNome: string,
-      editSetorId: number,
+      editDepartamentoId: number,
       onClose: () => void,
     ) => {
       switch (true) {
@@ -82,7 +82,7 @@ export function useFuncionarios() {
                   funcionario: {
                     id: editId,
                     nome: editNome,
-                    setor_id: editSetorId,
+                    setor_id: editDepartamentoId,
                   },
                 })
                   .then(() => {

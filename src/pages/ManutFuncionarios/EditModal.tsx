@@ -17,30 +17,30 @@ type EditModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
-  setores: Departamento[];
+  departamentos: Departamento[];
   editId: number;
   editNome: string;
-  editSetorId: number;
+  editDepartamentoId: number;
   chaveEditId: number;
   errorMessageInputModal: string;
   onChangeEditId: (value: number) => void;
   onChangeEditNome: (value: string) => void;
-  onChangeEditSetorId: (value: number) => void;
+  onChangeEditDepartamentoId: (value: number) => void;
 };
 
 export function EditModal({
   isOpen,
   onClose,
   onSubmit,
-  setores,
+  departamentos,
   editId,
   editNome,
-  editSetorId,
+  editDepartamentoId,
   chaveEditId,
   errorMessageInputModal,
   onChangeEditId,
   onChangeEditNome,
-  onChangeEditSetorId,
+  onChangeEditDepartamentoId,
 }: EditModalProps) {
   return (
     <ContainerModal isOpen={isOpen} onRequestClose={onClose}>
@@ -88,17 +88,17 @@ export function EditModal({
         </InputContainer>
         <InputContainer>
           <StyledSelect
-            id="setor"
-            value={editSetorId || ''}
-            onChange={(e) => onChangeEditSetorId(parseInt(e.target.value))}
+            id="departamento"
+            value={editDepartamentoId || ''}
+            onChange={(e) => onChangeEditDepartamentoId(parseInt(e.target.value))}
             required
           >
-            <option value="" disabled={!editSetorId}>
-              Selecione um setor
+            <option value="" disabled={!editDepartamentoId}>
+              Selecione um departamento
             </option>
-            {setores.map((setor) => (
-              <option key={setor.id} value={setor.id}>
-                {setor.nome}
+            {departamentos.map((departamento) => (
+              <option key={departamento.id} value={departamento.id}>
+                {departamento.nome}
               </option>
             ))}
           </StyledSelect>

@@ -28,7 +28,7 @@ export function ManutDepartamentos() {
     nome: string;
   }
 
-  const [departamento, setDepartamentos] = useState<DepartamentoType[]>([]);
+  const [departamentos, setDepartamentos] = useState<DepartamentoType[]>([]);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [deleteNome, setDeleteNome] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -42,7 +42,7 @@ export function ManutDepartamentos() {
   const [filterName, setFilterName] = useState('');
   const [filterId, setFilterId] = useState<number>();
 
-  // Função para carregar os setores
+  // Função para carregar os departamentos
   async function carregaDadosTabela() {
     setLoading(true);
 
@@ -50,7 +50,7 @@ export function ManutDepartamentos() {
         const dados = await fetchDepartamentos();
         setDepartamentos(dados);
     } catch (error) {
-        setErrorMessage("Ocorreu um erro ao listar os departatamentos!")
+        setErrorMessage("Ocorreu um erro ao listar os departamentos!")
     } finally {
         setLoading(false)
     }
@@ -60,20 +60,20 @@ export function ManutDepartamentos() {
     carregaDadosTabela();
   }, []);
 
-  // Função de excluir setor
+  // Função de excluir departamento
   async function handleDelete(id: number)  {
     setLoading(true);
     await deleteDepartamento(id)
       .then(response => {
         carregaDadosTabela();
-        setSuccessMessage('Setor excluído com sucesso!');
+        setSuccessMessage('Departamento excluído com sucesso!');
         setTimeout(() => {
           setSuccessMessage('');
         }, 4000);
       })
       .catch(error => {
         console.error(error);
-        setErrorMessage('Ocorreu um erro ao excluir o setor. Contate o Administrador!');
+        setErrorMessage('Ocorreu um erro ao excluir o departamento. Contate o Administrador!');
         setTimeout(() => {
           setErrorMessage('');
         }, 4000);
@@ -111,7 +111,7 @@ export function ManutDepartamentos() {
     setIsEditModalOpen(false);
   }
 
-  // Função para editar setor
+  // Função para editar departamento
   async function handleEditarCadastro(editNome: string){
     if (editId == null) return;
 
@@ -125,7 +125,7 @@ export function ManutDepartamentos() {
       }, 4000);
     })
     .catch ((err) => {
-      setErrorMessage('Não foi possível editar o setor, contate o administrador!');
+      setErrorMessage('Não foi possível editar o departamento, contate o administrador!');
       setTimeout(() => {
         setErrorMessage('');
       }, 4000);
@@ -162,19 +162,19 @@ export function ManutDepartamentos() {
             </tr>
           </thead>
           <tbody>
-            {departamento.filter((setor) =>
-              setor.nome.toLowerCase().startsWith(filterName.toLowerCase()) &&
-              (!filterId || setor.id === filterId))
-              .map(setor => (
-              <tr key={setor.id}>
-                <Td>{setor.nome}</Td>
+            {departamentos.filter((departamento) =>
+              departamento.nome.toLowerCase().startsWith(filterName.toLowerCase()) &&
+              (!filterId || departamento.id === filterId))
+              .map(departamento => (
+              <tr key={departamento.id}>
+                <Td>{departamento.nome}</Td>
                 <Td>
-                  <ButtonGreen onClick={() => openEditModal(setor.id, setor.nome)}>
+                  <ButtonGreen onClick={() => openEditModal(departamento.id, departamento.nome)}>
                     <Icon className="fas fa-edit" />
                   </ButtonGreen>
                 </Td>
                 <Td>
-                  <ButtonRed onClick={() => openModal(setor.id, setor.nome)}>
+                  <ButtonRed onClick={() => openModal(departamento.id, departamento.nome)}>
                     <Icon className="fas fa-trash-alt" />
                   </ButtonRed>
                 </Td>
@@ -191,7 +191,7 @@ export function ManutDepartamentos() {
         contentLabel="Confirmar exclusão"
       >
         <Title>Confirmar exclusão?</Title>
-        <SubtitleComp subtitle={`Você está prestes a excluir o setor: \n\n Nome: ${deleteNome} \n\n  Tem certeza disso?`}/>
+        <SubtitleComp subtitle={`Você está prestes a excluir o departamento: \n\n Nome: ${deleteNome} \n\n  Tem certeza disso?`}/>
           <SpinnerContainer>
             {loading && <LoadingSpinner />}
           </SpinnerContainer> 
@@ -207,14 +207,14 @@ export function ManutDepartamentos() {
         </ButonContainer>
       </ContainerModal>
 
-      {/* Modal Editar Setor */}
+      {/* Modal Editar Departamento */}
       <ContainerModal
         isOpen={isEditModalOpen}
         onRequestClose={closeEditModal}
-        contentLabel="Editar Setor"
+        contentLabel="Editar Departamento"
       >
-        <Title>Editar Setor</Title>
-        <SubtitleComp subtitle={`Código do Setor: ${editId}`} />
+        <Title>Editar Departamento</Title>
+        <SubtitleComp subtitle={`Código do Departamento: ${editId}`} />
         
         <InputContainer>
           <Input
@@ -222,7 +222,7 @@ export function ManutDepartamentos() {
             onChange={(e) => setEditNome(e.target.value)}
             type="text"
             id="editNome"
-            placeholder="Nome do Setor"
+            placeholder="Nome do Departamento"
           />
         </InputContainer>
         {errorMessageInputModal && 

@@ -46,14 +46,14 @@ export function CadastroDepartamento(){
             });
             
             if (response.status == 200) {
-                setSuccessMessage('Setor cadastrado com sucesso!')
+                setSuccessMessage('Departamento cadastrado com sucesso!')
                     setTimeout(() => {
                         setSuccessMessage('');
                     }, 4000);
                 reset();        
             }
         } catch (error: any) {
-            setErrorMessage(error.response?.data?.message || 'Ocorreu um erro ao cadastrar o setor');
+            setErrorMessage(error.response?.data?.message || 'Ocorreu um erro ao cadastrar o departamento');
             setTimeout(() => {
                 setErrorMessage('');
             }, 4000)
