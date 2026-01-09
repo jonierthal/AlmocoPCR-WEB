@@ -5,7 +5,7 @@ import {
   NavLinkButton,
 } from "./styles";
 import Logo from "../../assets/LogoPCR.png";
-import { NAV_ITEMS } from "../../routes/paths";
+import { NAV_ITEMS } from "../../routes/nav";
 
 export function Header() {
   return (
