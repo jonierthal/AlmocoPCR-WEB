@@ -35,11 +35,7 @@ export function useCadastroFuncionario() {
       try {
         setLoading(true);
 
-        const response = await createFuncionario({
-          codFuncionario: data.codigo,
-          nameFuncionario: data.nome,
-          departamentos: data.departamento,
-        });
+        const response = await createFuncionario(data);
 
         if (response.status === 200) {
           setSuccessMessage("Funcionário cadastrado com sucesso!");

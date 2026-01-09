@@ -3,21 +3,23 @@ import { API_ENDPOINTS } from '../../../services/endpoints';
 import { Funcionario } from '../types/funcionario';
 
 export interface CreateFuncionarioPayload {
-  codFuncionario: number;
-  nameFuncionario: string;
-  departamentos: number;
+  codigo: number;
+  nome: string;
+  departamento: number;
 }
 
 export interface UpdateFuncionarioPayload {
-  funcionario: {
-    id: number;
-    nome: string;
-    setor_id: number;
-  };
+  codigo: number;
+  nome: string;
+  departamento: number;
 }
 
 export async function createFuncionario(payload: CreateFuncionarioPayload) {
-  return api.post(API_ENDPOINTS.funcionarios.create, payload);
+  return api.post(API_ENDPOINTS.funcionarios.create, {
+    codFuncionario: payload.codigo,
+    nameFuncionario: payload.nome,
+    departamentos: payload.departamento,
+  });
 }
 
 export async function fetchFuncionarios() {
@@ -38,8 +40,17 @@ export async function verifyFuncionarioId(id: number) {
   return response.data;
 }
 
-export async function updateFuncionario(id: number, payload: UpdateFuncionarioPayload) {
-  return api.put(API_ENDPOINTS.funcionarios.update(id), payload, {
+export async function updateFuncionario(
+  id: number,
+  payload: UpdateFuncionarioPayload,
+) {
+  return api.put(API_ENDPOINTS.funcionarios.update(id), {
+    funcionario: {
+      id: payload.codigo,
+      nome: payload.nome,
+      setor_id: payload.departamento,
+    },
+  }, {
     headers: {
       'Content-Type': 'application/json',
     },

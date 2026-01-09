@@ -79,11 +79,9 @@ export function useFuncionarios() {
                 setLoading(true);
 
                 await updateFuncionario(id, {
-                  funcionario: {
-                    id: editId,
-                    nome: editNome,
-                    setor_id: editDepartamentoId,
-                  },
+                  codigo: editId,
+                  nome: editNome,
+                  departamento: editDepartamentoId,
                 })
                   .then(() => {
                     setSuccessMessage("Funcionário editado com sucesso!");
