@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
 import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
 import { useFuncionarios } from '../../hooks/useFuncionario';
+import { useFuncionarioFilters } from '../../hooks/useFuncionarioFilters';
+import { useFuncionarioModals } from '../../hooks/useFuncionarioModals';
 import { useDepartamentos } from '../../hooks/useDepartamento';
 import { DeleteModal } from './DeleteModal';
 import { EditModal } from './EditModal';
 import { FuncionarioFilters } from './FuncionarioFilters';
 import { FuncionarioTable } from './FuncionarioTable';
 import { StyledAlert, TextAlertContainer } from './styles';
-
 
 export function ManutFuncionarios() {
 
@@ -22,52 +22,29 @@ export function ManutFuncionarios() {
     handleEditarCadastro,
   } = useFuncionarios();
 
-  const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [deleteNome, setDeleteNome] = useState<string>('');
+  const {
+    deleteId,
+    deleteNome,
+    isDeleteModalOpen,
+    openDeleteModal,
+    closeDeleteModal,
+    editId,
+    editNome,
+    editDepartamentoId,
+    chaveEditId,
+    isEditModalOpen,
+    openEditModal,
+    closeEditModal,
+    setEditId,
+    setEditNome,
+    setEditDepartamentoId,
+  } = useFuncionarioModals();
 
-  const [editDepartamentoId, setEditDepartamentoId] = useState<number>(0);
-
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  const[editId,setEditId] = useState<number>(0);
-  const[editNome,setEditNome] = useState<string>('');
-  const[chaveEditId,setChaveEditId] = useState<number>(0);
-  
-  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-
-  const [filterName, setFilterName] = useState('');
-  const [filterId, setFilterId] = useState<number>();
-
-  function openModal(id: number, nome: string)  {
-    setDeleteId(id);
-    setDeleteNome(nome);
-    setIsModalOpen(true);
-  };
-
-  function closeModal() {
-    setDeleteId(null);
-    setDeleteNome('');
-    setIsModalOpen(false);
-  };
-
-  function openEditModal(id: number, nome: string, departamentoId: number)  {
-    setChaveEditId(id);
-    setEditNome(nome);
-    setEditDepartamentoId(departamentoId);
-    setIsEditModalOpen(true);
-  };
-
-  function closeEditModal(){
-    setIsEditModalOpen(false)
-  }
-
-  useEffect(() => {
-    setEditId(chaveEditId)
-    }, [chaveEditId]);
+  const { filterName, filterId, onChangeFilterName, onChangeFilterId } = useFuncionarioFilters();
 
   return (
     <>
-    {errorMessage && (
+      {errorMessage && (
         <TextAlertContainer>
           <StyledAlert variant="danger">{errorMessage}</StyledAlert>
         </TextAlertContainer>
@@ -80,8 +57,8 @@ export function ManutFuncionarios() {
       <FuncionarioFilters
         filterName={filterName}
         filterId={filterId}
-        onChangeFilterName={setFilterName}
-        onChangeFilterId={setFilterId}
+        onChangeFilterName={onChangeFilterName}
+        onChangeFilterId={onChangeFilterId}
       />
       {loading ? (
         <LoadingSpinner />
@@ -91,17 +68,17 @@ export function ManutFuncionarios() {
           filterName={filterName}
           filterId={filterId}
           onEdit={openEditModal}
-          onDelete={openModal}
+          onDelete={openDeleteModal}
         />
       )}
 
       <DeleteModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
         deleteNome={deleteNome}
         deleteId={deleteId}
         loading={loading}
-        onConfirm={() => handleDelete(deleteId!, closeModal)}
+        onConfirm={() => handleDelete(deleteId!, closeDeleteModal)}
       />
       <EditModal
         isOpen={isEditModalOpen}
