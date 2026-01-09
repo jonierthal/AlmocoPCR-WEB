@@ -1,14 +1,16 @@
-import { Button } from "../../components/Button";
-import { SubtitleComp } from "../../components/Subtitle";
-import { TitleComp } from "../../components/Title";
+import {
+  Button,
+  FormAlert,
+  FormFieldError,
+  LoadingSpinner,
+  SubtitleComp,
+  TitleComp,
+} from "../../components";
 import { StyledSelect, Fieldset, Input, InputContainer } from "./styles";
 
-import { useDepartamentos } from "../../hooks/useDepartamento";
+import { useDepartamentos } from "../../hooks";
 import { useCadastroFuncionario } from "../../features/funcionarios/hooks/useCadastroFuncionario";
 
-import { FormAlert } from "../../components/Feedback/FormAlert"
-import { LoadingSpinner } from "../../components/Feedback/LoadingSpinner";
-import { FormFieldError } from "../../components/Feedback/FormFieldError";
 import { getFieldErrorMessage } from "../../utils/form";
 
 export function Home(){

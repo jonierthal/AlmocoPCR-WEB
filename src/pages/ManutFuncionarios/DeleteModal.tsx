@@ -1,5 +1,4 @@
-import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
-import { SubtitleComp } from '../../components/Subtitle';
+import { LoadingSpinner, SubtitleComp } from '../../components';
 import { Title } from '../../components/Title/styles';
 import { SpinnerContainer } from '../Relatorios/styles';
 import {

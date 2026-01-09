@@ -1,4 +1,4 @@
-import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
+import { LoadingSpinner } from '../../components';
 import {
   ButtonRed,
   Icon,

@@ -1,7 +1,12 @@
 import { Fieldset, Input, InputContainer } from './styles';
-import { TitleComp } from '../../components/Title';
-import { SubtitleComp } from '../../components/Subtitle';
-import { Button } from '../../components/Button';
+import {
+  Button,
+  FormAlert,
+  FormFieldError,
+  LoadingSpinner,
+  SubtitleComp,
+  TitleComp,
+} from '../../components';
 
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -9,11 +14,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react';
 
-import { FormAlert } from '../../components/Feedback/FormAlert';
-import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
-import { FormFieldError } from '../../components/Feedback/FormFieldError';
 import { getFieldErrorMessage } from '../../utils/form';
-import { createDepartamento } from '../../features/departamentos/services/departamentos';
+import { createDepartamento } from '../../services';
 
 interface NewValidationFormData {
     nome: string;

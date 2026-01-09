@@ -16,13 +16,12 @@ import { ButonContainer, ButtonGreen, ContainerModal, StyledAlert, TextAlertCont
 import axios from 'axios' ;
 import { BiMoveHorizontal } from 'react-icons/bi';
 import { useEffect, useState } from "react";
-import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
+import { LoadingSpinner, SubtitleComp } from '../../components';
 import moment from 'moment';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
 import ptBR from 'date-fns/locale/pt-BR';
 import { api } from "../../lib/axios";
 import { Title } from "../../components/Title/styles";
-import { SubtitleComp } from "../../components/Subtitle";
 import {
   EMAIL_DESTINATARIO_PADRAO,
   HORARIO_ENVIO_AUTOMATICO_HORA,

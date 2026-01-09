@@ -15,11 +15,13 @@ import { TableContainer,
          InputContainer, 
          InputFilterContainer} from './styles';
 import { Title } from '../../components/Title/styles';
-import { SubtitleComp } from '../../components/Subtitle';
-import { LoadingSpinner } from '../../components/Feedback/LoadingSpinner';
-import { TitleComp } from '../../components/Title';
+import { LoadingSpinner, SubtitleComp, TitleComp } from '../../components';
 import { SpinnerContainer } from '../Relatorios/styles';
-import { deleteDepartamento, fetchDepartamentos, updateDepartamento } from '../../features/departamentos/services/departamentos';
+import {
+  deleteDepartamento,
+  fetchDepartamentos,
+  updateDepartamento,
+} from '../../services';
 
 export function ManutDepartamentos() {
 

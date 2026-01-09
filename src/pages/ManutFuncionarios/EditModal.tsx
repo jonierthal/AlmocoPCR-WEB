@@ -1,5 +1,4 @@
-import { SubtitleComp } from '../../components/Subtitle';
-import { TitleComp } from '../../components/Title';
+import { SubtitleComp, TitleComp } from '../../components';
 import { Departamento } from '../../features/departamentos/types/departamento';
 import {
   ButtonGreen,
