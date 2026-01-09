@@ -1,11 +1,11 @@
 import { Routes, Route } from "react-router-dom";
-import { DefaultLayout } from "./layouts/DefaultLayout";
-import { Home } from "./pages/Home";
-import { ManutFuncionarios } from "./pages/ManutFuncionarios";
-import { Relatorios } from "./pages/Relatorios";
-import { CadastroDepartamento } from "./pages/CadastroDepartamento";
-import { ManutDepartamentos } from "./pages/ManutDepartamentos";
-import { ROUTES } from "./routes/paths";
+import { DefaultLayout } from "../layouts/DefaultLayout";
+import { Home } from "../pages/Home";
+import { ManutFuncionarios } from "../pages/ManutFuncionarios";
+import { Relatorios } from "../pages/Relatorios";
+import { CadastroDepartamento } from "../pages/CadastroDepartamento";
+import { ManutDepartamentos } from "../pages/ManutDepartamentos";
+import { ROUTES } from "./paths";
 
 
 export function Router() {
