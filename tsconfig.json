@@ -17,8 +17,13 @@
     "baseUrl": ".",
     "paths": {
       "@components": ["src/components/index.ts"],
+      "@components/*": ["src/components/*"],
       "@features/*": ["src/features/*"],
-      "@components/*": ["src/components/*"]
+      "@assets/*": ["src/assets/*"],
+      "@lib/*": ["src/lib/*"],
+      "@routes/*": ["src/routes/*"],
+      "@styles/*": ["src/styles/*"],
+      "@utils/*": ["src/utils/*"]
     },
     "jsx": "react-jsx"
   },

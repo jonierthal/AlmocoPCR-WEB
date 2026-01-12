@@ -4,8 +4,8 @@ import {
   ButtonContainer,
   NavLinkButton,
 } from "./styles";
-import Logo from "../../assets/LogoPCR.png";
-import { NAV_ITEMS } from "../../routes/navigation";
+import Logo from "@assets/LogoPCR.png";
+import { NAV_ITEMS } from "@routes/navigation";
 
 export function Header() {
   return (
