@@ -1,4 +1,4 @@
-import { SubtitleComp, TitleComp } from '../../../../components';
+import { Subtitle, Title } from '../../../../components';
 import { Departamento } from '../../../departamentos/types/departamento';
 import {
   ButtonGreen,
@@ -43,8 +43,8 @@ export function EditModal({
 }: EditModalProps) {
   return (
     <ContainerModal isOpen={isOpen} onRequestClose={onClose}>
-      <TitleComp title="Editar funcionário" />
-      <SubtitleComp subtitle="Preencha as informações" />
+      <Title title="Editar funcionário" />
+      <Subtitle subtitle="Preencha as informações" />
       <form onSubmit={onSubmit}>
         <InputContainer>
           <Input

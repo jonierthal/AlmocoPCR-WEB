@@ -14,8 +14,8 @@ import { TableContainer,
          Input, 
          InputContainer, 
          InputFilterContainer} from './styles';
-import { Title } from '../../../../components/Title/styles';
-import { LoadingSpinner, SubtitleComp, TitleComp } from '../../../../components';
+import { TitleComp} from '../../../../components/Title/styles';
+import { LoadingSpinner, Subtitle } from '../../../../components';
 import { SpinnerContainer } from '../../../relatorios/pages/Relatorios/styles';
 import {
   deleteDepartamento,
@@ -192,8 +192,8 @@ export function ManutDepartamentos() {
         onRequestClose={closeModal}
         contentLabel="Confirmar exclusão"
       >
-        <Title>Confirmar exclusão?</Title>
-        <SubtitleComp subtitle={`Você está prestes a excluir o departamento: \n\n Nome: ${deleteNome} \n\n  Tem certeza disso?`}/>
+        <TitleComp>Confirmar exclusão?</TitleComp>
+        <Subtitle subtitle={`Você está prestes a excluir o departamento: \n\n Nome: ${deleteNome} \n\n  Tem certeza disso?`}/>
           <SpinnerContainer>
             {loading && <LoadingSpinner />}
           </SpinnerContainer> 
@@ -215,8 +215,8 @@ export function ManutDepartamentos() {
         onRequestClose={closeEditModal}
         contentLabel="Editar Departamento"
       >
-        <Title>Editar Departamento</Title>
-        <SubtitleComp subtitle={`Código do Departamento: ${editId}`} />
+        <TitleComp>Editar Departamento</TitleComp>
+        <Subtitle subtitle={`Código do Departamento: ${editId}`} />
         
         <InputContainer>
           <Input

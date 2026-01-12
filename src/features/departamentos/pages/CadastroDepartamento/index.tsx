@@ -4,8 +4,8 @@ import {
   FormAlert,
   FormFieldError,
   LoadingSpinner,
-  SubtitleComp,
-  TitleComp,
+  Subtitle,
+  Title,
 } from '../../../../components';
 
 import * as Yup from 'yup';
@@ -69,8 +69,8 @@ export function CadastroDepartamento(){
         <>
             <Fieldset>
                 
-                <TitleComp title='Cadastro de Departamento' />  
-                <SubtitleComp subtitle='Preencha as informações' />
+                <Title title='Cadastro de Departamento' />  
+                <Subtitle subtitle='Preencha as informações' />
 
                 <form onSubmit={handleSubmit(handleSubmitForm)} action="">
                     <InputContainer>

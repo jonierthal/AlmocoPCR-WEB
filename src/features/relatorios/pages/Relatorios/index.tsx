@@ -22,12 +22,12 @@ import {
 import axios from 'axios' ;
 import { BiMoveHorizontal } from 'react-icons/bi';
 import { useEffect, useState } from "react";
-import { LoadingSpinner, SubtitleComp } from '../../../../components';
+import { LoadingSpinner, Subtitle } from '../../../../components';
 import moment from 'moment';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
 import ptBR from 'date-fns/locale/pt-BR';
 import { api } from "../../../../lib/axios";
-import { Title } from "../../../../components/Title/styles";
+import { TitleComp } from "../../../../components/Title/styles";
 import {
   EMAIL_DESTINATARIO_PADRAO,
   HORARIO_ENVIO_AUTOMATICO_HORA,
@@ -619,8 +619,8 @@ setDefaultLocale('pt-BR');
           onRequestClose={closeModal}
           contentLabel="Confirmar exclusão"
         >
-          <Title>Confirmar exclusão?</Title>
-          <SubtitleComp subtitle={`Você está prestes a excluir a reserva de Almoço: \n\n Nome: ${deleteNome} \n\nTem certeza disso?`}/>
+          <TitleComp>Confirmar exclusão?</TitleComp>
+          <Subtitle subtitle={`Você está prestes a excluir a reserva de Almoço: \n\n Nome: ${deleteNome} \n\nTem certeza disso?`}/>
             <SpinnerContainer>
               {loadingAlmoco && <LoadingSpinner />}
             </SpinnerContainer>
@@ -641,8 +641,8 @@ setDefaultLocale('pt-BR');
             onRequestClose={closeModal}
             contentLabel="Confirmar exclusão"
           >
-          <Title>Confirmar exclusão?</Title>
-          <SubtitleComp subtitle={`Você está prestes a excluir a reserva de Xis: \n\n Nome: ${deleteNome} \n\n Tem certeza disso?`}/>
+          <TitleComp>Confirmar exclusão?</TitleComp>
+          <Subtitle subtitle={`Você está prestes a excluir a reserva de Xis: \n\n Nome: ${deleteNome} \n\n Tem certeza disso?`}/>
           <SpinnerContainer>
             {loadingXis && <LoadingSpinner />}
           </SpinnerContainer>
@@ -663,8 +663,8 @@ setDefaultLocale('pt-BR');
             onRequestClose={closeModal}
             contentLabel="Confirmar exclusão"
           >
-          <Title>Confirmar exclusão?</Title>
-          <SubtitleComp subtitle={`Você está prestes a excluir a reserva de almoço extra: \n\n Nome: ${deleteNome} \n\n Tem certeza disso?`}/>
+          <TitleComp>Confirmar exclusão?</TitleComp>
+          <Subtitle subtitle={`Você está prestes a excluir a reserva de almoço extra: \n\n Nome: ${deleteNome} \n\n Tem certeza disso?`}/>
           <SpinnerContainer>
             {loadingAlm_ext && <LoadingSpinner />}
           </SpinnerContainer>

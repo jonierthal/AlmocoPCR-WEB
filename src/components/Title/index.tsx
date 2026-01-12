@@ -1,15 +1,15 @@
-import { TitleContainer, Title } from "./styles";
+import { TitleContainer, TitleComp} from "./styles";
 
 interface TitleProps {
     title: string;
 }
 
-export function TitleComp({ title} : TitleProps) {
+export function Title({ title} : TitleProps) {
     return (
         <TitleContainer>
-            <Title >
+            <TitleComp>
                 {title}
-            </Title>
+            </TitleComp>
         </TitleContainer>
     );
 }

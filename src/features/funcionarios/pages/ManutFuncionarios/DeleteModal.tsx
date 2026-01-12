@@ -1,5 +1,5 @@
-import { LoadingSpinner, SubtitleComp } from '../../../../components';
-import { Title } from '../../../../components/Title/styles';
+import { LoadingSpinner, Subtitle } from '../../../../components';
+import { TitleComp } from '../../../../components/Title/styles';
 import { SpinnerContainer } from '../../../relatorios/pages/Relatorios/styles';
 import {
   ButtonGreen,
@@ -27,8 +27,8 @@ export function DeleteModal({
 }: DeleteModalProps) {
   return (
     <ContainerModal isOpen={isOpen} onRequestClose={onClose} contentLabel="Confirmar exclusão">
-      <Title>Confirmar exclusão?</Title>
-      <SubtitleComp
+      <TitleComp>Confirmar exclusão?</TitleComp>
+      <Subtitle
         subtitle={`Você está prestes a excluir o funcionário: \n\n Nome: ${deleteNome} \n Código: ${deleteId}\n\n Tem certeza disso?`}
       />
       <SpinnerContainer>

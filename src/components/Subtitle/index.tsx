@@ -4,7 +4,7 @@ interface SubtitleProps {
     subtitle: string;
 }
 
-export function SubtitleComp({ subtitle} : SubtitleProps) {
+export function Subtitle({ subtitle} : SubtitleProps) {    
     return (
         <TitleContainer>
             <Title >

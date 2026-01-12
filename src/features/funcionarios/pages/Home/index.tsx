@@ -3,8 +3,8 @@ import {
   FormAlert,
   FormFieldError,
   LoadingSpinner,
-  SubtitleComp,
-  TitleComp,
+  Subtitle,
+  Title,
 } from "../../../../components";
 import { StyledSelect, Fieldset, Input, InputContainer } from "./styles";
 
@@ -28,9 +28,9 @@ export function Home(){
       return (
         <>
           <Fieldset>
-            <TitleComp title="Cadastro de funcionários" />
+            <Title title="Cadastro de funcionários" />
     
-            <SubtitleComp subtitle="Preencha as informações" />
+            <Subtitle subtitle="Preencha as informações" />
     
             <form onSubmit={handleSubmit(submitCadastro)} action="">
               <InputContainer>

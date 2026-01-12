@@ -8,7 +8,7 @@ export const TitleContainer = styled.div`
     margin-top: 1rem;
 `;
 
-export const Title = styled.h1`
+export const TitleComp = styled.h1`
     font-size: 1.5em;
     font-family: Arial;
     color: #0476AC;
