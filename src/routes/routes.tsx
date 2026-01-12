@@ -1,6 +1,6 @@
-import { CadastroDepartamento, ManutDepartamentos } from "../features/departamentos";
-import { Home, ManutFuncionarios } from "../features/funcionarios";
-import { Relatorios } from "../features/relatorios/pages/Relatorios";
+import { CadastroDepartamento, ManutDepartamentos } from "@features/departamentos";
+import { Home, ManutFuncionarios } from "@features/funcionarios";
+import { Relatorios } from "@features/relatorios";
 export const ROUTES = [
   {
     key: "home",
