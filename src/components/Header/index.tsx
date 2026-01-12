@@ -5,16 +5,16 @@ import {
   NavLinkButton,
 } from "./styles";
 import Logo from "../../assets/LogoPCR.png";
-import { NAV_ITEMS } from "../../routes/nav";
+import { NAV_ITEMS } from "../../routes/navigation";
 
 export function Header() {
   return (
     <>
-        <LogoContainer>
-          <LogoImg src={Logo} alt="Imagem PNG" />
-        </LogoContainer>
+      <LogoContainer>
+        <LogoImg src={Logo} alt="Imagem PNG" />
+      </LogoContainer>
 
-        <ButtonContainer>
+      <ButtonContainer>
         {NAV_ITEMS.map((item) => (
           <NavLinkButton key={item.path} to={item.path} title={item.label}>
             <h5>{item.label}</h5>
@@ -22,6 +22,5 @@ export function Header() {
         ))}
       </ButtonContainer>
     </>
-
   );
 }

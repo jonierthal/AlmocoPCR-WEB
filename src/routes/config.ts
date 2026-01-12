@@ -1,42 +1,34 @@
+import { createElement } from "react";
 import { CadastroDepartamento, ManutDepartamentos } from "@features/departamentos";
 import { Home, ManutFuncionarios } from "@features/funcionarios";
 import { Relatorios } from "@features/relatorios";
-export const ROUTES = [
+
+export const ROUTE_CONFIG = [
   {
     key: "home",
-    label: "Cadastro de funcionários",
     path: "/",
-    element: <Home />,
-  },
+    element: createElement(Home),  },
   {
     key: "manutFuncionarios",
-    label: "Manutenção de funcionários",
     path: "/manutencao-funcionarios",
-    element: <ManutFuncionarios />,
-  },
+    element: createElement(ManutFuncionarios),  },
   {
     key: "cadastroDepartamento",
-    label: "Cadastro de Departamento",
     path: "/cadastro-departamento",
-    element: <CadastroDepartamento />,
-  },
+    element: createElement(CadastroDepartamento),  },
   {
     key: "manutDepartamentos",
-    label: "Manutenção de Departamento",
     path: "/manutencao-departamentos",
-    element: <ManutDepartamentos />,
-  },
+    element: createElement(ManutDepartamentos),  },
   {
     key: "relatorios",
-    label: "Relatórios",
     path: "/relatorios",
-    element: <Relatorios />,
-  },
+    element: createElement(Relatorios),
+    },
 ] as const satisfies ReadonlyArray<{
   key: string;
-  label: string;
   path: string;
   element: JSX.Element;
 }>;
 
-export type RouteKey = (typeof ROUTES)[number]["key"];
+export type RouteKey = (typeof ROUTE_CONFIG)[number]["key"];
