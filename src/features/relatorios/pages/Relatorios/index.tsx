@@ -15,10 +15,9 @@ import {
 import {
   ButonContainer,
   ButtonGreen,
-  ContainerModal,
-  StyledAlert,
   TextAlertContainer,
 } from "@features/funcionarios/pages/ManutFuncionarios/styles";
+import { ContainerModal, StyledAlert } from "../../../../styles/shared/modal";
 import axios from 'axios' ;
 import { BiMoveHorizontal } from 'react-icons/bi';
 import { useEffect, useState } from "react";

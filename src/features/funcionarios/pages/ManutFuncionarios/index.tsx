@@ -9,7 +9,8 @@ import { DeleteModal } from './DeleteModal';
 import { EditModal } from './EditModal';
 import { FuncionarioFilters } from './FuncionarioFilters';
 import { FuncionarioTable } from './FuncionarioTable';
-import { StyledAlert, TextAlertContainer } from './styles';
+import { TextAlertContainer } from './styles';
+import { StyledAlert } from '../../../../styles/shared/modal';
 
 export function ManutFuncionarios() {
 

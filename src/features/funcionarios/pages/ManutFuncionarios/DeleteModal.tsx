@@ -5,8 +5,8 @@ import {
   ButtonGreen,
   ButtonRed,
   ButonContainer,
-  ContainerModal,
 } from './styles';
+import { ContainerModal } from '../../../../styles/shared/modal';
 
 type DeleteModalProps = {
   isOpen: boolean;

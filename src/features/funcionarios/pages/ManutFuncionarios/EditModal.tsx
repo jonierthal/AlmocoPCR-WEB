@@ -4,13 +4,12 @@ import {
   ButtonGreen,
   ButtonRed,
   ButonContainer,
-  ContainerModal,
   Input,
   InputContainer,
-  StyledAlert,
   StyledSelect,
   TextAlertContainer,
 } from './styles';
+import { ContainerModal, StyledAlert } from '../../../../styles/shared/modal';
 
 type EditModalProps = {
   isOpen: boolean;
