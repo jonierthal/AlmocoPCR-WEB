@@ -1,5 +1,5 @@
-import { Subtitle, Title } from '../../../../components';
-import { Departamento } from '../../../departamentos/types/departamento';
+import { Subtitle, Title } from '@components';
+import { Departamento } from '@features/departamentos/types/departamento';
 import {
   ButtonGreen,
   ButtonRed,

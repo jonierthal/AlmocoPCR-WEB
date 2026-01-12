@@ -1,10 +1,10 @@
-import { LoadingSpinner } from '../../../../components';
+import { LoadingSpinner } from '@components';
 import {
   useFuncionarioFilters,
   useFuncionarioModals,
   useFuncionarios,
 } from '../../hooks';
-import { useDepartamentos } from '../../../departamentos';
+import { useDepartamentos } from '@features/departamentos';
 import { DeleteModal } from './DeleteModal';
 import { EditModal } from './EditModal';
 import { FuncionarioFilters } from './FuncionarioFilters';

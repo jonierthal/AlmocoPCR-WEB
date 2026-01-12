@@ -5,10 +5,10 @@ import {
   LoadingSpinner,
   Subtitle,
   Title,
-} from "../../../../components";
+} from "@components";
 import { StyledSelect, Fieldset, Input, InputContainer } from "./styles";
 
-import { useDepartamentos } from "../../../departamentos";
+import { useDepartamentos } from "@features/departamentos";
 import { useCadastroFuncionario } from "../../hooks";
 
 import { getFieldErrorMessage } from "../../../../utils/form";

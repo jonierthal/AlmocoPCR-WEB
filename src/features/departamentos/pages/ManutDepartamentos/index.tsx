@@ -14,14 +14,14 @@ import { TableContainer,
          Input, 
          InputContainer, 
          InputFilterContainer} from './styles';
-import { TitleComp} from '../../../../components/Title/styles';
-import { LoadingSpinner, Subtitle } from '../../../../components';
-import { SpinnerContainer } from '../../../relatorios/pages/Relatorios/styles';
+import { TitleComp} from '@components/Title/styles';
+import { LoadingSpinner, Subtitle } from '@components';
+import { SpinnerContainer } from '@features/relatorios/pages/Relatorios/styles';
 import {
   deleteDepartamento,
   fetchDepartamentos,
   updateDepartamento,
-} from '../../../../services';
+} from '@services';
 
 export function ManutDepartamentos() {
 

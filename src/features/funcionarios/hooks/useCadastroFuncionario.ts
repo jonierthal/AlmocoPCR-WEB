@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { createFuncionario } from "../../../services";
+import { createFuncionario } from "@services";
 import { novoValidacaoFormularioSchema } from "../validation/cadastroFuncionarioSchema";
 
 export interface NewValidationFormData {

@@ -18,16 +18,16 @@ import {
   ContainerModal,
   StyledAlert,
   TextAlertContainer,
-} from "../../../funcionarios/pages/ManutFuncionarios/styles";
+} from "@features/funcionarios/pages/ManutFuncionarios/styles";
 import axios from 'axios' ;
 import { BiMoveHorizontal } from 'react-icons/bi';
 import { useEffect, useState } from "react";
-import { LoadingSpinner, Subtitle } from '../../../../components';
+import { LoadingSpinner, Subtitle } from '@components';
 import moment from 'moment';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
 import ptBR from 'date-fns/locale/pt-BR';
 import { api } from "../../../../lib/axios";
-import { TitleComp } from "../../../../components/Title/styles";
+import { TitleComp } from "@components/Title/styles";
 import {
   EMAIL_DESTINATARIO_PADRAO,
   HORARIO_ENVIO_AUTOMATICO_HORA,

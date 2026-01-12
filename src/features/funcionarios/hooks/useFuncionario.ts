@@ -5,7 +5,7 @@ import {
   fetchFuncionarios,
   updateFuncionario,
   verifyFuncionarioId,
-} from "../services/funcionario";
+} from "@features/funcionarios/services/funcionario";
 import { Funcionario } from "../types/funcionario";
 
 export function useFuncionarios() {

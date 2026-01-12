@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { fetchDepartamentos } from "../services/departamentos";
+import { fetchDepartamentos } from "@features/departamentos/services/departamentos";
 import { Departamento } from "../types/departamento";
 
 export function useDepartamentos() {
