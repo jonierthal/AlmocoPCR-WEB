@@ -6,11 +6,18 @@ atualizar e excluir dados. A navegação principal fica no cabeçalho e organiza
 módulos de cadastro, manutenção e relatórios.
 
 # Pré-requisitos e execução
-- Node.js 20 (use `nvm use` se já estiver configurado).
+- Node.js 20+ (use `nvm use` se já estiver configurado).
 - Dependências: `npm install`.
 - Desenvolvimento: `npm run dev` (servidor Vite).
+
+## Scripts principais
 - Build de produção: `npm run build` (gera `dist/`).
 - Pré-visualização do build: `npm run preview`.
+
+## Configuração local rápida
+1. Instale as dependências com `npm install`.
+2. Inicie o servidor de desenvolvimento com `npm run dev`.
+3. Acesse a aplicação em `http://localhost:5173`.
 
 ## Estrutura do projeto
 - `src/App.tsx` – Inicializa o tema global, React Router e registra o elemento raiz para modais.
@@ -58,3 +65,7 @@ módulos de cadastro, manutenção e relatórios.
 ## Configuração de API
 O endpoint raiz da API pode ser ajustado em `src/lib/axios.ts`. Se precisar apontar para outro
 ambiente, altere o `baseURL` e reinicie o servidor de desenvolvimento.
+
+## Padrões do projeto
+- Alias de imports são resolvidos pelo `tsconfig.json` (ex.: `@features`, `@components`).
+- Rotas são centralizadas em `src/Router.tsx` e usam `DefaultLayout` como layout base.
