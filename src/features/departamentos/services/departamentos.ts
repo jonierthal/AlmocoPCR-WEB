@@ -1,5 +1,5 @@
 import { api } from '../../../lib/axios';
-import { API_ENDPOINTS } from '../../../services/endpoints';
+import { departamentosEndpoints } from '../api/endpoints';
 import { Departamento } from '../types/departamento';
 
 interface CreateDepartamentoPayload {
@@ -7,20 +7,20 @@ interface CreateDepartamentoPayload {
 }
 
 export async function fetchDepartamentos() {
-  const response = await api.get<Departamento[]>(API_ENDPOINTS.departamentos.list);
+  const response = await api.get<Departamento[]>(departamentosEndpoints.list);
   return response.data;
 }
 
 export async function createDepartamento(payload: CreateDepartamentoPayload) {
-  return api.post(API_ENDPOINTS.departamentos.create, payload);
+  return api.post(departamentosEndpoints.create, payload);
 }
 
 export async function deleteDepartamento(id: number) {
-  return api.delete(API_ENDPOINTS.departamentos.remove(id));
+  return api.delete(departamentosEndpoints.remove(id));
 }
 
 export async function updateDepartamento(id: number, nome: string) {
-  return api.put(API_ENDPOINTS.departamentos.update(id), {
+  return api.put(departamentosEndpoints.update(id), {
     setor: {
       nome,
     },
