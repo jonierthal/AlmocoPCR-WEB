@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form'
 import { useState } from 'react';
 
 import { getFieldErrorMessage } from '../../../../utils/form';
-import { createDepartamento } from '@services';
+import { createDepartamento } from '@features/departamentos';
 
 interface NewValidationFormData {
     nome: string;

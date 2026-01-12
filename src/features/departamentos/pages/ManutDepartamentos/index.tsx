@@ -21,7 +21,7 @@ import {
   deleteDepartamento,
   fetchDepartamentos,
   updateDepartamento,
-} from '@services';
+} from '@features/departamentos';
 
 export function ManutDepartamentos() {
 

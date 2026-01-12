@@ -20,6 +20,10 @@ módulos de cadastro, manutenção e relatórios.
 - `src/lib/axios.ts` – Cliente Axios com `baseURL` da API.
 - `src/pages` – Páginas agrupadas por funcionalidade (cadastros, manutenção e relatórios).
 
+## Padrão de imports por feature
+- Serviços de cada feature devem ser exportados por `src/features/<feature>/index.ts`.
+- Ao consumir serviços, importe diretamente pela feature (ex.: `@features/departamentos`), evitando o índice global de `src/services`.
+
 ## Fluxo das páginas
 ### Cadastro de funcionários (`/`)
 - Carrega setores com `GET /setores` ao montar o componente.
