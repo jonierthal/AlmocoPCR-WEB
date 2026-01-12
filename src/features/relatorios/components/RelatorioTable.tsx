@@ -10,8 +10,8 @@ import {
   Th,
   Th2,
   Thead,
-} from './styles';
-import { AlmocoExtraType, AlmocoType, ReservaXisType } from './types';
+} from '../pages/Relatorios/styles';
+import { AlmocoExtraType, AlmocoType, ReservaXisType } from '../types';
 
 type RelatorioTableProps = {
   almocosExtra: AlmocoExtraType[];

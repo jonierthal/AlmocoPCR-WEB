@@ -8,7 +8,7 @@ import {
   AutoEmailText,
   AutoEmailTitle,
   Button,
-} from './styles';
+} from '../pages/Relatorios/styles';
 
 const EMAIL_AUTO_TOGGLE_TEXT = {
   closed: 'Mostrar ▼',
