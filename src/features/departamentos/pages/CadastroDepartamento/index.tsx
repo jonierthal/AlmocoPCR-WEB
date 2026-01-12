@@ -6,7 +6,7 @@ import {
   LoadingSpinner,
   SubtitleComp,
   TitleComp,
-} from '../../components';
+} from '../../../../components';
 
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -14,8 +14,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react';
 
-import { getFieldErrorMessage } from '../../utils/form';
-import { createDepartamento } from '../../services';
+import { getFieldErrorMessage } from '../../../../utils/form';
+import { createDepartamento } from '../../../../services';
 
 interface NewValidationFormData {
     nome: string;

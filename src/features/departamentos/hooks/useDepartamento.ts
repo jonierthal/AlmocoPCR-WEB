@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { fetchDepartamentos } from "../services";
-import { Departamento } from "../features/departamentos/types/departamento";
+import { fetchDepartamentos } from "../services/departamentos";
+import { Departamento } from "../types/departamento";
 
 export function useDepartamentos() {
   const [departamentos, setDepartamentos] = useState<Departamento[]>([]);

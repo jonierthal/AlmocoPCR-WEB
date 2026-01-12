@@ -1,6 +1,6 @@
-import { LoadingSpinner, SubtitleComp } from '../../components';
-import { Title } from '../../components/Title/styles';
-import { SpinnerContainer } from '../Relatorios/styles';
+import { LoadingSpinner, SubtitleComp } from '../../../../components';
+import { Title } from '../../../../components/Title/styles';
+import { SpinnerContainer } from '../../../relatorios/pages/Relatorios/styles';
 import {
   ButtonGreen,
   ButtonRed,

@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import Modal from 'react-modal';
 import Alert from 'react-bootstrap/Alert';
-export { InputContainer, InputWide as Input } from '../../styles/forms';
+export { InputContainer, InputWide as Input } from '../../../../styles/forms';
 
 export const StyledAlert = styled(Alert)`
   text-align: center;

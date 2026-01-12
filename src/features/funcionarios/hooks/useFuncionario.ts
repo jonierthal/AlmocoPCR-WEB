@@ -5,8 +5,8 @@ import {
   fetchFuncionarios,
   updateFuncionario,
   verifyFuncionarioId,
-} from "../services";
-import { Funcionario } from "../features/funcionarios/types/funcionario";
+} from "../services/funcionario";
+import { Funcionario } from "../types/funcionario";
 
 export function useFuncionarios() {
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);

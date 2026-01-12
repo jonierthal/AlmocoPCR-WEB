@@ -12,16 +12,22 @@ import {
   TextDate,
   TextDateContainer,
 } from './styles';
-import { ButonContainer, ButtonGreen, ContainerModal, StyledAlert, TextAlertContainer } from "../ManutFuncionarios/styles";
+import {
+  ButonContainer,
+  ButtonGreen,
+  ContainerModal,
+  StyledAlert,
+  TextAlertContainer,
+} from "../../../funcionarios/pages/ManutFuncionarios/styles";
 import axios from 'axios' ;
 import { BiMoveHorizontal } from 'react-icons/bi';
 import { useEffect, useState } from "react";
-import { LoadingSpinner, SubtitleComp } from '../../components';
+import { LoadingSpinner, SubtitleComp } from '../../../../components';
 import moment from 'moment';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
 import ptBR from 'date-fns/locale/pt-BR';
-import { api } from "../../lib/axios";
-import { Title } from "../../components/Title/styles";
+import { api } from "../../../../lib/axios";
+import { Title } from "../../../../components/Title/styles";
 import {
   EMAIL_DESTINATARIO_PADRAO,
   HORARIO_ENVIO_AUTOMATICO_HORA,

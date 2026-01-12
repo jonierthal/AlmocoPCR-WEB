@@ -5,13 +5,13 @@ import {
   LoadingSpinner,
   SubtitleComp,
   TitleComp,
-} from "../../components";
+} from "../../../../components";
 import { StyledSelect, Fieldset, Input, InputContainer } from "./styles";
 
-import { useDepartamentos } from "../../hooks";
-import { useCadastroFuncionario } from "../../features/funcionarios/hooks/useCadastroFuncionario";
+import { useDepartamentos } from "../../../departamentos";
+import { useCadastroFuncionario } from "../../hooks";
 
-import { getFieldErrorMessage } from "../../utils/form";
+import { getFieldErrorMessage } from "../../../../utils/form";
 
 export function Home(){
     const { departamentos } = useDepartamentos();
