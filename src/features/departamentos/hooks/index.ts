@@ -1,0 +1,1 @@
+export { useDepartamentos } from "./useDepartamento";

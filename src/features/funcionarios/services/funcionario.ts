@@ -1,6 +1,6 @@
-import { api } from '../../../lib/axios';
+import { api } from '@lib/axios';
+import { Funcionario } from '@features/funcionarios/types';
 import { funcionariosEndpoints } from '../api/endpoints';
-import { Funcionario } from '../types/funcionario';
 
 export interface CreateFuncionarioPayload {
   codigo: number;

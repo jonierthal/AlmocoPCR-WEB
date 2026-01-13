@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-export { InputContainer, InputWide as Input, StyledSelect } from '../../../../styles/forms';
+export { InputContainer, InputWide as Input, StyledSelect } from '@styles/forms';
 
 export const TableContainer = styled.div`
   margin-top: 1rem;

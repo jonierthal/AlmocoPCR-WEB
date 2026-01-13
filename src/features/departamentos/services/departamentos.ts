@@ -1,4 +1,4 @@
-import { api } from '../../../lib/axios';
+import { api } from '@lib/axios';
 import { departamentosEndpoints } from '../api/endpoints';
 import { Departamento } from '../types/departamento';
 

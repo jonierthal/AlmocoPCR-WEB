@@ -9,7 +9,7 @@ import {
   StyledSelect,
   TextAlertContainer,
 } from './styles';
-import { ContainerModal, StyledAlert } from '../../../../styles/shared/modal';
+import { ContainerModal, StyledAlert } from '@styles/shared/modal';
 
 type EditModalProps = {
   isOpen: boolean;

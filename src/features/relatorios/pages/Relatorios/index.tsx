@@ -6,7 +6,7 @@ import {
   TextDate,
 } from './styles';
 import { TextAlertContainer } from "@features/funcionarios/pages/ManutFuncionarios/styles";
-import { StyledAlert } from "../../../../styles/shared/modal";
+import { StyledAlert } from "@styles/shared/modal";
 import { useCallback, useState } from "react";
 import { LoadingSpinner } from '@components';
 import moment from 'moment';
@@ -14,14 +14,18 @@ import { registerLocale, setDefaultLocale } from 'react-datepicker';
 import ptBR from 'date-fns/locale/pt-BR';
 import {
   EMAIL_DESTINATARIO_PADRAO,
-  } from '../../constants';
-import { EmailSettings } from '../../components/EmailSettings';
-import { RelatorioTable } from '../../components/RelatorioTable';
-import { DateFilters } from '../../components/DateFilters';
-import { ReportActions } from '../../components/ReportActions';
-import { ConfirmDeleteModal } from '../../components/ConfirmDeleteModal';
-import { useRelatoriosEmail } from '../../hooks/useRelatoriosEmail';
-import { useRelatoriosData } from '../../hooks/useRelatoriosData';
+  } from '@features/relatorios/constants';
+import {
+  ConfirmDeleteModal,
+  DateFilters,
+  EmailSettings,
+  RelatorioTable,
+  ReportActions,
+} from '@features/relatorios/components';
+import {
+  useRelatoriosData,
+  useRelatoriosEmail,
+} from '@features/relatorios/hooks';
 
 // Registra o locale para Português (Brasil)
 registerLocale('pt-BR', ptBR);

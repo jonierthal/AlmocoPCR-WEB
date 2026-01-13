@@ -1,4 +1,4 @@
-import { Funcionario } from '../../types/funcionario';
+import { Funcionario } from '@features/funcionarios/types';
 import {
   ButtonGreen,
   ButtonRed,

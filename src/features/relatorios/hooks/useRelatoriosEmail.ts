@@ -12,7 +12,7 @@ import {
   STORAGE_DATA_ENVIO_XIS,
   STORAGE_EMAIL_ADICIONAIS,
 } from '../constants';
-import { api } from '../../../lib/axios';
+import { api } from '@lib/axios';
 import { RelatorioEmailPayload } from '../types';
 
 type UseRelatoriosEmailOptions = {

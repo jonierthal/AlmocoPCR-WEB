@@ -9,9 +9,8 @@ import {
 import { StyledSelect, Fieldset, Input, InputContainer } from "./styles";
 
 import { useDepartamentos } from "@features/departamentos";
-import { useCadastroFuncionario } from "../../hooks";
-
-import { getFieldErrorMessage } from "../../../../utils/form";
+import { useCadastroFuncionario } from "@features/funcionarios/hooks";
+import { getFieldErrorMessage } from "@utils/form";
 
 export function Home(){
     const { departamentos } = useDepartamentos();

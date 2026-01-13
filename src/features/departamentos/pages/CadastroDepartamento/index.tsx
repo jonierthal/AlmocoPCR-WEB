@@ -14,7 +14,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react';
 
-import { getFieldErrorMessage } from '../../../../utils/form';
+import { getFieldErrorMessage } from '@utils/form';
 import { createDepartamento } from '@features/departamentos';
 
 interface NewValidationFormData {

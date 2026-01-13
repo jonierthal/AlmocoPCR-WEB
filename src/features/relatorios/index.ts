@@ -1,1 +1,3 @@
-export { Relatorios } from "./pages/Relatorios";
+export * from "./components";
+export * from "./hooks";
+export * from "./pages";

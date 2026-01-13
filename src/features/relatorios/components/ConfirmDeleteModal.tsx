@@ -3,7 +3,7 @@ import {
   ButtonGreen,
 } from '@features/funcionarios/pages/ManutFuncionarios/styles';
 import { ButtonRed } from '../pages/Relatorios/styles';
-import { ContainerModal } from '../../../styles/shared/modal';
+import { ContainerModal } from '@styles/shared/modal';
 import { LoadingSpinner, Subtitle } from '@components';
 import { TitleComp } from '@components/Title/styles';
 import { SpinnerContainer } from '../pages/Relatorios/styles';

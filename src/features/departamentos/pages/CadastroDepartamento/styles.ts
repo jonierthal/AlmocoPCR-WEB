@@ -1,1 +1,1 @@
-export { Fieldset , InputContainer , Input } from '../../../../styles/forms' ;
+export { Fieldset, InputContainer, Input } from '@styles/forms';

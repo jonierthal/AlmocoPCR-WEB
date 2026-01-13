@@ -3,14 +3,14 @@ import {
   useFuncionarioFilters,
   useFuncionarioModals,
   useFuncionarios,
-} from '../../hooks';
+} from '@features/funcionarios/hooks';
 import { useDepartamentos } from '@features/departamentos';
 import { DeleteModal } from './DeleteModal';
 import { EditModal } from './EditModal';
 import { FuncionarioFilters } from './FuncionarioFilters';
 import { FuncionarioTable } from './FuncionarioTable';
 import { TextAlertContainer } from './styles';
-import { StyledAlert } from '../../../../styles/shared/modal';
+import { StyledAlert } from '@styles/shared/modal';
 
 export function ManutFuncionarios() {
 
