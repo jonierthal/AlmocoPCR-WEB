@@ -31,6 +31,7 @@ const EMAIL_AUTO_TOGGLE_TEXT = {
 
 type EmailSettingsProps = {
   emailMenuOpen: boolean;
+  onToggleMenu: () => void;
   destinatarios: EmailDestinatario[];
   loadingDestinatarios: boolean;
   savingDestinatario: boolean;
