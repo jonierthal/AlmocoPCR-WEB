@@ -34,8 +34,25 @@ export type ReservaXisPeriodoType = {
   setor_nome: string;
 };
 
+export type EmailDestinatarioTipo = 'ALMOCO' | 'XIS';
+
+export type EmailDestinatario = {
+  id: number;
+  email: string;
+  nome: string;
+  tipo: EmailDestinatarioTipo;
+  ativo: boolean;
+};
+
+export type EmailDestinatarioPayload = {
+  email: string;
+  nome: string;
+  tipo: EmailDestinatarioTipo;
+  ativo: boolean;
+};
+
 export type RelatorioEmailPayload = {
-  destinatarioPadrao: string;
-  destinatariosAdicionais: string;
+ tipoRelatorio: EmailDestinatarioTipo;
   dataReferencia: string;
+  destinatariosExtras?: string[];
 };

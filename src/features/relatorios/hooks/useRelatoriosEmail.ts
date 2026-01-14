@@ -1,12 +1,8 @@
 import axios from 'axios';
 import moment from 'moment';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  EMAIL_DESTINATARIO_PADRAO,
-  STORAGE_EMAIL_ADICIONAIS,
-} from '../constants';
 import { api } from '@lib/axios';
-import { RelatorioEmailPayload } from '../types';
+import { EmailDestinatarioTipo, RelatorioEmailPayload } from '../types';
 
 type UseRelatoriosEmailOptions = {
   onSuccessMessage: (message: string) => void;
@@ -24,41 +20,42 @@ type StatusEnvios = {
   xis: StatusEnvioInfo;
 };
 
+const EMAIL_MENU_STORAGE_KEY = 'relatorios-email-menu-open';
+
 export function useRelatoriosEmail({
   onSuccessMessage,
   onErrorMessage,
 }: UseRelatoriosEmailOptions) {
   const [enviandoEmail, setEnviandoEmail] = useState(false);
-  const [emailsAdicionais, setEmailsAdicionais] = useState('');
-  const [emailMenuOpen, setEmailMenuOpen] = useState(false);
+  const [destinatariosExtras, setDestinatariosExtras] = useState('');
+  const [emailMenuOpen, setEmailMenuOpen] = useState(() => {
+    const storedValue = localStorage.getItem(EMAIL_MENU_STORAGE_KEY);
+    return storedValue ? storedValue === 'true' : false;
+  });
   const [statusEnvios, setStatusEnvios] = useState<StatusEnvios | null>(null);
   const [loadingStatus, setLoadingStatus] = useState(false);
 
-  useEffect(() => {
-    const emailsSalvos = localStorage.getItem(STORAGE_EMAIL_ADICIONAIS);
-
-    if (emailsSalvos) {
-      setEmailsAdicionais(emailsSalvos);
-    }
-  }, []);
-
-  const obterEmailsAdicionais = useCallback(() => {
-    return emailsAdicionais
+  const obterDestinatariosExtras = useCallback(() => {
+    return destinatariosExtras
       .split(/[,;]+/)
       .map((email) => email.trim())
       .filter((email) => email.length > 0);
-  }, [emailsAdicionais]);
+  }, [destinatariosExtras]);
 
-  const montarPayloadEmail = useCallback((): RelatorioEmailPayload => {
-    return {
-      destinatarioPadrao: EMAIL_DESTINATARIO_PADRAO,
-      destinatariosAdicionais: emailsAdicionais,
-      dataReferencia: moment().format('YYYY-MM-DD'),
-    };
-  }, [emailsAdicionais]);
+  const montarPayloadEmail = useCallback(
+    (tipoRelatorio: EmailDestinatarioTipo): RelatorioEmailPayload => {
+      const extras = obterDestinatariosExtras();
+      return {
+        tipoRelatorio,
+        dataReferencia: moment().format('YYYY-MM-DD'),
+        ...(extras.length > 0 ? { destinatariosExtras: extras } : {}),
+      };
+    },
+    [obterDestinatariosExtras]
+  );
 
-  const validarEmailsAdicionais = useCallback(() => {
-    const emails = obterEmailsAdicionais();
+  const validarDestinatariosExtras = useCallback(() => {
+    const emails = obterDestinatariosExtras();
     if (emails.length === 0) {
       return true;
     }
@@ -74,15 +71,19 @@ export function useRelatoriosEmail({
     }
 
     return true;
-  }, [obterEmailsAdicionais, onErrorMessage]);
+  }, [obterDestinatariosExtras, onErrorMessage]);
 
   const logEmailErro = useCallback(
-    (error: unknown, payload: RelatorioEmailPayload, manual: boolean) => {
+    (
+      error: unknown,
+      payload: RelatorioEmailPayload,
+      manual: boolean
+    ) => {
       const contextoEnvio = {
         tipoEnvio: manual ? 'manual' : 'automatico',
         dataReferencia: payload.dataReferencia,
-        destinatarioPadrao: payload.destinatarioPadrao,
-        destinatariosAdicionais: payload.destinatariosAdicionais,
+        tipoRelatorio: payload.tipoRelatorio,
+        destinatariosExtras: payload.destinatariosExtras ?? [],
       };
 
       console.group('Falha ao enviar relatório de reservas por e-mail');
@@ -107,16 +108,25 @@ export function useRelatoriosEmail({
     []
   );
 
-  const construirMensagemErroEmail = useCallback((error: unknown) => {
-    if (axios.isAxiosError(error) && error.response?.status) {
-      const statusText = error.response?.statusText
-        ? ` ${error.response.statusText}`
-        : '';
-      return `Erro ao enviar o relatório por e-mail (status ${error.response.status}${statusText}). Detalhes disponíveis no console.`;
-    }
+  const construirMensagemErroEmail = useCallback(
+    (error: unknown, tipoRelatorio: EmailDestinatarioTipo) => {
+      if (axios.isAxiosError(error) && error.response?.status) {
+        if (error.response.status === 422) {
+          const label =
+            tipoRelatorio === 'ALMOCO' ? 'almoço' : 'xis';
+          return `Nenhum destinatário ativo configurado para relatório de ${label}. Cadastre ao menos um.`;
+        }
+
+        const statusText = error.response?.statusText
+          ? ` ${error.response.statusText}`
+          : '';
+        return `Erro ao enviar o relatório por e-mail (status ${error.response.status}${statusText}). Detalhes disponíveis no console.`;
+      }
 
     return 'Ocorreu um erro ao enviar o relatório de reservas por e-mail. Consulte o console para detalhes.';
-  }, []);
+    },
+    []
+  );
 
   const carregarStatusEnvios = useCallback(async () => {
     setLoadingStatus(true);
@@ -135,25 +145,27 @@ export function useRelatoriosEmail({
   }, []);
 
   const enviarRelatorioPorEmail = useCallback(
-    async (manual: boolean) => {
-      if (!validarEmailsAdicionais()) {
+    async (tipoRelatorio: EmailDestinatarioTipo, manual: boolean) => {
+      if (!validarDestinatariosExtras()) {
         return;
       }
 
       setEnviandoEmail(true);
-      const payload = montarPayloadEmail();
+      const payload = montarPayloadEmail(tipoRelatorio);
 
       try {
         await api.post('/relatorios/email-automatico', payload);
         await carregarStatusEnvios();
         onSuccessMessage(
           manual
-            ? 'E-mail de reservas enviado com sucesso!'
+            ? `E-mail de ${
+                tipoRelatorio === 'ALMOCO' ? 'almoço' : 'xis'
+              } enviado com sucesso!`
             : 'Envio automático do relatório de reservas realizado com sucesso!'
         );
       } catch (error) {
         logEmailErro(error, payload, manual);
-        onErrorMessage(construirMensagemErroEmail(error));
+        onErrorMessage(construirMensagemErroEmail(error, tipoRelatorio));
       } finally {
         setEnviandoEmail(false);
       }
@@ -165,56 +177,9 @@ export function useRelatoriosEmail({
       montarPayloadEmail,
       onErrorMessage,
       onSuccessMessage,
-      validarEmailsAdicionais,
+      validarDestinatariosExtras,
     ]
   );
-
-  const enviarRelatorioXisPorEmail = useCallback(
-    async (manual: boolean) => {
-      if (!validarEmailsAdicionais()) {
-        return;
-      }
-
-      setEnviandoEmail(true);
-      const payload = montarPayloadEmail();
-
-      try {
-        await api.post('/relatorios/xis-email-automatico', payload);
-        await carregarStatusEnvios();
-        onSuccessMessage(
-          manual
-            ? 'Relatório de Xis enviado com sucesso!'
-            : 'Envio automático do relatório de Xis realizado com sucesso!'
-        );
-      } catch (error) {
-        logEmailErro(error, payload, manual);
-        onErrorMessage(construirMensagemErroEmail(error));
-      } finally {
-        setEnviandoEmail(false);
-      }
-    },
-    [
-      carregarStatusEnvios,
-      construirMensagemErroEmail,
-      logEmailErro,
-      montarPayloadEmail,
-      onErrorMessage,
-      onSuccessMessage,
-      validarEmailsAdicionais,
-    ]
-  );
-
-  const handleSalvarEmailsAdicionais = useCallback(() => {
-    localStorage.setItem(STORAGE_EMAIL_ADICIONAIS, emailsAdicionais);
-    onSuccessMessage('Destinatários adicionais salvos!');
-  }, [emailsAdicionais, onSuccessMessage]);
-
-  const destinatariosResumo = useMemo(() => {
-    const emailsAdicionaisLista = obterEmailsAdicionais();
-    return emailsAdicionaisLista.length > 0
-      ? `${EMAIL_DESTINATARIO_PADRAO} + ${emailsAdicionaisLista.join(', ')}`
-      : EMAIL_DESTINATARIO_PADRAO;
-  }, [obterEmailsAdicionais]);
 
   useEffect(() => {
     carregarStatusEnvios();
@@ -226,20 +191,27 @@ export function useRelatoriosEmail({
   }, [carregarStatusEnvios]);
 
   const toggleEmailMenu = useCallback(() => {
-    setEmailMenuOpen((open) => !open);
+    setEmailMenuOpen((open) => {
+      const nextValue = !open;
+      localStorage.setItem(EMAIL_MENU_STORAGE_KEY, String(nextValue));
+      return nextValue;
+    });
   }, []);
+
+  const destinatariosExtrasResumo = useMemo(() => {
+    const extras = obterDestinatariosExtras();
+    return extras.join(', ');
+  }, [obterDestinatariosExtras]);
 
   return {
     emailMenuOpen,
-    emailsAdicionais,
+    destinatariosExtras,
+    destinatariosExtrasResumo,
     enviandoEmail,
-    destinatariosResumo,
     statusEnvios,
     loadingStatus,
-    setEmailsAdicionais,
+    setDestinatariosExtras,
     toggleEmailMenu,
-    handleSalvarEmailsAdicionais,
     enviarRelatorioPorEmail,
-    enviarRelatorioXisPorEmail,
   };
 }

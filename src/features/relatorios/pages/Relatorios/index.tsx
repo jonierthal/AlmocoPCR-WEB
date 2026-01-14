@@ -13,9 +13,6 @@ import moment from 'moment';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
 import ptBR from 'date-fns/locale/pt-BR';
 import {
-  EMAIL_DESTINATARIO_PADRAO,
-  } from '@features/relatorios/constants';
-import {
   ConfirmDeleteModal,
   DateFilters,
   EmailSettings,
@@ -23,6 +20,7 @@ import {
   ReportActions,
 } from '@features/relatorios/components';
 import {
+  useEmailDestinatarios,
   useRelatoriosData,
   useRelatoriosEmail,
 } from '@features/relatorios/hooks';
@@ -57,21 +55,26 @@ setDefaultLocale('pt-BR');
 
     const {
       emailMenuOpen,
-      emailsAdicionais,
+      destinatariosExtras,
+      destinatariosExtrasResumo,
       enviandoEmail,
-      destinatariosResumo,
-      horarioAlmoco,
-      horarioXis,
-      ultimaDataEnvio,
-      ultimaDataEnvioFormatada,
-      ultimaDataEnvioXis,
-      ultimaDataEnvioXisFormatada,
-      setEmailsAdicionais,
+      statusEnvios,
+      loadingStatus,
+      setDestinatariosExtras,
       toggleEmailMenu,
-      handleSalvarEmailsAdicionais,
       enviarRelatorioPorEmail,
-      enviarRelatorioXisPorEmail,
     } = useRelatoriosEmail({
+      onSuccessMessage: showSuccessMessage,
+      onErrorMessage: showErrorMessage,
+    });
+
+    const {
+      destinatarios,
+      loadingDestinatarios,
+      savingDestinatario,
+      criarDestinatario,
+      atualizarDestinatario,
+    } = useEmailDestinatarios({
       onSuccessMessage: showSuccessMessage,
       onErrorMessage: showErrorMessage,
     });
@@ -184,20 +187,19 @@ setDefaultLocale('pt-BR');
             <EmailSettings
               emailMenuOpen={emailMenuOpen}
               onToggleMenu={toggleEmailMenu}
-              emailsAdicionais={emailsAdicionais}
-              onChangeEmailsAdicionais={setEmailsAdicionais}
-              onSalvarEmailsAdicionais={handleSalvarEmailsAdicionais}
-              destinatariosResumo={destinatariosResumo}
-              ultimaDataEnvio={ultimaDataEnvio}
-              ultimaDataEnvioFormatada={ultimaDataEnvioFormatada}
-              ultimaDataEnvioXis={ultimaDataEnvioXis}
-              ultimaDataEnvioXisFormatada={ultimaDataEnvioXisFormatada}
+              destinatarios={destinatarios}
+              loadingDestinatarios={loadingDestinatarios}
+              savingDestinatario={savingDestinatario}
+              onCriarDestinatario={criarDestinatario}
+              onAtualizarDestinatario={atualizarDestinatario}
+              destinatariosExtras={destinatariosExtras}
+              destinatariosExtrasResumo={destinatariosExtrasResumo}
+              onChangeDestinatariosExtras={setDestinatariosExtras}
               enviandoEmail={enviandoEmail}
-              horarioAlmoco={horarioAlmoco}
-              horarioXis={horarioXis}
-              onEnviarRelatorioAlmoco={() => enviarRelatorioPorEmail(true)}
-              onEnviarRelatorioXis={() => enviarRelatorioXisPorEmail(true)}
-              emailDestinatarioPadrao={EMAIL_DESTINATARIO_PADRAO}
+              statusEnvios={statusEnvios}
+              loadingStatus={loadingStatus}
+              onEnviarRelatorioAlmoco={() => enviarRelatorioPorEmail('ALMOCO', true)}
+              onEnviarRelatorioXis={() => enviarRelatorioPorEmail('XIS', true)}
             />
             <SpinnerContainer>
             {loading && <LoadingSpinner />}

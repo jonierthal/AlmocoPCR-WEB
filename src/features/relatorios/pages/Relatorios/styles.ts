@@ -170,6 +170,95 @@ export const AutoEmailInput = styled.textarea`
   resize: vertical;
 `;
 
+export const EmailRecipientGrid = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+`;
+
+export const EmailRecipientRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #c7e3f3;
+  background-color: #ffffff;
+`;
+
+export const EmailRecipientMeta = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+`;
+
+export const EmailRecipientValue = styled.span`
+  color: #0476AC;
+  font-size: 0.95rem;
+  font-family: Arial;
+`;
+
+export const EmailRecipientCard = styled.div`
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px dashed #c7e3f3;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+`;
+
+export const EmailFormGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+`;
+
+export const EmailLabel = styled.label`
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: #0476AC;
+  font-weight: bold;
+  font-size: 0.95rem;
+  font-family: Arial;
+`;
+
+export const EmailInput = styled.input`
+  padding: 0.5rem;
+  border: 1px solid #0476AC;
+  border-radius: 6px;
+  color: #0476AC;
+  font-size: 0.95rem;
+  font-family: Arial;
+`;
+
+export const EmailSelect = styled.select`
+  padding: 0.5rem;
+  border: 1px solid #0476AC;
+  border-radius: 6px;
+  color: #0476AC;
+  font-size: 0.95rem;
+  font-family: Arial;
+  background-color: #ffffff;
+`;
+
+export const EmailFormActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;
+
+export const WarningText = styled.p`
+  margin: 0;
+  color: #b54700;
+  font-weight: bold;
+  font-size: 0.95rem;
+  font-family: Arial;
+`;
+
 export const ListsContainer = styled.div`
     display: flex;
     //align-items: center;
