@@ -64,7 +64,7 @@ type EmailSettingsProps = {
 const defaultFormState: EmailDestinatarioPayload = {
   email: '',
   nome: '',
-  tipo: 'ALMOCO',
+  tipos: 'ALMOCO',
   ativo: true,
 };
 
@@ -116,7 +116,7 @@ export function EmailSettings({
     () =>
       destinatarios.filter(
         (destinatario) =>
-          ['ALMOCO', 'AMBOS'].includes(destinatario.tipo) && destinatario.ativo
+          ['ALMOCO', 'AMBOS'].includes(destinatario.tipos) && destinatario.ativo
       ),
     [destinatarios]
   );
@@ -124,7 +124,7 @@ export function EmailSettings({
     () =>
       destinatarios.filter(
         (destinatario) =>
-          ['XIS', 'AMBOS'].includes(destinatario.tipo) && destinatario.ativo
+          ['XIS', 'AMBOS'].includes(destinatario.tipos) && destinatario.ativo
       ),
     [destinatarios]
   );
@@ -182,7 +182,7 @@ export function EmailSettings({
     setFormState({
       email: destinatario.email,
       nome: destinatario.nome,
-      tipo: destinatario.tipo,
+      tipos: destinatario.tipos,
       ativo: destinatario.ativo,
     });
     setEditingId(destinatario.id);
@@ -194,7 +194,7 @@ export function EmailSettings({
     await onAtualizarDestinatario(destinatario.id, {
       email: destinatario.email,
       nome: destinatario.nome,
-      tipo: destinatario.tipo,
+      tipos: destinatario.tipos,
       ativo: !destinatario.ativo,
     });
   };
@@ -282,11 +282,11 @@ export function EmailSettings({
                 <EmailLabel>
                   Tipo de relatório
                   <EmailSelect
-                    value={formState.tipo}
+                    value={formState.tipos}
                     onChange={(event) =>
                       setFormState((state) => ({
                         ...state,
-                        tipo: event.target.value as EmailDestinatario['tipo'],
+                        tipos: event.target.value as EmailDestinatario['tipos'],
                       }))
                     }
                   >
@@ -347,9 +347,9 @@ export function EmailSettings({
                     <EmailRecipientValue>{destinatario.email}</EmailRecipientValue>
                     <EmailRecipientValue>
                       Tipo:{' '}
-                      {destinatario.tipo === 'ALMOCO'
+                      {destinatario.tipos === 'ALMOCO'
                         ? 'Almoço'
-                        : destinatario.tipo === 'XIS'
+                        : destinatario.tipos === 'XIS'
                         ? 'Xis'
                         : 'Ambos'}
                     </EmailRecipientValue>

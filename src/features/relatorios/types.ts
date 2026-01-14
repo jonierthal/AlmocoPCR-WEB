@@ -40,19 +40,19 @@ export type EmailDestinatario = {
   id: number;
   email: string;
   nome: string;
-  tipo: EmailDestinatarioTipo;
+  tipos: EmailDestinatarioTipo;
   ativo: boolean;
 };
 
 export type EmailDestinatarioPayload = {
   email: string;
   nome: string;
-  tipo: EmailDestinatarioTipo;
+  tipos: EmailDestinatarioTipo;
   ativo: boolean;
 };
 
 export type RelatorioEmailPayload = {
- tipoRelatorio: EmailDestinatarioTipo;
+  tipoRelatorio: EmailDestinatarioTipo;
   dataReferencia: string;
   destinatariosExtras?: string[];
 };

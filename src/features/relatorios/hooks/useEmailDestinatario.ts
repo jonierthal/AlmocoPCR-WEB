@@ -12,10 +12,11 @@ type UseEmailDestinatariosOptions = {
   onErrorMessage: (message: string) => void;
 };
 
-type EmailDestinatarioApi = Omit<EmailDestinatario, 'tipo' | 'ativo'> & {
+type EmailDestinatarioApi = Omit<EmailDestinatario, 'tipos' | 'ativo'> & {
   tipo?: EmailDestinatarioTipo;
   tipoRelatorio?: EmailDestinatarioTipo;
   tipo_relatorio?: EmailDestinatarioTipo;
+  tipos?: EmailDestinatarioTipo;
   ativo?: boolean | number;
 };
 
@@ -26,6 +27,7 @@ const normalizeDestinatario = (
     destinatario.tipo ??
     destinatario.tipoRelatorio ??
     destinatario.tipo_relatorio ??
+    destinatario.tipos ??
     'ALMOCO';
   const ativo =
     typeof destinatario.ativo === 'number'
@@ -36,15 +38,17 @@ const normalizeDestinatario = (
     id: destinatario.id,
     email: destinatario.email,
     nome: destinatario.nome,
-    tipo,
+    tipos: tipo,
     ativo,
   };
 };
 
+const normalizeTipos = (tipos: string) => tipos.trim().toUpperCase();
+
 const mapPayloadToApi = (payload: EmailDestinatarioPayload) => ({
   email: payload.email,
   nome: payload.nome,
-  tipoRelatorio: payload.tipo,
+  tipos: normalizeTipos(payload.tipos),
   ativo: payload.ativo,
 });
 
