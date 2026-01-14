@@ -1,9 +1,2 @@
-export const EMAIL_DESTINATARIO_PADRAO = 'jonierthal@gmail.com';
-export const HORARIO_ENVIO_AUTOMATICO_HORA = 8;
-export const HORARIO_ENVIO_AUTOMATICO_MINUTO = 10;
-export const HORARIO_ENVIO_XIS_HORA = 15;
-export const HORARIO_ENVIO_XIS_MINUTO = 30;
-export const INTERVALO_CHECAGEM_MS = 30000;
-export const STORAGE_DATA_ENVIO = 'relatorio-almoco-email-enviado';
-export const STORAGE_DATA_ENVIO_XIS = 'relatorio-xis-email-enviado';
+export const EMAIL_DESTINATARIO_PADRAO = 'jonathan.erthal@pcr.ind.br';
 export const STORAGE_EMAIL_ADICIONAIS = 'relatorio-almoco-email-adicionais';

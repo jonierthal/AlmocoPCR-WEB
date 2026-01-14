@@ -1,3 +1,4 @@
+import moment from 'moment';
 import {
   AutoEmailContainer,
   AutoEmailContent,
@@ -22,13 +23,20 @@ type EmailSettingsProps = {
   onChangeEmailsAdicionais: (value: string) => void;
   onSalvarEmailsAdicionais: () => void;
   destinatariosResumo: string;
-  ultimaDataEnvio: string | null;
-  ultimaDataEnvioFormatada: string;
-  ultimaDataEnvioXis: string | null;
-  ultimaDataEnvioXisFormatada: string;
   enviandoEmail: boolean;
-  horarioAlmoco: string;
-  horarioXis: string;
+  statusEnvios: {
+    almoco: {
+      status: 'ENVIADO' | 'PENDENTE' | 'FALHA';
+      dataHora?: string | null;
+      erro?: string | null;
+    };
+    xis: {
+      status: 'ENVIADO' | 'PENDENTE' | 'FALHA';
+      dataHora?: string | null;
+      erro?: string | null;
+    };
+  } | null;
+  loadingStatus: boolean;
   onEnviarRelatorioAlmoco: () => void;
   onEnviarRelatorioXis: () => void;
   emailDestinatarioPadrao: string;
@@ -41,17 +49,33 @@ export function EmailSettings({
   onChangeEmailsAdicionais,
   onSalvarEmailsAdicionais,
   destinatariosResumo,
-  ultimaDataEnvio,
-  ultimaDataEnvioFormatada,
-  ultimaDataEnvioXis,
-  ultimaDataEnvioXisFormatada,
   enviandoEmail,
-  horarioAlmoco,
-  horarioXis,
+  statusEnvios,
+  loadingStatus,
   onEnviarRelatorioAlmoco,
   onEnviarRelatorioXis,
   emailDestinatarioPadrao,
 }: EmailSettingsProps) {
+  const formatarDataHora = (dataHora?: string | null) => {
+    if (!dataHora) {
+      return null;
+    }
+    return moment(dataHora).format('DD/MM/YYYY HH:mm');
+  };
+
+  const statusAlmoco = statusEnvios?.almoco;
+  const statusXis = statusEnvios?.xis;
+  const statusLabelAlmoco = loadingStatus
+    ? 'Carregando...'
+    : statusAlmoco?.status ?? 'Indisponível';
+  const statusLabelXis = loadingStatus
+    ? 'Carregando...'
+    : statusXis?.status ?? 'Indisponível';
+  const dataHoraAlmoco = formatarDataHora(statusAlmoco?.dataHora);
+  const dataHoraXis = formatarDataHora(statusXis?.dataHora);
+  const erroAlmoco = statusAlmoco?.status === 'FALHA' ? statusAlmoco?.erro : null;
+  const erroXis = statusXis?.status === 'FALHA' ? statusXis?.erro : null;
+
   return (
     <AutoEmailContainer>
       <AutoEmailHeader
@@ -67,8 +91,8 @@ export function EmailSettings({
       {!emailMenuOpen && (
         <AutoEmailSummary>
           <span>Destinatário padrão: {emailDestinatarioPadrao}</span>
-          <span>Último envio almoço: {ultimaDataEnvioFormatada}</span>
-          <span>Último envio xis: {ultimaDataEnvioXisFormatada}</span>
+          <span>Almoço: {statusLabelAlmoco}</span>
+          <span>Xis: {statusLabelXis}</span>
         </AutoEmailSummary>
       )}
       {emailMenuOpen && (
@@ -91,26 +115,25 @@ export function EmailSettings({
           </Button>
           <AutoEmailText>Serão enviados para: {destinatariosResumo}</AutoEmailText>
 
-          <AutoEmailTitle>Almoço</AutoEmailTitle>
-          <AutoEmailText>Envio automático diário às {horarioAlmoco}</AutoEmailText>
+          <AutoEmailTitle>Automação de e-mails</AutoEmailTitle>
           <AutoEmailStatus>
-            {ultimaDataEnvio
-              ? `Último envio registrado: ${ultimaDataEnvioFormatada}`
-              : 'Nenhum envio registrado ainda.'}
+            Almoço: {statusLabelAlmoco}
+            {dataHoraAlmoco ? ` • ${dataHoraAlmoco}` : ''}
           </AutoEmailStatus>
+          {erroAlmoco && (
+            <AutoEmailStatus>Erro almoço: {erroAlmoco}</AutoEmailStatus>
+          )}
           <Button disabled={enviandoEmail} onClick={onEnviarRelatorioAlmoco}>
-            {enviandoEmail ? 'Enviando...' : 'Enviar e-mail de almoço de teste agora'}
+             {enviandoEmail ? 'Enviando...' : 'Enviar teste Almoço agora'}
           </Button>
 
-          <AutoEmailTitle>Xis</AutoEmailTitle>
-          <AutoEmailText>Envio automático diário às {horarioXis}</AutoEmailText>
           <AutoEmailStatus>
-            {ultimaDataEnvioXis
-              ? `Último envio registrado: ${ultimaDataEnvioXisFormatada}`
-              : 'Nenhum envio registrado ainda.'}
+            Xis: {statusLabelXis}
+            {dataHoraXis ? ` • ${dataHoraXis}` : ''}
           </AutoEmailStatus>
+          {erroXis && <AutoEmailStatus>Erro Xis: {erroXis}</AutoEmailStatus>}
           <Button disabled={enviandoEmail} onClick={onEnviarRelatorioXis}>
-            {enviandoEmail ? 'Enviando...' : 'Enviar e-mail de Xis de teste agora'}
+            {enviandoEmail ? 'Enviando...' : 'Enviar teste Xis agora'}
           </Button>
         </AutoEmailContent>
       )}

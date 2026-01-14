@@ -3,13 +3,6 @@ import moment from 'moment';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   EMAIL_DESTINATARIO_PADRAO,
-  HORARIO_ENVIO_AUTOMATICO_HORA,
-  HORARIO_ENVIO_AUTOMATICO_MINUTO,
-  HORARIO_ENVIO_XIS_HORA,
-  HORARIO_ENVIO_XIS_MINUTO,
-  INTERVALO_CHECAGEM_MS,
-  STORAGE_DATA_ENVIO,
-  STORAGE_DATA_ENVIO_XIS,
   STORAGE_EMAIL_ADICIONAIS,
 } from '../constants';
 import { api } from '@lib/axios';
@@ -20,42 +13,33 @@ type UseRelatoriosEmailOptions = {
   onErrorMessage: (message: string) => void;
 };
 
+type StatusEnvioInfo = {
+  status: 'ENVIADO' | 'PENDENTE' | 'FALHA';
+  dataHora?: string | null;
+  erro?: string | null;
+};
+
+type StatusEnvios = {
+  almoco: StatusEnvioInfo;
+  xis: StatusEnvioInfo;
+};
+
 export function useRelatoriosEmail({
   onSuccessMessage,
   onErrorMessage,
 }: UseRelatoriosEmailOptions) {
   const [enviandoEmail, setEnviandoEmail] = useState(false);
-  const [ultimaDataEnvio, setUltimaDataEnvio] = useState<string | null>(null);
-  const [ultimaDataEnvioXis, setUltimaDataEnvioXis] = useState<string | null>(null);
   const [emailsAdicionais, setEmailsAdicionais] = useState('');
   const [emailMenuOpen, setEmailMenuOpen] = useState(false);
+  const [statusEnvios, setStatusEnvios] = useState<StatusEnvios | null>(null);
+  const [loadingStatus, setLoadingStatus] = useState(false);
 
   useEffect(() => {
-    const dataSalva = localStorage.getItem(STORAGE_DATA_ENVIO);
-    const dataSalvaXis = localStorage.getItem(STORAGE_DATA_ENVIO_XIS);
     const emailsSalvos = localStorage.getItem(STORAGE_EMAIL_ADICIONAIS);
-
-    if (dataSalva) {
-      setUltimaDataEnvio(dataSalva);
-    }
-
-    if (dataSalvaXis) {
-      setUltimaDataEnvioXis(dataSalvaXis);
-    }
 
     if (emailsSalvos) {
       setEmailsAdicionais(emailsSalvos);
     }
-  }, []);
-
-  const atualizarDataEnvio = useCallback((dataEnvio: string) => {
-    setUltimaDataEnvio(dataEnvio);
-    localStorage.setItem(STORAGE_DATA_ENVIO, dataEnvio);
-  }, []);
-
-  const atualizarDataEnvioXis = useCallback((dataEnvio: string) => {
-    setUltimaDataEnvioXis(dataEnvio);
-    localStorage.setItem(STORAGE_DATA_ENVIO_XIS, dataEnvio);
   }, []);
 
   const obterEmailsAdicionais = useCallback(() => {
@@ -134,6 +118,22 @@ export function useRelatoriosEmail({
     return 'Ocorreu um erro ao enviar o relatório de reservas por e-mail. Consulte o console para detalhes.';
   }, []);
 
+  const carregarStatusEnvios = useCallback(async () => {
+    setLoadingStatus(true);
+    const dataHoje = moment().format('YYYY-MM-DD');
+
+    try {
+      const resp = await api.get<StatusEnvios>('/relatorios/status-envios', {
+        params: { data: dataHoje },
+      });
+      setStatusEnvios(resp.data);
+    } catch (error) {
+      console.error('Erro ao carregar status de envios de e-mail.', error);
+    } finally {
+      setLoadingStatus(false);
+    }
+  }, []);
+
   const enviarRelatorioPorEmail = useCallback(
     async (manual: boolean) => {
       if (!validarEmailsAdicionais()) {
@@ -145,8 +145,7 @@ export function useRelatoriosEmail({
 
       try {
         await api.post('/relatorios/email-automatico', payload);
-        const dataHoje = moment().format('YYYY-MM-DD');
-        atualizarDataEnvio(dataHoje);
+        await carregarStatusEnvios();
         onSuccessMessage(
           manual
             ? 'E-mail de reservas enviado com sucesso!'
@@ -160,7 +159,7 @@ export function useRelatoriosEmail({
       }
     },
     [
-      atualizarDataEnvio,
+      carregarStatusEnvios,
       construirMensagemErroEmail,
       logEmailErro,
       montarPayloadEmail,
@@ -181,8 +180,7 @@ export function useRelatoriosEmail({
 
       try {
         await api.post('/relatorios/xis-email-automatico', payload);
-        const dataHoje = moment().format('YYYY-MM-DD');
-        atualizarDataEnvioXis(dataHoje);
+        await carregarStatusEnvios();
         onSuccessMessage(
           manual
             ? 'Relatório de Xis enviado com sucesso!'
@@ -196,7 +194,7 @@ export function useRelatoriosEmail({
       }
     },
     [
-      atualizarDataEnvioXis,
+      carregarStatusEnvios,
       construirMensagemErroEmail,
       logEmailErro,
       montarPayloadEmail,
@@ -218,57 +216,14 @@ export function useRelatoriosEmail({
       : EMAIL_DESTINATARIO_PADRAO;
   }, [obterEmailsAdicionais]);
 
-  const horarioAlmoco = useMemo(() => {
-    return `${String(HORARIO_ENVIO_AUTOMATICO_HORA).padStart(2, '0')}:${String(
-      HORARIO_ENVIO_AUTOMATICO_MINUTO
-    ).padStart(2, '0')}`;
-  }, []);
-
-  const horarioXis = useMemo(() => {
-    return `${String(HORARIO_ENVIO_XIS_HORA).padStart(2, '0')}:${String(
-      HORARIO_ENVIO_XIS_MINUTO
-    ).padStart(2, '0')}`;
-  }, []);
-
-  const ultimaDataEnvioFormatada = useMemo(() => {
-    return ultimaDataEnvio ? moment(ultimaDataEnvio).format('DD/MM/YYYY') : 'nenhum';
-  }, [ultimaDataEnvio]);
-
-  const ultimaDataEnvioXisFormatada = useMemo(() => {
-    return ultimaDataEnvioXis
-      ? moment(ultimaDataEnvioXis).format('DD/MM/YYYY')
-      : 'nenhum';
-  }, [ultimaDataEnvioXis]);
-
   useEffect(() => {
+    carregarStatusEnvios();
     const intervalo = setInterval(() => {
-      const agora = moment();
-      const dataHoje = agora.format('YYYY-MM-DD');
-
-      if (
-        agora.hour() === HORARIO_ENVIO_AUTOMATICO_HORA &&
-        agora.minute() === HORARIO_ENVIO_AUTOMATICO_MINUTO &&
-        ultimaDataEnvio !== dataHoje
-      ) {
-        enviarRelatorioPorEmail(false);
-      }
-
-      if (
-        agora.hour() === HORARIO_ENVIO_XIS_HORA &&
-        agora.minute() === HORARIO_ENVIO_XIS_MINUTO &&
-        ultimaDataEnvioXis !== dataHoje
-      ) {
-        enviarRelatorioXisPorEmail(false);
-      }
-    }, INTERVALO_CHECAGEM_MS);
+      carregarStatusEnvios();
+    }, 60000);
 
     return () => clearInterval(intervalo);
-  }, [
-    enviarRelatorioPorEmail,
-    enviarRelatorioXisPorEmail,
-    ultimaDataEnvio,
-    ultimaDataEnvioXis,
-  ]);
+  }, [carregarStatusEnvios]);
 
   const toggleEmailMenu = useCallback(() => {
     setEmailMenuOpen((open) => !open);
@@ -279,12 +234,8 @@ export function useRelatoriosEmail({
     emailsAdicionais,
     enviandoEmail,
     destinatariosResumo,
-    horarioAlmoco,
-    horarioXis,
-    ultimaDataEnvio,
-    ultimaDataEnvioFormatada,
-    ultimaDataEnvioXis,
-    ultimaDataEnvioXisFormatada,
+    statusEnvios,
+    loadingStatus,
     setEmailsAdicionais,
     toggleEmailMenu,
     handleSalvarEmailsAdicionais,
