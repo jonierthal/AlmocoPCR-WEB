@@ -115,7 +115,7 @@ export function EmailSettings({
     () =>
       destinatarios.filter(
         (destinatario) =>
-          destinatario.tipo === 'ALMOCO' && destinatario.ativo
+          ['ALMOCO', 'AMBOS'].includes(destinatario.tipo) && destinatario.ativo
       ),
     [destinatarios]
   );
@@ -123,7 +123,7 @@ export function EmailSettings({
     () =>
       destinatarios.filter(
         (destinatario) =>
-          destinatario.tipo === 'XIS' && destinatario.ativo
+          ['XIS', 'AMBOS'].includes(destinatario.tipo) && destinatario.ativo
       ),
     [destinatarios]
   );
@@ -291,6 +291,7 @@ export function EmailSettings({
                   >
                     <option value="ALMOCO">Almoço</option>
                     <option value="XIS">Xis</option>
+                    <option value="AMBOS">Ambos</option>
                   </EmailSelect>
                 </EmailLabel>
                 <EmailLabel>
@@ -344,7 +345,12 @@ export function EmailSettings({
                     </EmailRecipientValue>
                     <EmailRecipientValue>{destinatario.email}</EmailRecipientValue>
                     <EmailRecipientValue>
-                      Tipo: {destinatario.tipo === 'ALMOCO' ? 'Almoço' : 'Xis'}
+                      Tipo:{' '}
+                      {destinatario.tipo === 'ALMOCO'
+                        ? 'Almoço'
+                        : destinatario.tipo === 'XIS'
+                        ? 'Xis'
+                        : 'Ambos'}
                     </EmailRecipientValue>
                     <EmailRecipientValue>
                       {destinatario.ativo ? 'Ativo' : 'Inativo'}

@@ -34,7 +34,7 @@ export type ReservaXisPeriodoType = {
   setor_nome: string;
 };
 
-export type EmailDestinatarioTipo = 'ALMOCO' | 'XIS';
+export type EmailDestinatarioTipo = 'ALMOCO' | 'XIS' | 'AMBOS';
 
 export type EmailDestinatario = {
   id: number;
