@@ -3,6 +3,7 @@ import { api } from '@lib/axios';
 import {
   EmailDestinatario,
   EmailDestinatarioPayload,
+  EmailDestinatarioTipo,
 } from '../types';
 import axios from 'axios';
 
@@ -10,6 +11,42 @@ type UseEmailDestinatariosOptions = {
   onSuccessMessage: (message: string) => void;
   onErrorMessage: (message: string) => void;
 };
+
+type EmailDestinatarioApi = Omit<EmailDestinatario, 'tipo' | 'ativo'> & {
+  tipo?: EmailDestinatarioTipo;
+  tipoRelatorio?: EmailDestinatarioTipo;
+  tipo_relatorio?: EmailDestinatarioTipo;
+  ativo?: boolean | number;
+};
+
+const normalizeDestinatario = (
+  destinatario: EmailDestinatarioApi
+): EmailDestinatario => {
+  const tipo =
+    destinatario.tipo ??
+    destinatario.tipoRelatorio ??
+    destinatario.tipo_relatorio ??
+    'ALMOCO';
+  const ativo =
+    typeof destinatario.ativo === 'number'
+      ? destinatario.ativo === 1
+      : Boolean(destinatario.ativo);
+
+  return {
+    id: destinatario.id,
+    email: destinatario.email,
+    nome: destinatario.nome,
+    tipo,
+    ativo,
+  };
+};
+
+const mapPayloadToApi = (payload: EmailDestinatarioPayload) => ({
+  email: payload.email,
+  nome: payload.nome,
+  tipoRelatorio: payload.tipo,
+  ativo: payload.ativo,
+});
 
 export function useEmailDestinatarios({
   onSuccessMessage,
@@ -22,10 +59,10 @@ export function useEmailDestinatarios({
   const carregarDestinatarios = useCallback(async () => {
     setLoadingDestinatarios(true);
     try {
-      const response = await api.get<EmailDestinatario[]>(
+      const response = await api.get<EmailDestinatarioApi[]>(
         '/config/email-destinatarios'
       );
-      setDestinatarios(response.data ?? []);
+      setDestinatarios((response.data ?? []).map(normalizeDestinatario));
     } catch (error) {
       console.error('Erro ao carregar destinatários de e-mail.', error);
       onErrorMessage('Não foi possível carregar os destinatários de e-mail.');
@@ -38,7 +75,7 @@ export function useEmailDestinatarios({
     async (payload: EmailDestinatarioPayload) => {
       setSavingDestinatario(true);
       try {
-        await api.post('/config/email-destinatarios', payload);
+        await api.post('/config/email-destinatarios', mapPayloadToApi(payload));
         await carregarDestinatarios();
         onSuccessMessage('Destinatário criado com sucesso!');
       } catch (error) {
@@ -59,7 +96,10 @@ export function useEmailDestinatarios({
     async (id: number, payload: EmailDestinatarioPayload) => {
       setSavingDestinatario(true);
       try {
-        await api.put(`/config/email-destinatarios/${id}`, payload);
+        await api.put(
+          `/config/email-destinatarios/${id}`,
+          mapPayloadToApi(payload)
+        );
         await carregarDestinatarios();
         onSuccessMessage('Destinatário atualizado com sucesso!');
       } catch (error) {
