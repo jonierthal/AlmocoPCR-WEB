@@ -57,79 +57,152 @@ export function useEmailDestinatarios({
   onErrorMessage,
 }: UseEmailDestinatariosOptions) {
   const [destinatarios, setDestinatarios] = useState<EmailDestinatario[]>([]);
-  const [loadingDestinatarios, setLoadingDestinatarios] = useState(false);
-  const [savingDestinatario, setSavingDestinatario] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const carregarDestinatarios = useCallback(async () => {
-    setLoadingDestinatarios(true);
+  const listar = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await api.get<EmailDestinatarioApi[]>(
-        '/config/email-destinatarios'
+        '/email-destinatarios'
       );
       setDestinatarios((response.data ?? []).map(normalizeDestinatario));
+      setSuccess(true)
     } catch (error) {
       console.error('Erro ao carregar destinatários de e-mail.', error);
-      onErrorMessage('Não foi possível carregar os destinatários de e-mail.');
+      const message = 'Não foi possível carregar os destinatários de e-mail.';
+      setError(message);
+      setSuccess(false);
+      onErrorMessage(message);
     } finally {
-      setLoadingDestinatarios(false);
+      setLoading(false);
     }
   }, [onErrorMessage]);
 
-  const criarDestinatario = useCallback(
+  const criar = useCallback(
     async (payload: EmailDestinatarioPayload) => {
-      setSavingDestinatario(true);
+      setSaving(true);
+      setError(null);
       try {
-        await api.post('/config/email-destinatarios', mapPayloadToApi(payload));
-        await carregarDestinatarios();
+        await api.post('/email-destinatarios', mapPayloadToApi(payload));
+        await listar();
+        setSuccess(true);
         onSuccessMessage('Destinatário criado com sucesso!');
       } catch (error) {
         console.error('Erro ao criar destinatário de e-mail.', error);
-        if (axios.isAxiosError(error) && error.response?.data?.message) {
-          onErrorMessage(error.response.data.message);
-        } else {
-          onErrorMessage('Não foi possível criar o destinatário de e-mail.');
-        }
+        const message =
+          axios.isAxiosError(error) && error.response?.data?.message
+            ? error.response.data.message
+            : 'Não foi possível criar o destinatário de e-mail.';
+        setError(message);
+        setSuccess(false);
+        onErrorMessage(message);
       } finally {
-        setSavingDestinatario(false);
+        setSaving(false);
       }
     },
-    [carregarDestinatarios, onErrorMessage, onSuccessMessage]
+    [listar, onErrorMessage, onSuccessMessage]
   );
 
-  const atualizarDestinatario = useCallback(
+  const editar = useCallback(
     async (id: number, payload: EmailDestinatarioPayload) => {
-      setSavingDestinatario(true);
+      setSaving(true);
+      setError(null);
       try {
         await api.put(
-          `/config/email-destinatarios/${id}`,
+          `/email-destinatarios/${id}`,
           mapPayloadToApi(payload)
         );
-        await carregarDestinatarios();
+        await listar();
+        setSuccess(true);
         onSuccessMessage('Destinatário atualizado com sucesso!');
       } catch (error) {
         console.error('Erro ao atualizar destinatário de e-mail.', error);
-        if (axios.isAxiosError(error) && error.response?.data?.message) {
-          onErrorMessage(error.response.data.message);
-        } else {
-          onErrorMessage('Não foi possível atualizar o destinatário de e-mail.');
-        }
+        const message =
+          axios.isAxiosError(error) && error.response?.data?.message
+            ? error.response.data.message
+            : 'Não foi possível atualizar o destinatário de e-mail.';
+        setError(message);
+        setSuccess(false);
+        onErrorMessage(message);
       } finally {
-        setSavingDestinatario(false);
+        setSaving(false);
       }
     },
-    [carregarDestinatarios, onErrorMessage, onSuccessMessage]
+    [listar, onErrorMessage, onSuccessMessage]
   );
 
   useEffect(() => {
-    carregarDestinatarios();
-  }, [carregarDestinatarios]);
+    listar();
+  }, [listar]);
+
+  const toggleAtivo = useCallback(
+    async (destinatario: EmailDestinatario) => {
+      await editar(destinatario.id, {
+        email: destinatario.email,
+        nome: destinatario.nome,
+        tipos: destinatario.tipos,
+        ativo: !destinatario.ativo,
+      });
+    },
+    [editar]
+  );
+
+  const excluir = useCallback(
+    async (id: number) => {
+      setDeleting(true);
+      setError(null);
+      try {
+        await api.delete(`/email-destinatarios/${id}`);
+        await listar();
+        setSuccess(true);
+        onSuccessMessage('Destinatário excluído com sucesso!');
+      } catch (error) {
+        console.error('Erro ao excluir destinatário de e-mail.', error);
+        let message = 'Não foi possível excluir o destinatário de e-mail.';
+
+        if (axios.isAxiosError(error)) {
+          const apiMessage = error.response?.data?.message;
+          if (typeof apiMessage === 'string') {
+            const normalizedMessage = apiMessage.toLowerCase();
+            if (
+              normalizedMessage.includes('último destinatário ativo') ||
+              normalizedMessage.includes('ultimo destinatario ativo')
+            ) {
+              message =
+                'Não é possível excluir o último destinatário ativo. Cadastre outro destinatário ativo antes de excluir este.';
+            } else {
+              message = apiMessage;
+            }
+          }
+        }
+
+        setError(message);
+        setSuccess(false);
+        onErrorMessage(message);
+      } finally {
+        setDeleting(false);
+      }
+    },
+    [listar, onErrorMessage, onSuccessMessage]
+  );
 
   return {
     destinatarios,
-    loadingDestinatarios,
-    savingDestinatario,
-    carregarDestinatarios,
-    criarDestinatario,
-    atualizarDestinatario,
+    loading,
+    saving,
+    deleting,
+    success,
+    error,
+    empty: destinatarios.length === 0,
+    listar,
+    criar,
+    editar,
+    toggleAtivo,
+    excluir,
   };
 }

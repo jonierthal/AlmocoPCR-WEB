@@ -54,5 +54,4 @@ export type EmailDestinatarioPayload = {
 export type RelatorioEmailPayload = {
   tipoRelatorio: EmailDestinatarioTipo;
   dataReferencia: string;
-  destinatariosExtras?: string[];
 };

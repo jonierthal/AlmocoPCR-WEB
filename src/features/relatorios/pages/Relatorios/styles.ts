@@ -116,6 +116,29 @@ export const AutoEmailHeader = styled.button`
   }
 `;
 
+export const AutoEmailHeaderTop = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+`;
+
+export const AutoEmailHeaderTitle = styled.span`
+  font-weight: bold;
+  font-size: 1rem;
+  font-family: Arial;
+`;
+
+export const AutoEmailHeaderSummary = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-family: Arial;
+  font-weight: normal;
+  color: #0476AC;
+`;
+
 export const AutoEmailContent = styled.div`
   display: flex;
   flex-direction: column;
@@ -158,46 +181,39 @@ export const AutoEmailStatus = styled.span`
     font-family: Arial;
 `
 
-export const AutoEmailInput = styled.textarea`
+export const EmailTableWrapper = styled.div`
   width: 100%;
-  min-height: 80px;
-  padding: 0.6rem;
-  border: 1px solid #0476AC;
-  border-radius: 6px;
-  color: #0476AC;
-  font-size: 0.95rem;
-  font-family: Arial;
-  resize: vertical;
+  overflow-x: auto;
 `;
 
-export const EmailRecipientGrid = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-`;
-
-export const EmailRecipientRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  border-radius: 8px;
+export const EmailRecipientTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
   border: 1px solid #c7e3f3;
   background-color: #ffffff;
+  font-family: Arial;
 `;
 
-export const EmailRecipientMeta = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
+export const EmailRecipientRow = styled.tr`
+  &:nth-child(even) {
+    background-color: #f4fbff;
+  }
 `;
 
-export const EmailRecipientValue = styled.span`
+export const EmailRecipientHeaderCell = styled.th`
+  padding: 0.65rem;
+  border-bottom: 1px solid #c7e3f3;
+  text-align: left;
   color: #0476AC;
   font-size: 0.95rem;
-  font-family: Arial;
+  font-weight: bold;
+`;
+
+export const EmailRecipientCell = styled.td`
+  padding: 0.65rem;
+  border-bottom: 1px solid #e6f1f7;
+  color: #0476AC;
+  font-size: 0.95rem;
 `;
 
 export const EmailRecipientCard = styled.div`
@@ -245,10 +261,40 @@ export const EmailSelect = styled.select`
   background-color: #ffffff;
 `;
 
+export const EmailSwitchLabel = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #0476AC;
+  font-weight: bold;
+  font-size: 0.95rem;
+  font-family: Arial;
+`;
+
+export const EmailSwitch = styled.input`
+  width: 18px;
+  height: 18px;
+  accent-color: #0476AC;
+`;
+
 export const EmailFormActions = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+`;
+
+export const EmailTableActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+`;
+
+export const EmailToggleButton = styled(Button)`
+  background-color: #0f8ed0;
+`;
+
+export const EmailDeleteButton = styled(Button)`
+  background-color: #d93838;
 `;
 
 export const WarningText = styled.p`

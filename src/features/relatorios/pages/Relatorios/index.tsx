@@ -55,12 +55,9 @@ setDefaultLocale('pt-BR');
 
     const {
       emailMenuOpen,
-      destinatariosExtras,
-      destinatariosExtrasResumo,
       enviandoEmail,
       statusEnvios,
       loadingStatus,
-      setDestinatariosExtras,
       toggleEmailMenu,
       enviarRelatorioPorEmail,
     } = useRelatoriosEmail({
@@ -70,10 +67,14 @@ setDefaultLocale('pt-BR');
 
     const {
       destinatarios,
-      loadingDestinatarios,
-      savingDestinatario,
-      criarDestinatario,
-      atualizarDestinatario,
+      loading: loadingDestinatarios,
+      saving: savingDestinatario,
+      deleting: deletingDestinatario,
+      empty: emptyDestinatarios,
+      criar,
+      editar,
+      toggleAtivo,
+      excluir,
     } = useEmailDestinatarios({
       onSuccessMessage: showSuccessMessage,
       onErrorMessage: showErrorMessage,
@@ -190,11 +191,12 @@ setDefaultLocale('pt-BR');
               destinatarios={destinatarios}
               loadingDestinatarios={loadingDestinatarios}
               savingDestinatario={savingDestinatario}
-              onCriarDestinatario={criarDestinatario}
-              onAtualizarDestinatario={atualizarDestinatario}
-              destinatariosExtras={destinatariosExtras}
-              destinatariosExtrasResumo={destinatariosExtrasResumo}
-              onChangeDestinatariosExtras={setDestinatariosExtras}
+              deletingDestinatario={deletingDestinatario}
+              emptyDestinatarios={emptyDestinatarios}
+              onCriarDestinatario={criar}
+              onEditarDestinatario={editar}
+              onToggleAtivo={toggleAtivo}
+              onExcluirDestinatario={excluir}
               enviandoEmail={enviandoEmail}
               statusEnvios={statusEnvios}
               loadingStatus={loadingStatus}

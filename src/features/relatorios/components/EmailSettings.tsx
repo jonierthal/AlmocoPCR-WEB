@@ -4,9 +4,10 @@ import {
   AutoEmailContainer,
   AutoEmailContent,
   AutoEmailHeader,
-  AutoEmailInput,
+  AutoEmailHeaderSummary,
+  AutoEmailHeaderTitle,
+  AutoEmailHeaderTop,
   AutoEmailStatus,
-  AutoEmailSummary,
   AutoEmailText,
   AutoEmailTitle,
   Button,
@@ -15,14 +16,21 @@ import {
   EmailInput,
   EmailLabel,
   EmailRecipientCard,
-  EmailRecipientGrid,
-  EmailRecipientMeta,
+  EmailRecipientCell,
+  EmailRecipientHeaderCell,
   EmailRecipientRow,
-  EmailRecipientValue,
+  EmailRecipientTable,
   EmailSelect,
+  EmailSwitch,
+  EmailSwitchLabel,
+  EmailTableActions,
+  EmailTableWrapper,
+  EmailToggleButton,
+  EmailDeleteButton,
   WarningText,
 } from '../pages/Relatorios/styles';
 import { EmailDestinatario, EmailDestinatarioPayload } from '../types';
+import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 
 const EMAIL_AUTO_TOGGLE_TEXT = {
   closed: 'Mostrar ▼',
@@ -35,14 +43,15 @@ type EmailSettingsProps = {
   destinatarios: EmailDestinatario[];
   loadingDestinatarios: boolean;
   savingDestinatario: boolean;
+  deletingDestinatario: boolean;
+  emptyDestinatarios: boolean;
   onCriarDestinatario: (payload: EmailDestinatarioPayload) => Promise<void>;
-  onAtualizarDestinatario: (
+  onEditarDestinatario: (
     id: number,
     payload: EmailDestinatarioPayload
   ) => Promise<void>;
-  destinatariosExtras: string;
-  onChangeDestinatariosExtras: (value: string) => void;
-  destinatariosExtrasResumo: string;
+  onToggleAtivo: (destinatario: EmailDestinatario) => Promise<void>;
+  onExcluirDestinatario: (id: number) => Promise<void>;
   enviandoEmail: boolean;
   statusEnvios: {
     almoco: {
@@ -59,7 +68,7 @@ type EmailSettingsProps = {
   loadingStatus: boolean;
   onEnviarRelatorioAlmoco: () => void;
   onEnviarRelatorioXis: () => void;
-  };
+};
 
 const defaultFormState: EmailDestinatarioPayload = {
   email: '',
@@ -74,11 +83,12 @@ export function EmailSettings({
   destinatarios,
   loadingDestinatarios,
   savingDestinatario,
+  deletingDestinatario,
+  emptyDestinatarios,
   onCriarDestinatario,
-  onAtualizarDestinatario,
-  destinatariosExtras,
-  onChangeDestinatariosExtras,
-  destinatariosExtrasResumo,
+  onEditarDestinatario,
+  onToggleAtivo,
+  onExcluirDestinatario,
   enviandoEmail,
   statusEnvios,
   loadingStatus,
@@ -87,6 +97,9 @@ export function EmailSettings({
 }: EmailSettingsProps) {
   const [formOpen, setFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<EmailDestinatario | null>(
+    null
+  );
   const [formState, setFormState] = useState<EmailDestinatarioPayload>(
     defaultFormState
   );
@@ -129,10 +142,6 @@ export function EmailSettings({
     [destinatarios]
   );
 
-  const destinatariosResumo = useMemo(() => {
-    return `Almoço ativos: ${destinatariosAtivosAlmoco.length} • Xis ativos: ${destinatariosAtivosXis.length}`;
-  }, [destinatariosAtivosAlmoco.length, destinatariosAtivosXis.length]);
-
   const resetForm = () => {
     setFormState(defaultFormState);
     setEditingId(null);
@@ -147,10 +156,9 @@ export function EmailSettings({
 
   const handleSubmit = async () => {
     const emailValue = formState.email.trim();
-    const nomeValue = formState.nome.trim();
 
-    if (!emailValue || !nomeValue) {
-      setFormError('Preencha e-mail e nome antes de salvar.');
+    if (!emailValue) {
+      setFormError('Preencha o e-mail antes de salvar.');
       return;
     }
 
@@ -162,16 +170,16 @@ export function EmailSettings({
     setFormError('');
 
     if (editingId) {
-      await onAtualizarDestinatario(editingId, {
+      await onEditarDestinatario(editingId, {
         ...formState,
         email: emailValue,
-        nome: nomeValue,
+        nome: formState.nome.trim(),
       });
     } else {
       await onCriarDestinatario({
         ...formState,
         email: emailValue,
-        nome: nomeValue,
+        nome: formState.nome.trim(),
       });
     }
 
@@ -191,12 +199,24 @@ export function EmailSettings({
   };
 
   const handleToggleAtivo = async (destinatario: EmailDestinatario) => {
-    await onAtualizarDestinatario(destinatario.id, {
-      email: destinatario.email,
-      nome: destinatario.nome,
-      tipos: destinatario.tipos,
-      ativo: !destinatario.ativo,
-    });
+    await onToggleAtivo(destinatario);
+  };
+
+  const handleDelete = (destinatario: EmailDestinatario) => {
+    setDeleteTarget(destinatario);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) {
+      return;
+    }
+
+    await onExcluirDestinatario(deleteTarget.id);
+    setDeleteTarget(null);
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteTarget(null);
   };
 
   return (
@@ -206,18 +226,21 @@ export function EmailSettings({
         onClick={onToggleMenu}
         aria-expanded={emailMenuOpen}
       >
-        <span>Configurações de e-mail</span>
+        <AutoEmailHeaderTop>
+          <AutoEmailHeaderTitle>Configurações de e-mail</AutoEmailHeaderTitle>
+          <AutoEmailHeaderSummary>
+            <span>
+              Almoço: {destinatariosAtivosAlmoco.length} destinatários ativos
+            </span>
+            <span>
+              Xis: {destinatariosAtivosXis.length} destinatários ativos
+            </span>
+          </AutoEmailHeaderSummary>
+        </AutoEmailHeaderTop>
         <span>
           {emailMenuOpen ? EMAIL_AUTO_TOGGLE_TEXT.open : EMAIL_AUTO_TOGGLE_TEXT.closed}
         </span>
       </AutoEmailHeader>
-      {!emailMenuOpen && (
-        <AutoEmailSummary>
-          <span>{destinatariosResumo}</span>
-          <span>Almoço: {statusLabelAlmoco}</span>
-          <span>Xis: {statusLabelXis}</span>
-        </AutoEmailSummary>
-      )}
       {emailMenuOpen && (
         <AutoEmailContent>
           <AutoEmailTitle>Destinatários cadastrados</AutoEmailTitle>
@@ -254,7 +277,7 @@ export function EmailSettings({
             <EmailRecipientCard>
               <EmailFormGrid>
                 <EmailLabel>
-                  Nome
+                  Nome (opcional)
                   <EmailInput
                     value={formState.nome}
                     onChange={(event) =>
@@ -267,7 +290,7 @@ export function EmailSettings({
                   />
                 </EmailLabel>
                 <EmailLabel>
-                  E-mail
+                  E-mail (obrigatório)
                   <EmailInput
                     value={formState.email}
                     onChange={(event) =>
@@ -295,21 +318,19 @@ export function EmailSettings({
                     <option value="AMBOS">Ambos</option>
                   </EmailSelect>
                 </EmailLabel>
-                <EmailLabel>
-                  Status
-                  <EmailSelect
-                    value={formState.ativo ? 'ativo' : 'inativo'}
+                <EmailSwitchLabel>
+                  <EmailSwitch
+                    type="checkbox"
+                    checked={formState.ativo}
                     onChange={(event) =>
                       setFormState((state) => ({
                         ...state,
-                        ativo: event.target.value === 'ativo',
+                        ativo: event.target.checked,
                       }))
                     }
-                  >
-                    <option value="ativo">Ativo</option>
-                    <option value="inativo">Inativo</option>
-                  </EmailSelect>
-                </EmailLabel>
+                  />
+                  Ativo
+                </EmailSwitchLabel>
               </EmailFormGrid>
               {formError && <WarningText>{formError}</WarningText>}
               <EmailFormActions>
@@ -334,62 +355,68 @@ export function EmailSettings({
           {loadingDestinatarios ? (
             <AutoEmailText>Carregando destinatários...</AutoEmailText>
           ) : (
-            <EmailRecipientGrid>
-              {destinatarios.length === 0 && (
+            <EmailTableWrapper>
+              {emptyDestinatarios ? (
                 <AutoEmailText>Nenhum destinatário cadastrado.</AutoEmailText>
+              ) : (
+                <EmailRecipientTable>
+                  <thead>
+                    <EmailRecipientRow>
+                      <EmailRecipientHeaderCell>Email</EmailRecipientHeaderCell>
+                      <EmailRecipientHeaderCell>Nome</EmailRecipientHeaderCell>
+                      <EmailRecipientHeaderCell>Tipo</EmailRecipientHeaderCell>
+                      <EmailRecipientHeaderCell>Status</EmailRecipientHeaderCell>
+                      <EmailRecipientHeaderCell>Ações</EmailRecipientHeaderCell>
+                    </EmailRecipientRow>
+                  </thead>
+                  <tbody>
+                    {destinatarios.map((destinatario) => (
+                      <EmailRecipientRow key={destinatario.id}>
+                        <EmailRecipientCell>{destinatario.email}</EmailRecipientCell>
+                        <EmailRecipientCell>
+                          {destinatario.nome || '—'}
+                        </EmailRecipientCell>
+                        <EmailRecipientCell>
+                          {destinatario.tipos === 'ALMOCO'
+                            ? 'ALMOCO'
+                            : destinatario.tipos === 'XIS'
+                            ? 'XIS'
+                            : 'AMBOS'}
+                        </EmailRecipientCell>
+                        <EmailRecipientCell>
+                          {destinatario.ativo ? 'Ativo' : 'Inativo'}
+                        </EmailRecipientCell>
+                        <EmailRecipientCell>
+                          <EmailTableActions>
+                            <Button
+                              type="button"
+                              onClick={() => handleEdit(destinatario)}
+                              disabled={savingDestinatario || deletingDestinatario}
+                            >
+                              Editar
+                            </Button>
+                            <EmailToggleButton
+                              type="button"
+                              onClick={() => handleToggleAtivo(destinatario)}
+                              disabled={savingDestinatario || deletingDestinatario}
+                            >
+                              {destinatario.ativo ? 'Inativar' : 'Ativar'}
+                            </EmailToggleButton>
+                            <EmailDeleteButton
+                              type="button"
+                              onClick={() => handleDelete(destinatario)}
+                              disabled={savingDestinatario || deletingDestinatario}
+                            >
+                              Excluir
+                            </EmailDeleteButton>
+                          </EmailTableActions>
+                        </EmailRecipientCell>
+                      </EmailRecipientRow>
+                    ))}
+                  </tbody>
+                </EmailRecipientTable>
               )}
-              {destinatarios.map((destinatario) => (
-                <EmailRecipientRow key={destinatario.id}>
-                  <EmailRecipientMeta>
-                    <EmailRecipientValue>
-                      {destinatario.nome}
-                    </EmailRecipientValue>
-                    <EmailRecipientValue>{destinatario.email}</EmailRecipientValue>
-                    <EmailRecipientValue>
-                      Tipo:{' '}
-                      {destinatario.tipos === 'ALMOCO'
-                        ? 'Almoço'
-                        : destinatario.tipos === 'XIS'
-                        ? 'Xis'
-                        : 'Ambos'}
-                    </EmailRecipientValue>
-                    <EmailRecipientValue>
-                      {destinatario.ativo ? 'Ativo' : 'Inativo'}
-                    </EmailRecipientValue>
-                  </EmailRecipientMeta>
-                  <EmailFormActions>
-                    <Button
-                      type="button"
-                      onClick={() => handleEdit(destinatario)}
-                      disabled={savingDestinatario}
-                    >
-                      Editar
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={() => handleToggleAtivo(destinatario)}
-                      disabled={savingDestinatario}
-                    >
-                      {destinatario.ativo ? 'Desativar' : 'Ativar'}
-                    </Button>
-                  </EmailFormActions>
-                </EmailRecipientRow>
-              ))}
-            </EmailRecipientGrid>
-          )}
-
-          <AutoEmailTitle>Envio manual</AutoEmailTitle>
-          <AutoEmailText>Enviar também para (opcional)</AutoEmailText>
-          <AutoEmailInput
-            rows={2}
-            value={destinatariosExtras}
-            onChange={(event) => onChangeDestinatariosExtras(event.target.value)}
-            placeholder="email1@exemplo.com; email2@exemplo.com"
-          />
-          {destinatariosExtrasResumo && (
-            <AutoEmailText>
-              Destinatários extras: {destinatariosExtrasResumo}
-            </AutoEmailText>
+            </EmailTableWrapper>
           )}
 
           <AutoEmailTitle>Status de envio</AutoEmailTitle>
@@ -414,6 +441,16 @@ export function EmailSettings({
           </Button>
         </AutoEmailContent>
       )}
+      <ConfirmDeleteModal
+        isOpen={Boolean(deleteTarget)}
+        onRequestClose={closeDeleteModal}
+        title="Confirmar exclusão?"
+        subtitle={`Você está prestes a excluir o destinatário: ${
+          deleteTarget?.nome || deleteTarget?.email || ''
+        }.\n\nTem certeza disso?`}
+        loading={deletingDestinatario}
+        onConfirm={handleConfirmDelete}
+      />
     </AutoEmailContainer>
   );
 }

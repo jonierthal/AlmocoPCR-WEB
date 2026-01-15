@@ -1,6 +1,6 @@
 import axios from 'axios';
 import moment from 'moment';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api } from '@lib/axios';
 import { EmailDestinatarioTipo, RelatorioEmailPayload } from '../types';
 
@@ -20,58 +20,24 @@ type StatusEnvios = {
   xis: StatusEnvioInfo;
 };
 
-const EMAIL_MENU_STORAGE_KEY = 'relatorios-email-menu-open';
-
 export function useRelatoriosEmail({
   onSuccessMessage,
   onErrorMessage,
 }: UseRelatoriosEmailOptions) {
   const [enviandoEmail, setEnviandoEmail] = useState(false);
-  const [destinatariosExtras, setDestinatariosExtras] = useState('');
-  const [emailMenuOpen, setEmailMenuOpen] = useState(() => {
-    const storedValue = localStorage.getItem(EMAIL_MENU_STORAGE_KEY);
-    return storedValue ? storedValue === 'true' : false;
-  });
+  const [emailMenuOpen, setEmailMenuOpen] = useState(false);
   const [statusEnvios, setStatusEnvios] = useState<StatusEnvios | null>(null);
   const [loadingStatus, setLoadingStatus] = useState(false);
 
-  const obterDestinatariosExtras = useCallback(() => {
-    return destinatariosExtras
-      .split(/[,;]+/)
-      .map((email) => email.trim())
-      .filter((email) => email.length > 0);
-  }, [destinatariosExtras]);
-
   const montarPayloadEmail = useCallback(
     (tipoRelatorio: EmailDestinatarioTipo): RelatorioEmailPayload => {
-      const extras = obterDestinatariosExtras();
       return {
         tipoRelatorio,
         dataReferencia: moment().format('YYYY-MM-DD'),
-        ...(extras.length > 0 ? { destinatariosExtras: extras } : {}),
       };
     },
-    [obterDestinatariosExtras]
+    []
   );
-
-  const validarDestinatariosExtras = useCallback(() => {
-    const emails = obterDestinatariosExtras();
-    if (emails.length === 0) {
-      return true;
-    }
-
-    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const emailsInvalidos = emails.filter((email) => !regexEmail.test(email));
-
-    if (emailsInvalidos.length > 0) {
-      onErrorMessage(
-        `E-mails adicionais inválidos: ${emailsInvalidos.join(', ')}`
-      );
-      return false;
-    }
-
-    return true;
-  }, [obterDestinatariosExtras, onErrorMessage]);
 
   const logEmailErro = useCallback(
     (
@@ -83,7 +49,6 @@ export function useRelatoriosEmail({
         tipoEnvio: manual ? 'manual' : 'automatico',
         dataReferencia: payload.dataReferencia,
         tipoRelatorio: payload.tipoRelatorio,
-        destinatariosExtras: payload.destinatariosExtras ?? [],
       };
 
       console.group('Falha ao enviar relatório de reservas por e-mail');
@@ -123,7 +88,7 @@ export function useRelatoriosEmail({
         return `Erro ao enviar o relatório por e-mail (status ${error.response.status}${statusText}). Detalhes disponíveis no console.`;
       }
 
-    return 'Ocorreu um erro ao enviar o relatório de reservas por e-mail. Consulte o console para detalhes.';
+      return 'Ocorreu um erro ao enviar o relatório de reservas por e-mail. Consulte o console para detalhes.';
     },
     []
   );
@@ -146,9 +111,6 @@ export function useRelatoriosEmail({
 
   const enviarRelatorioPorEmail = useCallback(
     async (tipoRelatorio: EmailDestinatarioTipo, manual: boolean) => {
-      if (!validarDestinatariosExtras()) {
-        return;
-      }
 
       setEnviandoEmail(true);
       const payload = montarPayloadEmail(tipoRelatorio);
@@ -181,9 +143,7 @@ export function useRelatoriosEmail({
       logEmailErro,
       montarPayloadEmail,
       onErrorMessage,
-      onSuccessMessage,
-      validarDestinatariosExtras,
-    ]
+      onSuccessMessage,    ]
   );
 
   useEffect(() => {
@@ -196,26 +156,14 @@ export function useRelatoriosEmail({
   }, [carregarStatusEnvios]);
 
   const toggleEmailMenu = useCallback(() => {
-    setEmailMenuOpen((open) => {
-      const nextValue = !open;
-      localStorage.setItem(EMAIL_MENU_STORAGE_KEY, String(nextValue));
-      return nextValue;
-    });
+    setEmailMenuOpen((open) => !open);
   }, []);
-
-  const destinatariosExtrasResumo = useMemo(() => {
-    const extras = obterDestinatariosExtras();
-    return extras.join(', ');
-  }, [obterDestinatariosExtras]);
 
   return {
     emailMenuOpen,
-    destinatariosExtras,
-    destinatariosExtrasResumo,
     enviandoEmail,
     statusEnvios,
     loadingStatus,
-    setDestinatariosExtras,
     toggleEmailMenu,
     enviarRelatorioPorEmail,
   };
