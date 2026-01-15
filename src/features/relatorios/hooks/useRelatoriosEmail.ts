@@ -152,10 +152,15 @@ export function useRelatoriosEmail({
 
       setEnviandoEmail(true);
       const payload = montarPayloadEmail(tipoRelatorio);
+      const endpoint = manual
+        ? '/relatorios/email-manual'
+        : '/relatorios/email-automatico';
 
       try {
-        await api.post('/relatorios/email-automatico', payload);
-        await carregarStatusEnvios();
+       await api.post(endpoint, payload);
+        if (!manual) {
+          await carregarStatusEnvios();
+        }
         onSuccessMessage(
           manual
             ? `E-mail de ${

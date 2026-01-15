@@ -400,8 +400,8 @@ export function EmailSettings({
           {erroAlmoco && (
             <AutoEmailStatus>Erro almoço: {erroAlmoco}</AutoEmailStatus>
           )}
-          <Button disabled={enviandoEmail} onClick={onEnviarRelatorioAlmoco}>
-            {enviandoEmail ? 'Enviando...' : 'Enviar e-mail de teste agora (Almoço)'}
+          <Button onClick={onEnviarRelatorioAlmoco}>
+            {enviandoEmail ? 'Enviando...' : 'Enviar e-mail (Almoço)'}
           </Button>
 
           <AutoEmailStatus>
@@ -409,8 +409,8 @@ export function EmailSettings({
             {dataHoraXis ? ` • ${dataHoraXis}` : ''}
           </AutoEmailStatus>
           {erroXis && <AutoEmailStatus>Erro Xis: {erroXis}</AutoEmailStatus>}
-          <Button disabled={enviandoEmail} onClick={onEnviarRelatorioXis}>
-            {enviandoEmail ? 'Enviando...' : 'Enviar e-mail de teste agora (Xis)'}
+          <Button onClick={onEnviarRelatorioXis}>
+            {enviandoEmail ? 'Enviando...' : 'Enviar e-mail(Xis)'}
           </Button>
         </AutoEmailContent>
       )}
